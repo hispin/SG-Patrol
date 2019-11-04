@@ -71,7 +71,7 @@ class InitAppActivity : AppCompatActivity() {
                 deviceUniqueIdentifier = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     tm.imei
                 } else {
-                    tm.getDeviceId()
+                    tm.deviceId
                 }
             }
         }

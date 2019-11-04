@@ -384,23 +384,6 @@ class MainUartFragment : Fragment() ,OnAdapterListener {
     }
 
 
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-//        if (context is OnAdapterListener) {
-//            listener = context
-//        } else {
-//            throw RuntimeException(context.toString() + " must implement OnAdapterListener")
-//        }
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        //listener = null
-    }
-
-
-
     companion object {
         /**
          * Use this factory method to create a new instance of
