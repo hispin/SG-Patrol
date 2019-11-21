@@ -1,11 +1,6 @@
 package com.sensoguard.detectsensor.global
 
 import android.content.Context
-import android.graphics.drawable.VectorDrawable
-import android.graphics.BitmapFactory
-import android.graphics.drawable.BitmapDrawable
-import androidx.core.content.ContextCompat
-import android.graphics.drawable.Drawable
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.os.Build
@@ -13,12 +8,11 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.drawable.DrawableCompat
 import com.google.android.gms.maps.model.BitmapDescriptor
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.sensoguard.detectsensor.R
 
 
 //convert bitmap to bitmap discriptor
 fun convertBitmapToBitmapDiscriptor(context:Context,resId:Int): BitmapDescriptor? {
-    val bitmap = context?.let { getBitmapFromVectorDrawable(it, resId) }
+    val bitmap = context.let { getBitmapFromVectorDrawable(it, resId) }
     return BitmapDescriptorFactory.fromBitmap(bitmap)
 }
 

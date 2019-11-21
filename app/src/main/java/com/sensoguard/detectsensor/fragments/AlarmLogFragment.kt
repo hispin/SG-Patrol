@@ -1,10 +1,11 @@
 package com.sensoguard.detectsensor.fragments
 
+//import android.support.v4.app.Fragment
+
 import android.content.Context
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
-//import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,14 +16,13 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-
 import com.sensoguard.detectsensor.R
 import com.sensoguard.detectsensor.adapters.AlarmAdapter
 import com.sensoguard.detectsensor.classes.Alarm
 import com.sensoguard.detectsensor.classes.Sensor
 import com.sensoguard.detectsensor.global.*
 import com.sensoguard.detectsensor.interfaces.OnAdapterListener
-import java.util.ArrayList
+import java.util.*
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -182,15 +182,6 @@ class HistoryWarningFragment : Fragment(), OnAdapterListener {
     fun onButtonPressed(uri: Uri) {
         //listener?.onFragmentInteraction(uri)
     }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-    }
-
 
 
     companion object {

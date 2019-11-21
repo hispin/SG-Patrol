@@ -1,21 +1,26 @@
 package com.sensoguard.detectsensor.fragments
 
 
+//import android.support.design.widget.FloatingActionButton
+//import android.support.v4.app.Fragment
+//import android.support.v4.app.FragmentManager
+//import android.support.v4.content.ContextCompat
+//import android.support.v4.content.ContextCompat.startForegroundService
+//import android.support.v7.widget.DividerItemDecoration
+//import android.support.v7.widget.LinearLayoutManager
+//import android.support.v7.widget.RecyclerView
 import android.app.Dialog
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
-import android.location.Criteria
 import android.location.Location
 import android.location.LocationManager
-import android.media.*
+import android.media.Ringtone
+import android.media.RingtoneManager
 import android.net.Uri
 import android.os.*
-//import android.support.design.widget.FloatingActionButton
-//import android.support.v4.app.Fragment
-//import android.support.v4.app.FragmentManager
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -23,20 +28,7 @@ import android.view.ViewGroup
 import android.view.animation.Animation
 import android.widget.Button
 import android.widget.EditText
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
-import com.sensoguard.detectsensor.interfaces.OnAdapterListener
-import com.google.android.gms.maps.model.MarkerOptions
-import com.sensoguard.detectsensor.interfaces.OnFragmentListener
-//import android.support.v4.content.ContextCompat
-//import android.support.v4.content.ContextCompat.startForegroundService
-import com.sensoguard.detectsensor.classes.Sensor
-//import android.support.v7.widget.DividerItemDecoration
-//import android.support.v7.widget.LinearLayoutManager
-//import android.support.v7.widget.RecyclerView
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -44,15 +36,23 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.sensoguard.detectsensor.R
 import com.sensoguard.detectsensor.adapters.SensorsDialogAdapter
 import com.sensoguard.detectsensor.classes.AlarmSensor
+import com.sensoguard.detectsensor.classes.Sensor
 import com.sensoguard.detectsensor.controler.ViewModelListener
 import com.sensoguard.detectsensor.global.*
+import com.sensoguard.detectsensor.interfaces.OnAdapterListener
+import com.sensoguard.detectsensor.interfaces.OnFragmentListener
 import com.sensoguard.detectsensor.services.ServiceFindLocation
-import java.lang.Exception
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -246,6 +246,7 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
         super.onViewStateRestored(savedInstanceState)
     }
 
+    //get current location from gps
     private fun gotoMyLocation() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             activity?.startForegroundService(Intent(context, ServiceFindLocation::class.java))
@@ -264,10 +265,14 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
 
         //set the location of the current touching map
         mMap?.setOnMapLongClickListener { arg0 ->
-            // TODO Auto-generated method stub
-            currentLongitude = arg0.longitude
-            currentLatitude = arg0.latitude
-            showDialogSensorsList()
+            //bug fixed: crash when accept alarm
+            if (arg0 != null) {
+                currentLongitude = arg0.longitude
+                currentLatitude = arg0.latitude
+                showDialogSensorsList()
+            } else {
+                Toast.makeText(activity, "error in location1", Toast.LENGTH_LONG).show()
+            }
         }
 
         mMap?.setOnCameraMoveListener {
@@ -280,8 +285,25 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
 
         //go to last location
         val location = initFindLocation()
-        showLocation(location)
 
+        if (location == null) {
+            val latitude = getStringInPreference(activity, CURRENT_LATITUDE_PREF, "-1")
+            val longtude = getStringInPreference(activity, CURRENT_LONGTUDE_PREF, "-1")
+
+            if (!latitude.equals("-1") && !longtude.equals("-1")) {
+                try {
+                    val lat = latitude?.toDouble()
+                    val lon = longtude?.toDouble()
+
+                } catch (ex: NumberFormatException) {
+                }
+            }
+        }
+
+        //set last location if exist
+        location?.let { myLocate = LatLng(it.latitude, it.longitude) }
+
+        showLocation(location)
 
         gotoMyLocation()
     }
@@ -291,6 +313,16 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
 
         if (location != null) {
             setMyLocate(LatLng(location.latitude, location.longitude))
+        } else {
+
+            myLocate = getLastLocationLocally()
+
+            if (myLocate == null) {
+                //set default location (london)
+                myLocate = LatLng(51.509865, -0.118092)
+                //set default location (london) if there is no last location
+                setMyLocate(LatLng(51.509865, -0.118092))
+            }
         }
         //add marker at the focus of the map
         myLocate?.let{
@@ -299,6 +331,27 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
             //fillSensorsMarkers()
         }
 
+    }
+
+    //get last location from shared preference
+    private fun getLastLocationLocally(): LatLng? {
+        val latitude = getStringInPreference(activity, CURRENT_LATITUDE_PREF, "-1")
+        val longtude = getStringInPreference(activity, CURRENT_LONGTUDE_PREF, "-1")
+        var lat: Double? = null
+        var lon: Double? = null
+
+        if (!latitude.equals("-1") && !longtude.equals("-1")) {
+            try {
+                lat = latitude?.toDouble()
+                lon = longtude?.toDouble()
+
+            } catch (ex: NumberFormatException) {
+            }
+        }
+        if (lat != null && lon != null) {
+            return LatLng(lat, lon)
+        }
+        return null
     }
 
     //execute vibrate
@@ -444,6 +497,9 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
                return
            }
 
+       if (myLocate == null) {
+           return
+       }
 
             mMap?.addMarker(
                 myLocate?.let {
@@ -499,7 +555,7 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
             val sensorItem = iteratorList.next()
             if(isSensorAlarmTimeout(sensorItem)){
                 //show regular sensor marker
-                sensorItem?.marker?.let { showSensorMarker(it) }
+                sensorItem.marker?.let { showSensorMarker(it) }
                 //remove the sensor alarm because it timeout
                 iteratorList.remove()
             }
@@ -623,7 +679,7 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
                     currentLatitude?.let { SensorsDialogAdapter.selectedSensor?.setLatitude(it) }
                     currentLongitude?.let { SensorsDialogAdapter.selectedSensor?.setLongtitude(it) }
 
-                    SensorsDialogAdapter?.selectedSensor?.let { sensor -> saveLatLongDetector(sensor) }
+                    SensorsDialogAdapter.selectedSensor?.let { sensor -> saveLatLongDetector(sensor) }
                     dialog?.dismiss()
                     showMarkers()
                     //fillSensorsMarkers()
@@ -676,7 +732,7 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
                         val inn = Intent(READ_DATA_KEY)
                         inn.putExtra("data", arr)
                         context?.sendBroadcast(Intent(inn))
-                        dialog?.dismiss()
+                        dialog.dismiss()
                     }
                 }
 
@@ -732,8 +788,23 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
 
 
                     }else if(inn.action == GET_CURRENT_LOCATION_KEY){
-                        val location:Location?=inn.getParcelableExtra<Location>(CURRENT_LOCATION)
-                        showLocation(location)
+                        val location: Location? = inn.getParcelableExtra(CURRENT_LOCATION)
+                        if (location != null) {
+                            //save locally the current location
+                            setStringInPreference(
+                                activity,
+                                CURRENT_LATITUDE_PREF,
+                                location.latitude.toString()
+                            )
+                            setStringInPreference(
+                                activity,
+                                CURRENT_LONGTUDE_PREF,
+                                location.longitude.toString()
+                            )
+                            showLocation(location)
+                        } else {
+                            Toast.makeText(activity, "error in location2", Toast.LENGTH_LONG).show()
+                        }
                     }else if(inn.action == RESET_MARKERS_KEY){
                         //fillSensorsMarkers()
                         showMarkers()
@@ -749,13 +820,13 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
             }
 
     private var locationManager: LocationManager? = null
-    private var criteria: Criteria? = null
-    private var currentApiVersion: Int = 0
+    //    private var criteria: Criteria? = null
+//    private var currentApiVersion: Int = 0
     private fun initFindLocation(): Location? {
                 locationManager = activity?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-                criteria = Criteria()
-                criteria?.accuracy = Criteria.ACCURACY_FINE
-                currentApiVersion = Build.VERSION.SDK_INT
+//                criteria = Criteria()
+//                criteria?.accuracy = Criteria.ACCURACY_FINE
+//                currentApiVersion = Build.VERSION.SDK_INT
 
             if (context?.let {
                     ContextCompat.checkSelfPermission(
@@ -764,7 +835,9 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
                     )
                 } == PackageManager.PERMISSION_GRANTED
             ) {
-                return locationManager?.getLastKnownLocation(locationManager?.getBestProvider(criteria, false))
+
+                return locationManager?.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+                //return locationManager?.getLastKnownLocation(locationManager?.getBestProvider(criteria, false))
             }
 
 

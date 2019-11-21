@@ -1,6 +1,9 @@
 package com.sensoguard.detectsensor.classes;
 
+import android.util.Base64;
+
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -11,8 +14,6 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-
-import android.util.Base64;
 
 
 public class CryptoHandler {
@@ -35,7 +36,7 @@ public class CryptoHandler {
             BadPaddingException, InvalidKeyException,
             UnsupportedEncodingException, InvalidAlgorithmParameterException {
 
-        byte[] srcBuff = message.getBytes("UTF8");
+        byte[] srcBuff = message.getBytes(StandardCharsets.UTF_8);
         //here using substring because AES takes only 16 or 24 or 32 byte of key
         SecretKeySpec skeySpec = new
                 SecretKeySpec(SecretKey.substring(0,32).getBytes(), "AES");
@@ -61,7 +62,7 @@ public class CryptoHandler {
         ecipher.init(Cipher.DECRYPT_MODE, skeySpec, ivSpec);
         byte[] raw = Base64.decode(encrypted, Base64.DEFAULT);
         byte[] originalBytes = ecipher.doFinal(raw);
-        String original = new String(originalBytes, "UTF8");
+        String original = new String(originalBytes, StandardCharsets.UTF_8);
         return original;
     }
 }

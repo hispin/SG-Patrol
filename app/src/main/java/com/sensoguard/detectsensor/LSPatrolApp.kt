@@ -10,12 +10,6 @@ import com.sensoguard.detectsensor.global.setAppLanguage
 
 class LSPatrolApp : Application() {
 
-    override fun onCreate() {
-        super.onCreate()
-
-        //configurationLanguage()
-    }
-
     private fun configurationLanguage() {
         LanguageManager.setLanguageList()
         val currentLanguage = getStringInPreference(this, CURRENT_LANG_KEY_PREF, "-1")

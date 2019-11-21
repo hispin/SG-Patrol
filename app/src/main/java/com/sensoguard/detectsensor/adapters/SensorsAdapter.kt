@@ -1,25 +1,30 @@
 package com.sensoguard.detectsensor.adapters
 
-import android.content.Context
 //import android.support.v7.widget.RecyclerView
+
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import android.widget.TextView
-
-import com.sensoguard.detectsensor.classes.Sensor
-import com.sensoguard.detectsensor.interfaces.OnAdapterListener
-import java.util.ArrayList
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageButton
+import android.widget.TextView
 import android.widget.ToggleButton
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.sensoguard.detectsensor.R
+import com.sensoguard.detectsensor.classes.Sensor
+import com.sensoguard.detectsensor.interfaces.OnAdapterListener
+import java.util.*
 
 
-class SensorsAdapter (private var sensors: ArrayList<Sensor>, val context: Context, val onAdapterListener: OnAdapterListener, val isShowAll:Boolean, var itemClick: (Sensor) -> Unit) : RecyclerView.Adapter<SensorsAdapter.ViewHolder>() {
+class SensorsAdapter(
+    private var sensors: ArrayList<Sensor>,
+    val context: Context,
+    val onAdapterListener: OnAdapterListener,
+    var itemClick: (Sensor) -> Unit
+) : RecyclerView.Adapter<SensorsAdapter.ViewHolder>() {
 
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -70,7 +75,7 @@ class SensorsAdapter (private var sensors: ArrayList<Sensor>, val context: Conte
            tvIsLocate = _itemView.findViewById(R.id.tvIsLocate)
 
 
-           if(isShowAll){
+            //if(isShowAll){
                //in position 0 show the titles
 
                //check if the sensor is located in map then sign it in accordance
@@ -126,10 +131,10 @@ class SensorsAdapter (private var sensors: ArrayList<Sensor>, val context: Conte
                        false
                    }
                }
-           }else {
-               togIsActive?.visibility=View.GONE
-               tvIsLocate?.visibility=View.GONE
-           }
+//           }else {
+//               togIsActive?.visibility=View.GONE
+//               tvIsLocate?.visibility=View.GONE
+//           }
 
 
                tvId?.text = sensor.getId()

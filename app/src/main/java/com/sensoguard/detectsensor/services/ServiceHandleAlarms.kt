@@ -66,7 +66,7 @@ class ServiceHandleAlarms : Service(){
 
                 val idx = bit[5].toUByte().toInt()-1
 
-                if(stateTypes!=null && idx>= stateTypes?.size!!){
+                if (stateTypes != null && idx >= stateTypes.size) {
                     return
                 }
 

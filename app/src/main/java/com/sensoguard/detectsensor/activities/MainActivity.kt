@@ -5,9 +5,10 @@ import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.WindowManager
+import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.crashlytics.android.Crashlytics
 import com.sensoguard.detectsensor.classes.GeneralItemMenu
@@ -17,13 +18,13 @@ import com.sensoguard.detectsensor.global.*
 import io.fabric.sdk.android.Fabric
 
 
-
 class MainActivity : AppCompatActivity() {
 
     private var clickConsSensorTable:ConstraintLayout?=null
     private var clickConsMap:ConstraintLayout?=null
     private var clickConsConfiguration:ConstraintLayout?=null
     private var clickAlarmLog:ConstraintLayout?=null
+    private var tvShowVer: TextView? = null
 
 //    @Override
 //    protected override fun attachBaseContext(newBase:Context) {
@@ -31,6 +32,13 @@ class MainActivity : AppCompatActivity() {
 //    }
 
 
+    override fun onStart() {
+        super.onStart()
+        //show version name
+        val verName = packageManager.getPackageInfo(packageName, 0).versionName
+        val verTitle = "version:$verName"
+        tvShowVer?.text = verTitle
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -120,6 +128,7 @@ class MainActivity : AppCompatActivity() {
         clickConsMap=findViewById(com.sensoguard.detectsensor.R.id.clickConsMap)
         clickConsConfiguration=findViewById(com.sensoguard.detectsensor.R.id.clickConsConfiguration)
         clickAlarmLog=findViewById(com.sensoguard.detectsensor.R.id.clickAlarmLog)
+        tvShowVer = findViewById(com.sensoguard.detectsensor.R.id.tvShowVer)
     }
 
     private fun configurationLanguage() {

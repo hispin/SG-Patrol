@@ -1,32 +1,31 @@
 package com.sensoguard.detectsensor.fragments
 
+import android.app.Activity
 import android.app.AlertDialog
+import android.content.Context
+import android.content.Intent
+import android.media.RingtoneManager
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ListPopupWindow
+import android.widget.TextView
+import android.widget.Toast
+import android.widget.ToggleButton
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatEditText
-import androidx.fragment.app.Fragment
-import com.sensoguard.detectsensor.classes.Sensor
-import com.sensoguard.detectsensor.global.*
-import java.lang.NumberFormatException
-import android.media.RingtoneManager
-import android.content.Intent
-import android.net.Uri
-import android.app.Activity
-import android.content.Context
-import android.widget.*
-import androidx.appcompat.widget.AppCompatImageView
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.fragment.app.Fragment
 import com.sensoguard.detectsensor.R
 import com.sensoguard.detectsensor.adapters.GeneralItemMenuAdapter
 import com.sensoguard.detectsensor.classes.GeneralItemMenu
 import com.sensoguard.detectsensor.classes.LanguageManager
+import com.sensoguard.detectsensor.classes.Sensor
+import com.sensoguard.detectsensor.global.*
 import com.sensoguard.detectsensor.interfaces.CallToParentInterface
 import com.sensoguard.detectsensor.interfaces.OnFragmentListener
-import kotlinx.android.synthetic.main.fragment_configuration.*
-import kotlin.collections.ArrayList
 
 
 open class ConfigurationFragment : Fragment(),CallToParentInterface{
@@ -297,7 +296,7 @@ open class ConfigurationFragment : Fragment(),CallToParentInterface{
 
         if(numSensorsRequest!=null) {
             //add numSensors sensors
-            for (sensorId in 1 until numSensorsRequest!! + 1) {
+            for (sensorId in 1 until numSensorsRequest + 1) {
                 //add it just if not exist
                 if (sensors?.let { it1 -> !isIdExist(it1, sensorId.toString()) }!!) {
                     sensors.add(Sensor(sensorId.toString()))

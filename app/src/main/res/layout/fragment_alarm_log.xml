@@ -11,8 +11,8 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginTop="49.7dp"
-    >
+
+            >
 
     <!--&gt;-->
 

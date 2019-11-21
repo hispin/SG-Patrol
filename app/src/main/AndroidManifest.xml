@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
         package="com.sensoguard.detectsensor">
 
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
@@ -27,6 +26,7 @@
             android:roundIcon="@drawable/ic_launcher"
             android:supportsRtl="true"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"
+
             >
         <activity android:name=".activities.InitAppActivity"
                 android:theme="@style/Theme.AppCompat.NoActionBar">
@@ -72,6 +72,7 @@
                 android:name="io.fabric.ApiKey"
                 android:value="a2ca8d68e6eb68bf1b812b6e6f088bb62a139961" />
 
+        <!--        android:authorities="${applicationId}.contentprovider"-->
         <provider
                 android:name="androidx.core.content.FileProvider"
                 android:authorities="com.example.homefolder.example.provider"

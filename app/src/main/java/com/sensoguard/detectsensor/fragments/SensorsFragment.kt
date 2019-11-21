@@ -1,39 +1,36 @@
 package com.sensoguard.detectsensor.fragments
 
-import android.app.AlertDialog
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
-import android.net.Uri
-import android.os.Bundle
 //import android.support.v4.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import com.sensoguard.detectsensor.interfaces.OnAdapterListener
-import java.lang.StringBuilder
-import android.app.Dialog
-import androidx.core.content.ContextCompat
-import androidx.recyclerview.widget.DividerItemDecoration
 
 //import android.support.design.widget.FloatingActionButton
 //import android.support.v4.content.ContextCompat
 //import android.support.v7.widget.DividerItemDecoration
 //import android.support.v7.widget.LinearLayoutManager
 //import android.support.v7.widget.RecyclerView
+import android.app.AlertDialog
+import android.app.Dialog
+import android.content.*
+import android.net.Uri
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.view.Window
-import android.widget.*
-import com.sensoguard.detectsensor.adapters.SensorsAdapter
-import com.sensoguard.detectsensor.classes.Sensor
-import com.sensoguard.detectsensor.global.*
-import android.content.SharedPreferences
+import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
+import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.sensoguard.detectsensor.R
-import java.lang.NumberFormatException
+import com.sensoguard.detectsensor.adapters.SensorsAdapter
+import com.sensoguard.detectsensor.classes.Sensor
+import com.sensoguard.detectsensor.global.*
+import com.sensoguard.detectsensor.interfaces.OnAdapterListener
 
 
 //import android.R
@@ -93,8 +90,6 @@ class MainUartFragment : Fragment() ,OnAdapterListener {
 
     private fun initSensorsAdapter() {
 
-
-
         sensors= ArrayList()
 
         //sensors?.add(Sensor(resources.getString(R.string.id_title),resources.getString(R.string.name_title)))
@@ -105,7 +100,7 @@ class MainUartFragment : Fragment() ,OnAdapterListener {
 
         sensorsAdapter=activity?.let { adapter ->
             sensors?.let { arr ->
-                SensorsAdapter(arr, adapter,MainUartFragment@this,true) { _ ->
+                SensorsAdapter(arr, adapter, MainUartFragment@ this) { _ ->
 
                 }
             }
@@ -176,7 +171,7 @@ class MainUartFragment : Fragment() ,OnAdapterListener {
         val etId = dialog.findViewById(R.id.etId) as EditText
 
 
-        val btnOk= dialog.findViewById(com.sensoguard.detectsensor.R.id.btnOk) as Button
+        val btnOk = dialog.findViewById(R.id.btnOk) as Button
 
         btnOk.setOnClickListener {
 
@@ -271,7 +266,7 @@ class MainUartFragment : Fragment() ,OnAdapterListener {
         var isValid=true
 
         if (editText.text.isNullOrBlank()) {
-            editText.error=resources.getString(com.sensoguard.detectsensor.R.string.empty_field_error)
+            editText.error = resources.getString(R.string.empty_field_error)
             isValid=false
         }
 
@@ -308,10 +303,10 @@ class MainUartFragment : Fragment() ,OnAdapterListener {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        val view= inflater.inflate(com.sensoguard.detectsensor.R.layout.fragment_sensors, container, false)
-        tvShowLogs = view.findViewById(com.sensoguard.detectsensor.R.id.tvShowLogs)
-        rvSensor=view.findViewById(com.sensoguard.detectsensor.R.id.rvDetector)
-        floatAddSensor = view.findViewById(com.sensoguard.detectsensor.R.id.floatAddSensor)
+        val view = inflater.inflate(R.layout.fragment_sensors, container, false)
+        tvShowLogs = view.findViewById(R.id.tvShowLogs)
+        rvSensor = view.findViewById(R.id.rvDetector)
+        floatAddSensor = view.findViewById(R.id.floatAddSensor)
         floatAddSensor?.setOnClickListener {
             showDialog()
         }

@@ -11,7 +11,7 @@ import com.sensoguard.detectsensor.R
 import com.sensoguard.detectsensor.classes.Alarm
 import com.sensoguard.detectsensor.global.getStrDateTimeByMilliSeconds
 import com.sensoguard.detectsensor.interfaces.OnAdapterListener
-import java.util.ArrayList
+import java.util.*
 
 class AlarmAdapter (private var alarms: ArrayList<Alarm>, val context: Context, val onAdapterListener: OnAdapterListener, var itemClick: (Alarm) -> Unit) : RecyclerView.Adapter<AlarmAdapter.ViewHolder>() {
 
@@ -67,7 +67,7 @@ class AlarmAdapter (private var alarms: ArrayList<Alarm>, val context: Context, 
             if(alarm.isArmed!=null
                 && alarm.isArmed!!
                 && alarm.isLocallyDefined!=null
-                && alarm.isLocallyDefined!!
+                && alarm.isLocallyDefined
             ){
                 tvName?.setTextColor( ContextCompat.getColor(context,R.color.red))
                 tvDate?.setTextColor( ContextCompat.getColor(context,R.color.red))

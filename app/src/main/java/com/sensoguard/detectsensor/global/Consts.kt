@@ -16,8 +16,10 @@ const val  SELECTED_NOTIFICATION_SOUND_KEY  ="selectedNotificationSoundKey"
 const val  IS_NOTIFICATION_SOUND_KEY  ="isNotificationSoundKey"
 const val  ACTIVATION_CODE_KEY  ="activationCodeKey"
 const val  IMEI_KEY = "imeiKey"
-const val   CURRENT_LANG_KEY_PREF="currentLangKey"
 
+const val CURRENT_LANG_KEY_PREF = "currentLangKey"
+const val CURRENT_LATITUDE_PREF = "currentLatitudePref"
+const val CURRENT_LONGTUDE_PREF = "currentLongtudePref"
 const val  NO_DATA  ="-1"
 
 

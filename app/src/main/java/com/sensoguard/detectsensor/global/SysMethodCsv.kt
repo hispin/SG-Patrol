@@ -2,16 +2,15 @@ package com.sensoguard.detectsensor.global
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
+import android.os.Build
 import android.os.Environment
+import androidx.core.content.FileProvider
 import com.opencsv.CSVWriter
+import com.sensoguard.detectsensor.R
 import com.sensoguard.detectsensor.classes.Alarm
 import java.io.File
 import java.io.FileWriter
-import android.content.Intent
-import android.os.Build
-import android.util.Log
-import androidx.core.content.FileProvider
-import com.sensoguard.detectsensor.R
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -86,7 +85,7 @@ fun writeCsvFile(mCsvAlarms:ArrayList<String>):Boolean {
 
         val writer= CSVWriter(fileWriter)
 
-        val iteratorList=mCsvAlarms?.listIterator()
+         val iteratorList = mCsvAlarms.listIterator()
 
         while (iteratorList != null && iteratorList.hasNext()) {
             val item=iteratorList.next()

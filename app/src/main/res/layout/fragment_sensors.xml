@@ -26,12 +26,13 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginTop="49.7dp"
+
             >
 
     <!--&gt;-->
 
         <include
+
                 android:id="@+id/inHeader"
         layout="@layout/header_sensors"
                 />
@@ -41,7 +42,7 @@
         android:id="@+id/rvDetector"
         android:name="com.app.simplehostdev.viewLayer.fragments.NewReservationFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+                android:layout_height="wrap_content"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:context=".fragment.MainUartFragment"
         tools:listitem="@layout/sensor_item"
