@@ -162,11 +162,10 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
         }
 
         mMapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
+
         mMapFragment?.getMapAsync(this)
 
-//        // load the animation
-//        flickering = AnimationUtils.loadAnimation(activity,
-//            R.anim.flickering)
+
 
         return view
     }
@@ -577,8 +576,18 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
 
             try {
                 val uri = Uri.parse(selectedSound)
-                rington = RingtoneManager.getRingtone(activity ,uri)
-                rington?.play()
+
+                if (rington != null && rington!!.isPlaying) {
+                    //if the sound it is already played,
+                    rington?.stop()
+                    Handler().postDelayed({
+                        rington = RingtoneManager.getRingtone(activity, uri)
+                        rington?.play()
+                    }, 1000)
+                } else {
+                    rington = RingtoneManager.getRingtone(activity, uri)
+                    rington?.play()
+                }
             } catch ( e:Exception) {
                 e.printStackTrace()
             }
