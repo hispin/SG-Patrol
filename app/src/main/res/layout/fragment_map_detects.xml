@@ -25,6 +25,7 @@
             app:backgroundTint="@color/turquoise_blue"
             android:layout_marginBottom="36dp"
             android:layout_marginEnd="36dp"
+            android:visibility="gone"
     />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -39,6 +40,7 @@
             android:tint="@color/common_google_signin_btn_text_dark_focused"
             android:layout_marginTop="36dp"
             android:layout_marginEnd="36dp"
+            android:visibility="gone"
     />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton

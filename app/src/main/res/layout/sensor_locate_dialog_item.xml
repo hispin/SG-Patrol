@@ -8,7 +8,7 @@
 
     <ToggleButton
             android:id="@+id/togIsSelected"
-            android:layout_width="30dp"
+            android:layout_width="40dp"
             android:layout_height="wrap_content"
             android:button="@drawable/toggle_selector_selected"
             android:gravity="center"

@@ -1,57 +1,57 @@
 package com.sensoguard.detectsensor.activities
 
 import android.Manifest
-import android.app.Activity
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.PackageManager
+import android.hardware.usb.UsbManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.widget.ToggleButton
-import com.sensoguard.detectsensor.fragments.HistoryWarningFragment
-import com.sensoguard.detectsensor.fragments.MainUartFragment
-import com.sensoguard.detectsensor.fragments.MapSensorsFragment
-import com.sensoguard.detectsensor.interfaces.OnFragmentListener
-import android.content.pm.PackageManager
-import android.net.Uri
-import android.os.AsyncTask
-import android.os.Environment
 import android.util.Log
+import android.view.MotionEvent
+import android.view.View
+import android.view.View.OnTouchListener
+import android.widget.ToggleButton
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
+import androidx.lifecycle.ViewModelProviders
 import androidx.viewpager.widget.ViewPager
-import com.sensoguard.detectsensor.global.*
-import com.sensoguard.detectsensor.services.ServiceHandleAlarms
-import android.view.MotionEvent
-import android.view.View.OnTouchListener
-import android.view.View
 import com.google.android.material.tabs.TabLayout
 import com.sensoguard.detectsensor.R
+import com.sensoguard.detectsensor.classes.AlarmSensor
 import com.sensoguard.detectsensor.classes.GeneralItemMenu
-import com.sensoguard.detectsensor.classes.LanguageManager
+import com.sensoguard.detectsensor.controler.ViewModelListener
+import com.sensoguard.detectsensor.fragments.AlarmsLogFragment
 import com.sensoguard.detectsensor.fragments.ConfigurationFragment
+import com.sensoguard.detectsensor.fragments.MainUartFragment
+import com.sensoguard.detectsensor.fragments.MapSensorsFragment
+import com.sensoguard.detectsensor.global.*
+import com.sensoguard.detectsensor.interfaces.OnFragmentListener
 import com.sensoguard.detectsensor.services.ServiceConnectSensor
-import kotlinx.android.synthetic.main.my_screens_activity.*
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
-import java.lang.ref.WeakReference
+import com.sensoguard.detectsensor.services.ServiceHandleAlarms
+import kotlinx.android.synthetic.main.activity_my_screens.*
+import java.util.*
 
 
-class MyScreensActivity : AppCompatActivity(), OnFragmentListener {
+class MyScreensActivity : AppCompatActivity(), OnFragmentListener, java.util.Observer {
 
 
+    private var clickHundler: ClickHandler? = null
     // When requested, this adapter returns a DemoObjectFragment,
     // representing an object in the collection.
     private lateinit var collectionPagerAdapter: CollectionPagerAdapter
     private lateinit var viewPager: ViewPager
     private var currentItemTopMenu = 0
     private var togChangeStatus: ToggleButton? = null
+    private var consMyActionBar: ConstraintLayout? = null
 
 
     val TAG = "MyScreensActivity"
@@ -61,10 +61,9 @@ class MyScreensActivity : AppCompatActivity(), OnFragmentListener {
 
 
         super.onCreate(savedInstanceState)
+        startTimerListener()
 
-        //configurationLanguage()
-
-        setContentView(R.layout.my_screens_activity)
+        setContentView(R.layout.activity_my_screens)
 
         //store locally default values of configuration
         setConfigurationDefault()
@@ -80,6 +79,79 @@ class MyScreensActivity : AppCompatActivity(), OnFragmentListener {
 
     }
 
+    //start listener to timer
+    private fun startTimerListener() {
+        //this?.let {
+        ViewModelProviders.of(this).get(ViewModelListener::class.java)
+            .startCurrentCalendarListener()?.observe(this, androidx.lifecycle.Observer { calendar ->
+
+                //if there is no alarm in process then shut down the timer
+                if (UserSession.instance.alarmSensors == null || UserSession.instance.alarmSensors?.isEmpty()!!) {
+                    ViewModelProviders.of(this).get(ViewModelListener::class.java).shutDownTimer()
+                    sendBroadcast(Intent(STOP_ALARM_SOUND))
+                    //stopPlayingAlarm()
+                }
+
+            })
+
+        //}
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (isAnySensorAlarmNotTimeOut()) {
+            startTimer()
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        ViewModelProviders.of(this).get(ViewModelListener::class.java).shutDownTimer()
+    }
+
+
+    //create timeout for reset sensor to regular icon and cancel the alarm icon
+    private fun startTimer() {
+
+        Log.d("testTimer", "start timer")
+        ViewModelProviders.of(this).get(ViewModelListener::class.java).startTimer()
+
+
+    }
+
+    //check it there is any sensor alarm which is not time out
+    private fun isAnySensorAlarmNotTimeOut(): Boolean {
+        val iteratorList = UserSession.instance.alarmSensors?.listIterator()
+        while (iteratorList != null && iteratorList.hasNext()) {
+            val sensorItem = iteratorList.next()
+            if (!isSensorAlarmTimeout(sensorItem)) {
+                return true
+            }
+        }
+        return false
+    }
+
+    //check if the alarm sensor is in duration
+    private fun isSensorAlarmTimeout(alarmProcess: AlarmSensor?): Boolean {
+
+        val timeout = getLongInPreference(
+            this,
+            ALARM_FLICKERING_DURATION_KEY,
+            ALARM_FLICKERING_DURATION_DEFAULT_VALUE_SECONDS
+        )
+        val futureTimeout = timeout?.let { alarmProcess?.alarmTime?.timeInMillis?.plus(it * 1000) }
+
+        if (futureTimeout != null) {
+            val calendar = Calendar.getInstance()
+            return when {
+                futureTimeout < calendar.timeInMillis -> true
+                //alarmProcess.marker.setIcon(context?.let { con -> convertBitmapToBitmapDiscriptor(con,R.drawable.ic_sensor_item) })
+                //alarmSensors?.remove(alarmProcess)
+                else -> false
+            }
+        }
+        return true
+    }
 
     //store locally default values of configuration
     private fun setConfigurationDefault() {
@@ -105,17 +177,54 @@ class MyScreensActivity : AppCompatActivity(), OnFragmentListener {
     private val usbReceiver = object : BroadcastReceiver() {
         override fun onReceive(arg0: Context, arg1: Intent) {
             when {
-                arg1.action == USB_CONNECTION_FAILED -> {
+                arg1.action == USB_CONNECTION_OFF_UI -> {
+                    setBooleanInPreference(this@MyScreensActivity, USB_DEVICE_CONNECT_STATUS, false)
                     editActionBar(false)
+
                 }
+                arg1.action == USB_CONNECTION_ON_UI -> {
+                    setBooleanInPreference(this@MyScreensActivity, USB_DEVICE_CONNECT_STATUS, true)
+                    editActionBar(true)
+
+                }
+                arg1.action == UsbManager.ACTION_USB_DEVICE_ATTACHED -> {
+                    //
+
+                }
+                arg1.action == UsbManager.ACTION_USB_DEVICE_DETACHED -> {
+                    //Toast.makeText(this@MyScreensActivity, "detach", Toast.LENGTH_SHORT).show()
+                    stopUsbReadConnection()
+
+                }
+                arg1.action == CREATE_ALARM_KEY -> {
+                    startTimer()
+                }
+                arg1.action == STOP_ALARM_SOUND -> {
+
+                }
+
 
             }
         }
     }
 
-    private fun setFilter() {
-        val filter = IntentFilter(USB_CONNECTION_FAILED)
 
+    //stop usb read connection
+    private fun stopUsbReadConnection() {
+        setBooleanInPreference(this@MyScreensActivity, USB_DEVICE_CONNECT_STATUS, false)
+        //Toast.makeText(this,"stopUsbReadConnection", Toast.LENGTH_SHORT).show()
+        sendBroadcast(Intent(STOP_READ_DATA_KEY))
+        editActionBar(false)
+    }
+
+    private fun setFilter() {
+        val filter = IntentFilter(USB_CONNECTION_OFF_UI)
+        //filter.addAction("android.hardware.usb.action.USB_STATE")
+        filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED)
+        filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED)
+        filter.addAction(USB_CONNECTION_ON_UI)
+        filter.addAction(CREATE_ALARM_KEY)
+        filter.addAction(STOP_ALARM_SOUND)
         registerReceiver(usbReceiver, filter)
     }
 
@@ -134,25 +243,6 @@ class MyScreensActivity : AppCompatActivity(), OnFragmentListener {
 
     }
 
-//    @Override
-//    protected override fun attachBaseContext(newBase:Context) {
-//        configurationLanguage()
-//    }
-
-    private fun configurationLanguage() {
-        LanguageManager.setLanguageList()
-        val currentLanguage = getStringInPreference(this, CURRENT_LANG_KEY_PREF, "-1")
-        if (currentLanguage != "-1") {
-            GeneralItemMenu.selectedItem = currentLanguage
-            setAppLanguage(this, GeneralItemMenu.selectedItem)
-        } else {
-            val deviceLang = getAppLanguage()
-            if (LanguageManager.isExistLang(deviceLang)) {
-                GeneralItemMenu.selectedItem = deviceLang
-                setAppLanguage(this, GeneralItemMenu.selectedItem)
-            }
-        }
-    }
 
     private fun editActionBar(state: Boolean) {
         togChangeStatus?.isChecked = state
@@ -164,20 +254,39 @@ class MyScreensActivity : AppCompatActivity(), OnFragmentListener {
         val toolbar = findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar)//supportActionBar
         setSupportActionBar(toolbar)
 
-        togChangeStatus = findViewById<ToggleButton>(
+        togChangeStatus = findViewById(
             R.id.togChangeStatus
         )
-        togChangeStatus?.isChecked = false
+
+        consMyActionBar = findViewById(
+            R.id.consMyActionBar
+        )
+        consMyActionBar?.setOnClickListener {
+            if (clickHundler == null) {
+                clickHundler = ClickHandler()
+                Thread(clickHundler).start()
+            } else {
+                clickHundler?.recordNewClick()
+            }
+        }
+
+        val isConnected = getBooleanInPreference(this, USB_DEVICE_CONNECT_STATUS, false)
+        togChangeStatus?.isChecked = isConnected
+
+        //Toast.makeText(this,"isConnected1="+isConnected, Toast.LENGTH_SHORT).show()
 
         togChangeStatus?.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
+                //Toast.makeText(this,"isConnected2="+isConnected, Toast.LENGTH_SHORT).show()
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     startForegroundService(Intent(this, ServiceConnectSensor::class.java))
                 } else {
                     startService(Intent(this, ServiceConnectSensor::class.java))
                 }
             } else {
+                setBooleanInPreference(this, USB_DEVICE_CONNECT_STATUS, false)
                 sendBroadcast(Intent(STOP_READ_DATA_KEY))
+                sendBroadcast(Intent(STOP_ALARM_SOUND))
             }
         }
     }
@@ -191,7 +300,10 @@ class MyScreensActivity : AppCompatActivity(), OnFragmentListener {
 
         collectionPagerAdapter = CollectionPagerAdapter(supportFragmentManager)
         viewPager.adapter = collectionPagerAdapter
+        viewPager.offscreenPageLimit = 0
+        //prevent change screen by drag
         viewPager.setOnTouchListener(object : OnTouchListener {
+
 
             override fun onTouch(v: View, event: MotionEvent): Boolean {
                 return true
@@ -202,8 +314,11 @@ class MyScreensActivity : AppCompatActivity(), OnFragmentListener {
         tabs.setupWithViewPager(vPager)
         tabs.getTabAt(0)?.icon = ContextCompat.getDrawable(this@MyScreensActivity, R.drawable.selected_sensor_tab)
         tabs.getTabAt(1)?.icon = ContextCompat.getDrawable(this@MyScreensActivity, R.drawable.selected_map_tab)
-        tabs.getTabAt(2)?.icon = ContextCompat.getDrawable(this@MyScreensActivity, R.drawable.selected_config_tab)
-        tabs.getTabAt(3)?.icon = ContextCompat.getDrawable(this@MyScreensActivity, R.drawable.selected_alarm_log_tab)
+        tabs.getTabAt(2)?.icon =
+            ContextCompat.getDrawable(this@MyScreensActivity, R.drawable.selected_alarm_log_tab)
+        tabs.getTabAt(3)?.icon =
+            ContextCompat.getDrawable(this@MyScreensActivity, R.drawable.selected_config_tab)
+
 
         viewPager.currentItem = currentItemTopMenu
 
@@ -315,15 +430,15 @@ class MyScreensActivity : AppCompatActivity(), OnFragmentListener {
                         putInt("ARG_OBJECT", position + 1)
                     }
                 }
-                2 -> {
+                3 -> {
                     fragment = ConfigurationFragment()
                     fragment.arguments = Bundle().apply {
                         // Our object is just an integer :-P
                         putInt("ARG_OBJECT", position + 1)
                     }
                 }
-                3 -> {
-                    fragment = HistoryWarningFragment()
+                2 -> {
+                    fragment = AlarmsLogFragment()
                     fragment.arguments = Bundle().apply {
                         // Our object is just an integer :-P
                         putInt("ARG_OBJECT", position + 1)
@@ -340,8 +455,8 @@ class MyScreensActivity : AppCompatActivity(), OnFragmentListener {
             return when (position) {
                 0 -> resources.getString(R.string.sensor_table_title)
                 1 -> resources.getString(R.string.map_title)
-                2 -> resources.getString(R.string.config_title)
-                3 -> resources.getString(R.string.alarm_log_title)
+                2 -> resources.getString(R.string.alarm_log_title)
+                3 -> resources.getString(R.string.config_title)
                 else -> "nothing"
             }
 
@@ -349,10 +464,13 @@ class MyScreensActivity : AppCompatActivity(), OnFragmentListener {
 
     }
 
+
     override fun onBackPressed() {
         super.onBackPressed()
+        sendBroadcast(Intent(STOP_ALARM_SOUND))
         //start activity for loading new language if it has been changed
         startActivity(Intent(this,MainActivity::class.java))
+
     }
 
     //set the language of the app (calling  from activity)
@@ -361,64 +479,47 @@ class MyScreensActivity : AppCompatActivity(), OnFragmentListener {
         this.finish()
         this.startActivity(intent)
     }
-}
 
-//save the custom alarm file in alarms system
-    class SaveCustomAlarmSoundAsync() : AsyncTask<Void, Void, Void>() {
+    override fun update(o: Observable?, arg: Any?) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
-        val LOG_TAG: String= "saveCustomAlarm"
+    inner class ClickHandler : Runnable {
 
-        // Weak references will still allow the Activity to be garbage-collected
-        private var weakActivity: WeakReference<Activity>?=null
+        private val WAIT_DELAY = 1000
 
-        constructor(myActivity: Activity) : this() {
-            weakActivity = WeakReference(myActivity)
+        private var count = 1
+        private var lastSubmitTime = System.currentTimeMillis()
+
+        fun recordNewClick() {
+            count++
+            lastSubmitTime = System.currentTimeMillis()
         }
 
-
-        override fun doInBackground(vararg params: Void?): Void? {
-            saveCustomAlarmSound()
-            return null
-        }
-
-        private fun saveCustomAlarmSound() {
-            Environment.DIRECTORY_ALARMS
-
-            // Get the directory for the app's private files directory.
-            val dirTarget = File(
-                weakActivity?.get()?.getExternalFilesDir(
-                    Environment.DIRECTORY_ALARMS
-                ), "alarm_sound.mp3"
-            )
-
-            if (!dirTarget.mkdirs()) {
-                Log.e(LOG_TAG, "Directory not created")
-            } else {
-
-                val fileTarget = File(dirTarget.path + File.separator + "alarm_sound.mp3")
-                val inputFileAlarm = weakActivity?.get()?.resources?.openRawResource(R.raw.alarm_sound)
-
-                val byteArray = inputFileAlarm?.readBytes()
-
-
-                try {
-                    if(byteArray!=null) {
-                        val fileOutput = FileOutputStream(fileTarget.absolutePath)
-                        fileOutput.write(byteArray)
-                        fileOutput.close()
-                    }
-                    //display file saved message
-                    Log.e("Exception", "File saved successfully")
-
-                } catch (e: IOException) {
-                    Log.e("Exception", "File write failed: $e")
+        override fun run() {
+            while (System.currentTimeMillis() - lastSubmitTime <= WAIT_DELAY) {
+                // idle
+                Thread.yield()
+            }
+            runOnUiThread {
+                if (count >= 3) {
+                    sendBroadcast(Intent(ACTION_TOGGLE_TEST_MODE))
+                    count = 0
+                    clickHundler = null
                 }
-
+                count = 0
+                clickHundler = null
             }
 
-        }
 
+        }
     }
+
+
+}
+
+
+
 
 
 

@@ -1,6 +1,8 @@
 package com.sensoguard.detectsensor.services
 
-import android.app.Activity
+//import android.support.v4.app.NotificationCompat
+//import android.support.v4.content.ContextCompat
+
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
@@ -11,18 +13,16 @@ import android.location.Location
 import android.os.Build
 import android.os.IBinder
 import android.os.Looper
-//import android.support.v4.app.NotificationCompat
-//import android.support.v4.content.ContextCompat
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
-import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.sensoguard.detectsensor.global.CURRENT_LOCATION
 import com.sensoguard.detectsensor.global.GET_CURRENT_LOCATION_KEY
+
 
 class ServiceFindLocation :Service(){
     private val TAG="ServiceFindLocation"
@@ -31,9 +31,9 @@ class ServiceFindLocation :Service(){
     private val locationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
             run {
-                Log.d(TAG,"get location")
+                //Log.d(TAG,"get location")
                 location = locationResult.lastLocation
-                var inn = Intent(GET_CURRENT_LOCATION_KEY)
+                val inn = Intent(GET_CURRENT_LOCATION_KEY)
                 inn.putExtra(CURRENT_LOCATION,location)
                 sendBroadcast(inn)
             }
@@ -55,7 +55,9 @@ class ServiceFindLocation :Service(){
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         //FusedLocationProviderClient is for interacting with the location using fused location provider
         fusedLocationProviderClient = FusedLocationProviderClient(this)
-        locationRequest = LocationRequest().setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY).setInterval(1000).setFastestInterval(1000).setNumUpdates(1)
+        locationRequest =
+            LocationRequest().setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY).setInterval(10000)
+                .setFastestInterval(10000)//.setNumUpdates(1)
         startGetLocation()
 
         return START_NOT_STICKY
@@ -68,6 +70,7 @@ class ServiceFindLocation :Service(){
                     android.Manifest.permission.ACCESS_FINE_LOCATION
                 ) == PackageManager.PERMISSION_GRANTED
             ) {
+                //Log.d("ServiceFindLocation"," start location")
                 fusedLocationProviderClient.requestLocationUpdates(
                     locationRequest,
                     locationCallback,
@@ -77,6 +80,18 @@ class ServiceFindLocation :Service(){
         } catch (exception: Exception) {
             exception.printStackTrace()
             Log.d("startGetLocation","exception:"+exception.message)
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        try {
+            //Log.d("ServiceFindLocation"," onDestroy location")
+            fusedLocationProviderClient.removeLocationUpdates(
+                locationCallback
+            )
+        } catch (ex: Exception) {
+            ex.printStackTrace()
         }
     }
 

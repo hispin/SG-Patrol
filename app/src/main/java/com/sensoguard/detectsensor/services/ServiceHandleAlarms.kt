@@ -7,8 +7,10 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.os.Build
-import android.os.IBinder
+import android.media.Ringtone
+import android.media.RingtoneManager
+import android.net.Uri
+import android.os.*
 import android.util.Log
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
@@ -52,6 +54,7 @@ class ServiceHandleAlarms : Service(){
 
     private fun setFilter() {
         val filter = IntentFilter(READ_DATA_KEY)
+        filter.addAction(STOP_ALARM_SOUND)
         registerReceiver(usbReceiver, filter)
     }
 
@@ -104,11 +107,18 @@ class ServiceHandleAlarms : Service(){
                     val inn = Intent(CREATE_ALARM_KEY)
                     inn.putExtra(CREATE_ALARM_ID_KEY,currentSensorLocally.getId())
                     inn.putExtra(CREATE_ALARM_NAME_KEY,currentSensorLocally.getName())
+                    inn.putExtra(CREATE_ALARM_IS_ARMED, currentSensorLocally.isArmed())
                     //inn.putExtra(CREATE_ALARM_LATITUDE_KEY,currentSensorLocally.getLatitude())
                     //inn.putExtra(CREATE_ALARM_LONGTITUDE_KEY,currentSensorLocally.getLongtitude())
                     inn.putExtra(CREATE_ALARM_TYPE_KEY,type)
                     sendBroadcast(inn)
+
+                    //play sound and vibrate
+                    playAlarmSound()
+                    playVibrate()
                 }
+            } else if (intent.action == STOP_ALARM_SOUND) {
+                stopPlayingAlarm()
             }
         }
     }
@@ -222,6 +232,76 @@ class ServiceHandleAlarms : Service(){
             setStringInPreference(this, ALARM_LIST_KEY_PREF,alarmsJsonStr)
         }
     }
+
+    private var rington: Ringtone? = null
+
+    private fun stopPlayingAlarm() {
+        if (rington != null && rington?.isPlaying!!) {
+            rington?.stop()
+        }
+    }
+
+    private fun playAlarmSound() {
+
+        val isNotificationSound = getBooleanInPreference(this, IS_NOTIFICATION_SOUND_KEY, true)
+        if (!isNotificationSound) {
+            Toast.makeText(this, "fail start sound", Toast.LENGTH_LONG).show()
+            return
+        }
+
+        val selectedSound = getStringInPreference(this, SELECTED_NOTIFICATION_SOUND_KEY, "-1")
+
+        if (!selectedSound.equals("-1")) {
+
+            try {
+                val uri = Uri.parse(selectedSound)
+
+                if (rington != null && rington!!.isPlaying) {
+                    //if the sound it is already played,
+                    rington?.stop()
+                    Handler().postDelayed({
+                        rington = RingtoneManager.getRingtone(this, uri)
+                        rington?.play()
+                        //Toast.makeText(this, "play sound", Toast.LENGTH_LONG).show()
+                    }, 1000)
+                } else {
+                    rington = RingtoneManager.getRingtone(this, uri)
+                    rington?.play()
+                    //Toast.makeText(this, "play sound from Handle alarm", Toast.LENGTH_LONG).show()
+                }
+            } catch (e: Exception) {
+                Toast.makeText(this, "exception play sound", Toast.LENGTH_LONG).show()
+                e.printStackTrace()
+            }
+        }
+
+    }
+
+    //execute vibrate
+    private fun playVibrate() {
+
+        val isVibrateWhenAlarm =
+            getBooleanInPreference(applicationContext, IS_VIBRATE_WHEN_ALARM_KEY, true)
+        if (isVibrateWhenAlarm) {
+            // Get instance of Vibrator from current Context
+            val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+
+            // Vibrate for 200 milliseconds
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                vibrator.vibrate(
+                    VibrationEffect.createOneShot(
+                        1000,
+                        VibrationEffect.DEFAULT_AMPLITUDE
+                    )
+                )
+            } else {
+                vibrator.vibrate(1000)
+            }
+
+        }
+
+    }
+
 
         //The system allows apps to call Context.startForegroundService() even while the app is in the background. However, the app must call that service's startForeground() method within five seconds after the service is created
         private fun startSysForeGround() {

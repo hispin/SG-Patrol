@@ -43,7 +43,7 @@
     <string-array name="state_types">
         <item>car</item>
         <item>intruder</item>
-        <item>not in use</item>
+        <item>motion</item>
         <item>sensor disconnected</item>
         <item>system ok</item>
         <item>low battery</item>
@@ -68,5 +68,7 @@
     <string name="error">Error</string>
     <string name="general_desc">description</string>
     <string name="email_subject">My Code for SG-Patrol App</string>
+    <string name="delete_all">Delete all</string>
+    <string name="do_you_realy_want_delete_all_alarm">Do you realy want to delete all alarms</string>
 
 </resources>

@@ -21,7 +21,7 @@
 
     <include
             android:id="@+id/inHeader"
-            layout="@layout/header_dialog_sensor"
+            layout="@layout/sensor_locate_dialog_item_header"
     />
 
 

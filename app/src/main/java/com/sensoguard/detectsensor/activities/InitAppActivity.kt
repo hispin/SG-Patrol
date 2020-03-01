@@ -4,28 +4,30 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.content.res.Configuration
 import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.Settings
 import android.telephony.TelephonyManager
-import android.view.ContextThemeWrapper
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.sensoguard.detectsensor.R
 import com.sensoguard.detectsensor.classes.CryptoHandler
 import com.sensoguard.detectsensor.global.*
 import kotlinx.android.synthetic.main.activity_activation.*
-import java.util.*
 
 class InitAppActivity : AppCompatActivity() {
 
     private var myImei: String?=null
 
    override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
+       //init the usb disconnected
+       sendBroadcast(Intent(STOP_READ_DATA_KEY))
+       setBooleanInPreference(this, USB_DEVICE_CONNECT_STATUS, false)
+
         setContentView(R.layout.activity_init_app)
         setReadPhoneStatePermission()
     }

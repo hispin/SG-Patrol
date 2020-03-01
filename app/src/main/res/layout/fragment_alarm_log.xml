@@ -3,7 +3,7 @@
              xmlns:tools="http://schemas.android.com/tools"
              android:layout_width="match_parent"
              android:layout_height="match_parent" xmlns:app="http://schemas.android.com/apk/res-auto"
-             tools:context=".fragments.HistoryWarningFragment">
+        tools:context=".fragments.AlarmsLogFragment">
 
 
     <LinearLayout
@@ -34,7 +34,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:context=".fragment.HistoryWarningFragment"
+            tools:context=".fragment.AlarmLogFragment"
             tools:listitem="@layout/alarm_item"
             android:scrollbars="vertical"
     />
@@ -49,5 +49,14 @@
             android:layout_marginBottom="36dp"
             android:layout_marginEnd="36dp"
     />
+
+    <Button
+            android:id="@+id/btnDeleteAll"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|start"
+            android:layout_marginStart="36dp"
+            android:layout_marginBottom="36dp"
+            android:text="@string/delete_all" />
 
 </FrameLayout>

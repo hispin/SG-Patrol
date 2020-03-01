@@ -41,7 +41,7 @@
     <string-array name="state_types">
         <item>רכב</item>
         <item>הליכה</item>
-        <item>חיישן חיצוני</item>
+        <item>תנועה</item>
         <item>חיישן מנותק</item>
         <item>חודעת מערכת תקינה</item>
         <item>סוללה חלשה</item>
@@ -66,4 +66,6 @@
     <string name="error">שגיאה</string>
     <string name="general_desc">description</string>
     <string name="email_subject">My Code for SG-Patrol App</string>
+    <string name="delete_all">מחק הכל</string>
+    <string name="do_you_realy_want_delete_all_alarm">Do you realy want to delete all alarms</string>
 </resources>

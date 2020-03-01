@@ -3,7 +3,11 @@ package com.sensoguard.detectsensor.global
 const val  CHECK_AVAILABLE_KEY="find.drivers.command"
 const val  STOP_READ_DATA_KEY="stop.data.command"
 const val  HANDLE_READ_DATA_EXCEPTION="handle.read.data.exception"
+const val ACTION_USB_PERMISSION = "com.android.example.USB_PERMISSION"
+const val ACTION_TOGGLE_TEST_MODE = "toggleTestMode"
+
 const val  GET_CURRENT_LOCATION_KEY ="handle.get.current.location"
+const val STOP_ALARM_SOUND = "stop.alarm.sound"
 const val CURRENT_ITEM_TOP_MENU_KEY = "currentItemTopKey"
 const val  READ_DATA_KEY="handle.read.data"
 const val  CREATE_ALARM_KEY="handle.create.alarm"
@@ -27,11 +31,13 @@ const val  ALARM_FLICKERING_DURATION_KEY="alarmFlickeringDuration"
 const val  ALARM_FLICKERING_DURATION_DEFAULT_VALUE_SECONDS=30L
 
 
-const val  USB_CONNECTION_FAILED="usbConnectionFailed"
+const val USB_CONNECTION_OFF_UI = "usbConnectionFailed"
+const val USB_CONNECTION_ON_UI = "usbConnectionSuccess"
 
 const val  CREATE_ALARM_ID_KEY="CreateAlarmIdKey"
 const val  CREATE_ALARM_NAME_KEY="CreateAlarmNameKey"
 const val  CREATE_ALARM_TYPE_KEY="CreateAlarmTypeKey"
+const val CREATE_ALARM_IS_ARMED = "CreateAlarmIsArmedKey"
 const val  MAP_TYPE_KEY="mapTypeKey"
 
 
@@ -53,6 +59,8 @@ const val ALARM_CAR = "car"
 const val ALARM_INTRUDER = "intruder"
 const val ALARM_SENSOR_OFF = "sensor off"
 const val ALARM_LOW_BATTERY = "low battery"
+
+const val USB_DEVICE_CONNECT_STATUS = "usbDeviceConnect"
 
 
 

@@ -120,7 +120,7 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
                 //if there is no alarm in process then shut down the timer
                 if(UserSession.instance.alarmSensors==null ||  UserSession.instance.alarmSensors?.isEmpty()!!) {
                     activity?.let {act-> ViewModelProviders.of(act).get(ViewModelListener::class.java).shutDownTimer() }
-                    stopPlayingAlarm()
+                    //stopPlayingAlarm()
                     //refresh markers
                     showMarkers()
                 }else{
@@ -141,9 +141,9 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
         val view= inflater.inflate(R.layout.fragment_map_detects, container, false)
 
         fbRefresh=view.findViewById(R.id.fbRefresh)
-        fbRefresh?.setOnClickListener {
-            gotoMyLocation()
-        }
+//        fbRefresh?.setOnClickListener {
+//            gotoMyLocation()
+//        }
 
         fbTest=view.findViewById(R.id.fbTest)
         fbTest?.setOnClickListener {
@@ -171,6 +171,12 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
     }
 
 
+    override fun onPause() {
+        super.onPause()
+        activity?.stopService(Intent(context, ServiceFindLocation::class.java))
+        //Log.d("ServiceFindLocation"," map onPause")
+    }
+
     override fun onResume() {
         super.onResume()
         initMapType()
@@ -190,29 +196,8 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
                 }
 
             }
-//        }
-//        else{
-//            showMarkers()
-//        }
-
-        //check it there is any sensor alarm which is not time out, if yes then execute the timer
-        if(isAnySensorAlarmNotTimeOut()){
-            startTimer()
-        }
     }
 
-    override fun onPause() {
-        super.onPause()
-        activity?.let { ViewModelProviders.of(it).get(ViewModelListener::class.java).shutDownTimer() }
-        stopPlayingAlarm()
-        //setSensorsDefaultIcon()
-    }
-
-    private fun stopPlayingAlarm() {
-       if(rington!=null && rington?.isPlaying!!){
-           rington?.stop()
-       }
-    }
 
     //configureActivation map type
     private fun initMapType() {
@@ -235,6 +220,7 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
         super.onSaveInstanceState(outState)
         outState.putInt(MAP_TYPE_KEY, mapType)
     }
+
 
     //when the app complete rotate ,then invoke this method and restore the map type
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
@@ -304,6 +290,7 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
 
         showLocation(location)
 
+        //Log.d("ServiceFindLocation","map start location")
         gotoMyLocation()
     }
 
@@ -434,8 +421,6 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
             val calendar=Calendar.getInstance()
             return when {
                 futureTimeout < calendar.timeInMillis -> true
-                //alarmProcess.marker.setIcon(context?.let { con -> convertBitmapToBitmapDiscriptor(con,R.drawable.ic_sensor_item) })
-                //alarmSensors?.remove(alarmProcess)
                 else -> false
             }
         }
@@ -475,16 +460,23 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
 
 
        val loc:LatLng? = LatLng(sensorItem.getLatitude()!!, sensorItem.getLongtitude()!!)
+
+       mMap!!.setOnMarkerClickListener(object : GoogleMap.OnMarkerClickListener {
+           override fun onMarkerClick(marker: Marker): Boolean {
+               marker.showInfoWindow()
+               return true
+           }
+       })
+
        if(loc!=null) {
-           val marker = mMap?.addMarker(
+           return mMap?.addMarker(
                MarkerOptions()
                    .position(loc)
                    .draggable(true)
                    .icon(context?.let { alarmTypeIcon })
-
-               //.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+                   .title("id:" + sensorItem.getId() + "  name:" + sensorItem.getName())
+                   .snippet(" type:motion")
            )
-           return marker
        }
        return null
    }
@@ -513,25 +505,80 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
     //show marker of sensor
     private fun showSensorMarker(sensorItem: Sensor) {
 
-        if(mMap==null){
+        if (mMap == null || sensorItem == null) {
             return
         }
 
         val loc=LatLng(sensorItem.getLatitude()!!, sensorItem.getLongtitude()!!)
-        mMap?.addMarker(
-            MarkerOptions()
-                .position(loc)
-                .draggable(true)
-                .icon(context?.let { con -> convertBitmapToBitmapDiscriptor(con,R.drawable.ic_sensor_item) })
-        )
+
+        mMap!!.setOnMarkerClickListener(object : GoogleMap.OnMarkerClickListener {
+            override fun onMarkerClick(marker: Marker): Boolean {
+                marker.showInfoWindow()
+                return true
+            }
+        })
+
+        if (sensorItem.isArmed()) {
+
+            mMap?.addMarker(
+                MarkerOptions()
+                    .position(loc)
+                    .draggable(true)
+                    .icon(context?.let { con ->
+                        convertBitmapToBitmapDiscriptor(
+                            con,
+                            R.drawable.ic_sensor_item
+                        )
+                    }).title("id:" + sensorItem.getId() + "  name:" + sensorItem.getName())
+                    .snippet(" type:motion")
+                //.snippet("type:motion")
+            )
+        } else {
+            mMap?.addMarker(
+                MarkerOptions()
+                    .position(loc)
+                    .draggable(true)
+                    .icon(context?.let { con ->
+                        convertBitmapToBitmapDiscriptor(
+                            con,
+                            R.drawable.ic_sensor_item_disable
+                        )
+                    }).title("id:" + sensorItem.getId() + "  name:" + sensorItem.getName())
+                    .snippet(" type:motion")
+            )
+
+        }
     }
 
     //show marker of sensor
-    private fun showSensorMarker(marker: Marker) {
+    private fun showSensorMarker(marker: Marker, isSensorArmed: Boolean, sensorId: String) {
         if(marker==null){
             return
         }
-        marker.setIcon(context?.let { con -> convertBitmapToBitmapDiscriptor(con,R.drawable.ic_sensor_item) })
+
+        mMap!!.setOnMarkerClickListener(object : GoogleMap.OnMarkerClickListener {
+
+            override fun onMarkerClick(marker: Marker): Boolean {
+                marker.showInfoWindow()
+                return true
+            }
+        })
+
+        if (isSensorArmed) {
+            marker.setIcon(context?.let { con ->
+                convertBitmapToBitmapDiscriptor(
+                    con,
+                    R.drawable.ic_sensor_item
+                )
+            })
+        } else {
+            marker.setIcon(context?.let { con ->
+                convertBitmapToBitmapDiscriptor(
+                    con,
+                    R.drawable.ic_sensor_item_disable
+                )
+            })
+        }
     }
 
     //check it there is any sensor alarm which is not time out
@@ -554,7 +601,13 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
             val sensorItem = iteratorList.next()
             if(isSensorAlarmTimeout(sensorItem)){
                 //show regular sensor marker
-                sensorItem.marker?.let { showSensorMarker(it) }
+                sensorItem.marker?.let {
+                    showSensorMarker(
+                        it,
+                        sensorItem.isSensorArmed,
+                        sensorItem.alarmSensorId
+                    )
+                }
                 //remove the sensor alarm because it timeout
                 iteratorList.remove()
             }
@@ -604,6 +657,8 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
         val filter = IntentFilter(CREATE_ALARM_KEY)
         filter.addAction(RESET_MARKERS_KEY)
         filter.addAction(GET_CURRENT_LOCATION_KEY)
+        filter.addAction(STOP_ALARM_SOUND)
+        filter.addAction(ACTION_TOGGLE_TEST_MODE)
         activity?.registerReceiver(usbReceiver, filter)
     }
 
@@ -783,15 +838,24 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
 
                         val alarmSensorId = inn.getStringExtra(CREATE_ALARM_ID_KEY)
                         val type = inn.getStringExtra(CREATE_ALARM_TYPE_KEY)
+                        val isArmed = inn.getBooleanExtra(CREATE_ALARM_IS_ARMED, false)
 
                         //add alarm process to queue
-                        UserSession.instance.alarmSensors?.add(alarmSensorId.let { AlarmSensor(it, Calendar.getInstance(),type) })
+                        UserSession.instance.alarmSensors?.add(alarmSensorId.let {
+                            AlarmSensor(
+                                it,
+                                Calendar.getInstance(),
+                                type,
+                                isArmed
+                            )
+                        })
 
-                        playAlarmSound()
-
-                        playVibrate()
-
-                        startTimer()
+//                        Toast.makeText(activity, "start sound", Toast.LENGTH_LONG).show()
+//                        playAlarmSound()
+//
+//                        playVibrate()
+//
+//                        startTimer()
 
                         showMarkers()
 
@@ -817,7 +881,17 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
                     }else if(inn.action == RESET_MARKERS_KEY){
                         //fillSensorsMarkers()
                         showMarkers()
+                    } else if (inn.action == STOP_ALARM_SOUND) {
+                        //stopPlayingAlarm()
+                    } else if (inn.action == ACTION_TOGGLE_TEST_MODE) {
+                        if (fbTest?.visibility == View.VISIBLE) {
+                            fbTest?.visibility = View.GONE
+                        } else {
+                            fbTest?.visibility = View.VISIBLE
+                        }
                     }
+
+
                 }
             }
 

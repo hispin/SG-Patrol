@@ -2,17 +2,18 @@ package com.sensoguard.detectsensor.services
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.app.Service
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.os.Build
-import android.os.IBinder
-import android.app.PendingIntent
-import android.hardware.usb.UsbManager
-import android.content.BroadcastReceiver
-import android.hardware.usb.UsbDeviceConnection
 import android.content.IntentFilter
 import android.hardware.usb.UsbDevice
+import android.hardware.usb.UsbDeviceConnection
+import android.hardware.usb.UsbManager
+import android.media.Ringtone
+import android.os.Build
+import android.os.IBinder
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import com.felhr.usbserial.UsbSerialDevice
@@ -23,25 +24,26 @@ import com.sensoguard.detectsensor.global.*
 class ServiceConnectSensor : Service() {
 
     var manager:UsbManager?=null
-    private val ACTION_USB_PERMISSION = "com.android.example.USB_PERMISSION"
+
+    //private val ACTION_USB_PERMISSION1 = "com.android.USB_PERMISSION"
     var connection:UsbDeviceConnection?=null
     private var usbDevice: UsbDevice? = null
     private var serialPort: UsbSerialDevice? = null
     var numBytesCount=0
     var readData :ArrayList<Int>?=null
+    private var rington: Ringtone? = null
 
     override fun onCreate() {
         super.onCreate()
         startSysForeGround()
+        setFilter()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
-        setFilter()
-
         findUsbDevices()
 
-        return return START_NOT_STICKY
+        return START_NOT_STICKY
     }
 
     private val usbReceiver = object : BroadcastReceiver() {
@@ -51,7 +53,9 @@ class ServiceConnectSensor : Service() {
                     findUsbDevices()
                 }
                 arg1.action == STOP_READ_DATA_KEY -> {
+                    //setBooleanInPreference(this@ServiceConnectSensor,USB_DEVICE_CONNECT,false)
                     serialPort?.close()
+                    //this@ServiceConnectSensor.stopSelf()
                 }
                 arg1.action == HANDLE_READ_DATA_EXCEPTION -> {
                     val msg=arg1.getStringExtra("data")
@@ -60,47 +64,32 @@ class ServiceConnectSensor : Service() {
                 arg1.action == ACTION_USB_PERMISSION ->{
                     openConnection()
                 }
+//                arg1.action == CREATE_ALARM_KEY -> {
+//                //Toast.makeText(this@MyScreensActivity, "MyScreensActivity start sound", Toast.LENGTH_LONG).show()
+//                    playAlarmSound()
+//
+//                    playVibrate()
+//                 }
 
             }
-//            if (arg1.action == "find.drivers.command") {
-//                findUsbDevices()
-//            }else if (arg1.action == "read.data.command") {
-//                readData()
-//            } else if (arg1.action == "handle.read.data") {
-//
-//                val bs= StringBuilder()
-//                val bit=arg1.getIntegerArrayListExtra("data")
-//
-//                for(item in bit){
-//                    bs.append("  ${item.toUByte()}")
-//                }
-//                //bs?.append("\n")
-//                //tvShowLogs?.text=bs.toString()
-//                Toast.makeText(applicationContext,bs.toString(),Toast.LENGTH_LONG).show()
-//
-//
-//                //val size=arg1.getIntExtra("size",-1)
-//                //Toast.makeText(applicationContext,"accept data size:"+size,Toast.LENGTH_LONG).show()
-//
-//
-////                val buffer=arg1.getByteArrayExtra("data")
-//////                val data = String(buffer)
-//////                Toast.makeText(applicationContext, "data reader $data",Toast.LENGTH_LONG).show()
-////                val b1=buffer[5]
-////                for(item in 0 until buffer.size){
-////                    Toast.makeText(applicationContext,"handle read bl int "+buffer[item].toInt()+" item:"+item,Toast.LENGTH_LONG).show()
-////                }
-//
-//            } else if(arg1.action == "stop.data.command"){
-//                serialPort!!.close()
-//            }
+
         }
+
+
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        serialPort!!.close()
-        unregisterReceiver(usbReceiver)
+
+        try {
+            if (serialPort != null) {
+                serialPort!!.close()
+            }
+
+            unregisterReceiver(usbReceiver)
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+        }
     }
 
     private fun setFilter() {
@@ -108,6 +97,7 @@ class ServiceConnectSensor : Service() {
         filter.addAction(HANDLE_READ_DATA_EXCEPTION)
         filter.addAction(STOP_READ_DATA_KEY)
         filter.addAction(ACTION_USB_PERMISSION)
+        //filter.addAction(CREATE_ALARM_KEY)
         registerReceiver(usbReceiver, filter)
     }
 
@@ -117,11 +107,12 @@ class ServiceConnectSensor : Service() {
         // Find all available drivers from attached devices.
         manager = getSystemService(Context.USB_SERVICE) as UsbManager
 
+
         val usbDevices = manager?.deviceList
 
         if (usbDevices!=null && usbDevices.isEmpty()) {
             Toast.makeText(this,"not finding devices",Toast.LENGTH_LONG).show()
-            sendBroadcast(Intent(USB_CONNECTION_FAILED))
+            sendBroadcast(Intent(USB_CONNECTION_OFF_UI))
             return
         }
 
@@ -131,7 +122,7 @@ class ServiceConnectSensor : Service() {
             tryOpenConnection()
         }else{
             Toast.makeText(this,"not finding usbDevice",Toast.LENGTH_LONG).show()
-            sendBroadcast(Intent(USB_CONNECTION_FAILED))
+            sendBroadcast(Intent(USB_CONNECTION_OFF_UI))
         }
     }
 
@@ -139,9 +130,13 @@ class ServiceConnectSensor : Service() {
     private fun openConnection(){
         connection = manager?.openDevice(usbDevice)
         if(connection==null){
-            Toast.makeText(this@ServiceConnectSensor,"connection failed",Toast.LENGTH_LONG).show()
+            sendBroadcast(Intent(USB_CONNECTION_OFF_UI))
+            //Toast.makeText(this@ServiceConnectSensor,"connection failed",Toast.LENGTH_LONG).show()
         }else{
-            Toast.makeText(this@ServiceConnectSensor,"connection success",Toast.LENGTH_LONG).show()
+            //setBooleanInPreference(this,USB_DEVICE_CONNECT,true)
+            sendBroadcast(Intent(USB_CONNECTION_ON_UI))
+            Toast.makeText(this@ServiceConnectSensor, "connection success", Toast.LENGTH_SHORT)
+                .show()
             readData()
         }
     }
@@ -151,10 +146,11 @@ class ServiceConnectSensor : Service() {
         usbDevice?.let {
             connection = manager?.openDevice(usbDevice)
             if(connection==null){
-                //Toast.makeText(this,"connection failed",Toast.LENGTH_SHORT).show()
+                sendBroadcast(Intent(USB_CONNECTION_OFF_UI))
                 registerUsbPermission(it)
             }else{
-                Toast.makeText(this,"connection success",Toast.LENGTH_LONG).show()
+                sendBroadcast(Intent(USB_CONNECTION_ON_UI))
+                //Toast.makeText(this,"connection success",Toast.LENGTH_LONG).show()
                 readData()
             }
         }
@@ -163,47 +159,12 @@ class ServiceConnectSensor : Service() {
    //request usb permission
     private fun registerUsbPermission(usbDevice: UsbDevice) {
         val usbManager = getSystemService(Context.USB_SERVICE) as UsbManager
-        //val filter = IntentFilter(ACTION_USB_PERMISSION)
-        //filter.addAction("handle.read.data")
-        //registerReceiver(usbPermissionReceiver, filter)
         val mPermissionIntent = PendingIntent.getBroadcast(this, 0, Intent(ACTION_USB_PERMISSION), 0)
         usbManager.requestPermission(usbDevice, mPermissionIntent)
-//        connection = manager?.openDevice(usbDevice)
-//        if(connection==null){
-//            Toast.makeText(this,"connection failed",Toast.LENGTH_SHORT).show()
-//        }else{
-//            Toast.makeText(this,"connection success",Toast.LENGTH_SHORT).show()
-//            readData()
-//        }
     }
 
 
-//    private var usbPermissionReceiver: BroadcastReceiver = object : BroadcastReceiver() {
-//
-//        override fun onReceive(context: Context, intent: Intent) {
-//            val action = intent.action
-//            if (action == ACTION_USB_PERMISSION) {
-//
-////                if(!isReader) {
-////                    synchronized(this) {
-////                        val connection = manager?.openDevice(driver?.usbDevice)
-////                        if (connection == null) {
-////                            Toast.makeText(applicationContext, "connection failed", Toast.LENGTH_LONG).show()
-////                        } else {
-////                            Toast.makeText(applicationContext, "connection success", Toast.LENGTH_LONG).show()
-////                            isReader = true
-////                            //readData()
-////                        }
-////                    }
-////                }
-//            }
-//        }
-//
-//    }
-
-
-
-    fun readData() {
+    private fun readData() {
         if (usbDevice == null) {
             return
         }
@@ -283,42 +244,7 @@ class ServiceConnectSensor : Service() {
             arr=ArrayList<Int>(16)
         }
 
-        //numBytesCount=bytesArray.size
-//
-//        for(i in 0 until bytesArray.size){
-//            if(readData!=null && readData?.size!! <16) {
-//                readData?.add(bytesArray[i].toInt())
-//            }
-//            //sb.append("\n"+buffer[i].toString())
-//        }
-//
-//        if(readData!=null && readData?.size!!>=8 && readData?.get(7)==3){
-//            val inn = Intent("handle.read.data")
-//            inn.putExtra("data",readData)
-//
-//            //clear the array
-//            readData= ArrayList()
-//            //inn.putExtra("data1",arg0[1].toString())
-//            sendBroadcast(Intent(inn))
-//        }
-//        //Toast.makeText(applicationContext, "data reader" +arg0[0].toString(),Toast.LENGTH_LONG).show()
-////       val inn = Intent("handle.read.data")
-////       inn.putExtra("data",arg0[0].toString())
-////       //inn.putExtra("data1",arg0[1].toString())
-////       sendBroadcast(Intent(inn))
-////        bs=StringBuilder()
-////        bs?.append("\n data:"+arg0[0].toString())
-////        tvShowProgress?.text=bs.toString()
-//         // sendBroadcast(Intent("handle.read.data"))
-//        try {
-//
-//            //val data = String(arg0)
-////            bs?.append("\n data:$data")
-////            tvShowProgress?.text=bs.toString()
-//            //mHandler?.obtainMessage(MESSAGE_FROM_SERIAL_PORT, data)?.sendToTarget()
-//        } catch (e: UnsupportedEncodingException) {
-//            e.printStackTrace()
-//        }
+
     }
 
     /*

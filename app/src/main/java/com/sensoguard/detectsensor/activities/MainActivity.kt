@@ -86,6 +86,13 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+        //disconnect usb device
+        sendBroadcast(Intent(STOP_READ_DATA_KEY))
+        setBooleanInPreference(this@MainActivity, USB_DEVICE_CONNECT_STATUS, false)
+    }
+
     private fun configureGeneralCatch() {
         Thread.setDefaultUncaughtExceptionHandler(MyExceptionHandler(MyScreensActivity@ this))
     }
@@ -109,7 +116,7 @@ class MainActivity : AppCompatActivity() {
     private fun setOnClickConfigTable() {
         clickConsConfiguration?.setOnClickListener{
             val inn=Intent(this,MyScreensActivity::class.java)
-            inn.putExtra(CURRENT_ITEM_TOP_MENU_KEY,2)
+            inn.putExtra(CURRENT_ITEM_TOP_MENU_KEY, 3)
             inn.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
             startActivity(inn)
         }
@@ -117,7 +124,7 @@ class MainActivity : AppCompatActivity() {
     private fun setOnClickAlarmLogTable() {
         clickAlarmLog?.setOnClickListener{
             val inn=Intent(this,MyScreensActivity::class.java)
-            inn.putExtra(CURRENT_ITEM_TOP_MENU_KEY,3)
+            inn.putExtra(CURRENT_ITEM_TOP_MENU_KEY, 2)
             inn.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
             startActivity(inn)
         }

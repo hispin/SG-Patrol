@@ -1,21 +1,21 @@
 package com.sensoguard.detectsensor.adapters
 
-import android.content.Context
 //import android.support.v7.widget.RecyclerView
+
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import android.widget.TextView
-
-import com.sensoguard.detectsensor.classes.Sensor
-import com.sensoguard.detectsensor.interfaces.OnAdapterListener
-import java.util.ArrayList
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageButton
+import android.widget.TextView
 import android.widget.ToggleButton
 import androidx.recyclerview.widget.RecyclerView
 import com.sensoguard.detectsensor.R
+import com.sensoguard.detectsensor.classes.Sensor
+import com.sensoguard.detectsensor.interfaces.OnAdapterListener
+import java.util.*
 
 
 class SensorsDialogAdapter (private var sensors: ArrayList<Sensor>, val context: Context, val onAdapterListener: OnAdapterListener, var itemClick: (Sensor) -> Unit) : RecyclerView.Adapter<SensorsDialogAdapter.ViewHolder>() {
@@ -43,7 +43,8 @@ class SensorsDialogAdapter (private var sensors: ArrayList<Sensor>, val context:
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, p1: Int): ViewHolder {
-        val view= LayoutInflater.from(parent.context).inflate(R.layout.sensor_dialog_item, parent, false)
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.sensor_locate_dialog_item, parent, false)
 
 
 

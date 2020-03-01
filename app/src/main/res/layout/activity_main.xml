@@ -167,10 +167,11 @@
             android:background="@drawable/selector_main_menu"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/clickConsMap"
+            app:layout_constraintTop_toBottomOf="@+id/clickAlarmLog"
             app:layout_constraintHeight_default="percent"
             app:layout_constraintHeight_percent="0.203"
             android:layout_marginTop="2.7dp"
+
             android:layoutDirection="ltr"
     >
         <androidx.appcompat.widget.AppCompatImageView
@@ -211,7 +212,7 @@
         />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <!--configuration-->
+        <!--alarm log-->
     <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/clickAlarmLog"
             android:layout_width="match_parent"
@@ -219,7 +220,7 @@
             android:background="@drawable/selector_main_menu"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/clickConsConfiguration"
+            app:layout_constraintTop_toBottomOf="@+id/clickConsMap"
             app:layout_constraintHeight_default="percent"
             app:layout_constraintHeight_percent="0.203"
             android:layout_marginTop="2.7dp"
@@ -273,7 +274,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/clickAlarmLog" />
+                app:layout_constraintTop_toBottomOf="@+id/clickConsConfiguration" />
 
         <!--container 2-->
     </androidx.constraintlayout.widget.ConstraintLayout>
