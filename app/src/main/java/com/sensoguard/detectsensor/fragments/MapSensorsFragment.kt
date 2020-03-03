@@ -552,7 +552,7 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
 
     //show marker of sensor
     private fun showSensorMarker(marker: Marker, isSensorArmed: Boolean, sensorId: String) {
-        if(marker==null){
+        if (marker == null || mMap == null) {
             return
         }
 
