@@ -70,5 +70,6 @@
     <string name="email_subject">My Code for SG-Patrol App</string>
     <string name="delete_all">Delete all</string>
     <string name="do_you_realy_want_delete_all_alarm">Do you realy want to delete all alarms</string>
+    <string name="receiver_disconnected">Receiver Disconnected</string>
 
 </resources>

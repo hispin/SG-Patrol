@@ -25,7 +25,7 @@
             app:backgroundTint="@color/turquoise_blue"
             android:layout_marginBottom="36dp"
             android:layout_marginEnd="36dp"
-            android:visibility="gone"
+            android:visibility="visible"
     />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton

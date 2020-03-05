@@ -53,6 +53,7 @@ import com.sensoguard.detectsensor.global.*
 import com.sensoguard.detectsensor.interfaces.OnAdapterListener
 import com.sensoguard.detectsensor.interfaces.OnFragmentListener
 import com.sensoguard.detectsensor.services.ServiceFindLocation
+import com.sensoguard.detectsensor.services.ServiceFindSingleLocation
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -141,9 +142,10 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
         val view= inflater.inflate(R.layout.fragment_map_detects, container, false)
 
         fbRefresh=view.findViewById(R.id.fbRefresh)
-//        fbRefresh?.setOnClickListener {
-//            gotoMyLocation()
-//        }
+        fbRefresh?.setOnClickListener {
+            //gotoMyLocation()
+            gotoMySingleLocation()
+        }
 
         fbTest=view.findViewById(R.id.fbTest)
         fbTest?.setOnClickListener {
@@ -240,6 +242,15 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
         }
     }
 
+    //get current location from gps
+    private fun gotoMySingleLocation() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            activity?.startForegroundService(Intent(context, ServiceFindSingleLocation::class.java))
+        } else {
+            activity?.startService(Intent(context, ServiceFindSingleLocation::class.java))
+        }
+    }
+
     override fun onMapReady(googleMap: GoogleMap?) {
         mMap = googleMap
 
@@ -292,6 +303,35 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
 
         //Log.d("ServiceFindLocation","map start location")
         gotoMyLocation()
+    }
+
+
+    // move the camera to ic_mark location
+    private fun showMyLocationMarker(location: Location?) {
+
+        if (location != null) {
+            setMyLocate(LatLng(location.latitude, location.longitude))
+        } else {
+
+            myLocate = getLastLocationLocally()
+
+            if (myLocate == null) {
+                //set default location (london)
+                myLocate = LatLng(51.509865, -0.118092)
+                //set default location (london) if there is no last location
+                setMyLocate(LatLng(51.509865, -0.118092))
+            }
+        }
+        //add marker at the focus of the map
+        myLocate?.let {
+            //show current location marker
+            showCurrentLocationMarker()
+//            showMyLocationNarker(it)}
+//            //mMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocate, 15.0f))
+//            showMarkers()
+//            //fillSensorsMarkers()
+        }
+
     }
 
     // move the camera to ic_mark location
@@ -454,7 +494,7 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
                ALARM_CAR->context?.let { con -> convertBitmapToBitmapDiscriptor(con,R.drawable.ic_alarm_car)}
                ALARM_INTRUDER->context?.let { con -> convertBitmapToBitmapDiscriptor(con,R.drawable.ic_alarm_intruder)}
                ALARM_SENSOR_OFF->context?.let { con -> convertBitmapToBitmapDiscriptor(con,R.drawable.ic_alarm_sensor_off)}
-               ALARM_LOW_BATTERY->context?.let { con -> convertBitmapToBitmapDiscriptor(con,R.drawable.ic_alarm_low_battery)}
+               //ALARM_LOW_BATTERY->context?.let { con -> convertBitmapToBitmapDiscriptor(con,R.drawable.ic_alarm_low_battery)}
                else -> context?.let { con -> convertBitmapToBitmapDiscriptor(con,R.drawable.ic_sensor_alarm)}
            }
 
@@ -474,12 +514,14 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
                    .position(loc)
                    .draggable(true)
                    .icon(context?.let { alarmTypeIcon })
-                   .title("id:" + sensorItem.getId() + "  name:" + sensorItem.getName())
-                   .snippet(" type:motion")
+                   .title("Id:" + sensorItem.getId() + "  Name:" + sensorItem.getName())
+
            )
        }
        return null
    }
+
+    var myLocatioMarker: Marker? = null
 
    //show marker of current location
    private fun showCurrentLocationMarker(){
@@ -492,15 +534,22 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
            return
        }
 
-            mMap?.addMarker(
-                myLocate?.let {
-                    MarkerOptions()
-                        .position(it)
-                        .draggable(true)
-                        .icon(context?.let { con -> convertBitmapToBitmapDiscriptor(con,R.drawable.ic_my_locate) })
-                }
-            )
-        }
+       myLocatioMarker?.remove()
+
+       myLocatioMarker = mMap?.addMarker(
+           myLocate?.let {
+               MarkerOptions()
+                   .position(it)
+                   .draggable(true)
+                   .icon(context?.let { con ->
+                       convertBitmapToBitmapDiscriptor(
+                           con,
+                           R.drawable.ic_my_locate
+                       )
+                   })
+           }
+       )
+   }
 
     //show marker of sensor
     private fun showSensorMarker(sensorItem: Sensor) {
@@ -529,8 +578,7 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
                             con,
                             R.drawable.ic_sensor_item
                         )
-                    }).title("id:" + sensorItem.getId() + "  name:" + sensorItem.getName())
-                    .snippet(" type:motion")
+                    }).title("Id:" + sensorItem.getId() + "  Name:" + sensorItem.getName())
                 //.snippet("type:motion")
             )
         } else {
@@ -543,8 +591,7 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
                             con,
                             R.drawable.ic_sensor_item_disable
                         )
-                    }).title("id:" + sensorItem.getId() + "  name:" + sensorItem.getName())
-                    .snippet(" type:motion")
+                    }).title("Id:" + sensorItem.getId() + "  Name:" + sensorItem.getName())
             )
 
         }
@@ -657,6 +704,7 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
         val filter = IntentFilter(CREATE_ALARM_KEY)
         filter.addAction(RESET_MARKERS_KEY)
         filter.addAction(GET_CURRENT_LOCATION_KEY)
+        filter.addAction(GET_CURRENT_SINGLE_LOCATION_KEY)
         filter.addAction(STOP_ALARM_SOUND)
         filter.addAction(ACTION_TOGGLE_TEST_MODE)
         activity?.registerReceiver(usbReceiver, filter)
@@ -861,6 +909,25 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
 
 
                     }else if(inn.action == GET_CURRENT_LOCATION_KEY){
+                        val location: Location? = inn.getParcelableExtra(CURRENT_LOCATION)
+                        if (location != null) {
+                            //save locally the current location
+                            setStringInPreference(
+                                activity,
+                                CURRENT_LATITUDE_PREF,
+                                location.latitude.toString()
+                            )
+                            setStringInPreference(
+                                activity,
+                                CURRENT_LONGTUDE_PREF,
+                                location.longitude.toString()
+                            )
+                            showMyLocationMarker(location)
+                            //showLocation(location)
+                        } else {
+                            Toast.makeText(activity, "error in location2", Toast.LENGTH_LONG).show()
+                        }
+                    } else if (inn.action == GET_CURRENT_SINGLE_LOCATION_KEY) {
                         val location: Location? = inn.getParcelableExtra(CURRENT_LOCATION)
                         if (location != null) {
                             //save locally the current location

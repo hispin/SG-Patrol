@@ -74,19 +74,21 @@ class ServiceHandleAlarms : Service(){
                 }
 
                 val type=stateTypes?.get(bit[5].toUByte().toInt()-1)
+                Log.d("testIconAlarm", type)
                 val alarmSensorId = bit[1].toUByte().toString()
 
                 //get locally sensor that match to sensor of alarm
                 val currentSensorLocally=getLocallySensorAlarm(alarmSensorId)
 
+                Toast.makeText(context, "$type alarm from Unit $alarmSensorId ", Toast.LENGTH_LONG)
+                    .show()
+
                 //add alarm to history and send alarm if active
                 if(currentSensorLocally==null){
                      sendBroadcast(Intent(RESET_MARKERS_KEY))
-                     Toast.makeText(context, "Alarm from Unit $alarmSensorId", Toast.LENGTH_LONG).show()
                      addAlarmToHistory(false,"undefined", isArmed = false, alarmSensorId = alarmSensorId, type = type)
                 }else if(!currentSensorLocally.isArmed()){
                      sendBroadcast(Intent(RESET_MARKERS_KEY))
-                     Toast.makeText(context, "Alarm from Unit $alarmSensorId", Toast.LENGTH_LONG).show()
                     currentSensorLocally.getName()?.let {
                         addAlarmToHistory(true,
                             it, isArmed = false, alarmSensorId = alarmSensorId, type = type)
@@ -95,7 +97,6 @@ class ServiceHandleAlarms : Service(){
                 }else if(currentSensorLocally.getLatitude()==null
                     || currentSensorLocally.getLongtitude()==null) {
                     sendBroadcast(Intent(RESET_MARKERS_KEY))
-                    Toast.makeText(context, "Alarm from Unit $alarmSensorId", Toast.LENGTH_LONG).show()
                     currentSensorLocally.getName()?.let {
                         addAlarmToHistory(true,
                             it, isArmed = false, alarmSensorId = alarmSensorId, type = type)

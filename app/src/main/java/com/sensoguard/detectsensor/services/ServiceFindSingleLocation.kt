@@ -1,8 +1,5 @@
 package com.sensoguard.detectsensor.services
 
-//import android.support.v4.app.NotificationCompat
-//import android.support.v4.content.ContextCompat
-
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
@@ -20,13 +17,11 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
-import com.sensoguard.detectsensor.R
 import com.sensoguard.detectsensor.global.CURRENT_LOCATION
-import com.sensoguard.detectsensor.global.GET_CURRENT_LOCATION_KEY
+import com.sensoguard.detectsensor.global.GET_CURRENT_SINGLE_LOCATION_KEY
 
-
-class ServiceFindLocation :Service(){
-    private val TAG="ServiceFindLocation"
+class ServiceFindSingleLocation : Service() {
+    private val TAG = "ServiceFindSingleLocation"
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var locationRequest: LocationRequest
     private val locationCallback = object : LocationCallback() {
@@ -34,9 +29,10 @@ class ServiceFindLocation :Service(){
             run {
                 //Log.d(TAG,"get location")
                 location = locationResult.lastLocation
-                val inn = Intent(GET_CURRENT_LOCATION_KEY)
-                inn.putExtra(CURRENT_LOCATION,location)
+                val inn = Intent(GET_CURRENT_SINGLE_LOCATION_KEY)
+                inn.putExtra(CURRENT_LOCATION, location)
                 sendBroadcast(inn)
+                stopSelf()
             }
         }
     }
@@ -58,13 +54,13 @@ class ServiceFindLocation :Service(){
         fusedLocationProviderClient = FusedLocationProviderClient(this)
         locationRequest =
             LocationRequest().setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY).setInterval(10000)
-                .setFastestInterval(10000)//.setNumUpdates(1)
+                .setFastestInterval(1000).setNumUpdates(1)
         startGetLocation()
 
         return START_NOT_STICKY
     }
 
-    private fun startGetLocation(){
+    private fun startGetLocation() {
         try {
             if (ContextCompat.checkSelfPermission(
                     this.applicationContext,
@@ -80,7 +76,7 @@ class ServiceFindLocation :Service(){
             }
         } catch (exception: Exception) {
             exception.printStackTrace()
-            Log.d("startGetLocation","exception:"+exception.message)
+            Log.d("startGetLocation", "exception:" + exception.message)
         }
     }
 
@@ -98,8 +94,8 @@ class ServiceFindLocation :Service(){
 
     //The system allows apps to call Context.startForegroundService() even while the app is in the background. However, the app must call that service's startForeground() method within five seconds after the service is created
     private fun startSysForeGround() {
-        val CHANNEL_ID = "my_channel_01"
         if (Build.VERSION.SDK_INT >= 26) {
+            val CHANNEL_ID = "my_channel_01"
             val channel = NotificationChannel(
                 CHANNEL_ID,
                 "Channel human readable title",
@@ -110,19 +106,12 @@ class ServiceFindLocation :Service(){
             if (`object` != null && `object` is NotificationManager) {
                 `object`.createNotificationChannel(channel)
             }
-        }
+
             val notification = NotificationCompat.Builder(this, CHANNEL_ID)
-                .setContentTitle("SG-Patrol is running")
-                .setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle("")
                 .setContentText("").build()
 
-        startForeground(1, notification)
-
-    }
-
-    private fun getNotificationIcon(): Int {
-        val useWhiteIcon =
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
-        return if (useWhiteIcon) R.drawable.ic_crow_white else R.mipmap.ic_launcher
+            startForeground(1, notification)
+        }
     }
 }

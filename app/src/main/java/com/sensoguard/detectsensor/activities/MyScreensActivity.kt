@@ -14,6 +14,7 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.View.OnTouchListener
+import android.widget.Toast
 import android.widget.ToggleButton
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -212,7 +213,11 @@ class MyScreensActivity : AppCompatActivity(), OnFragmentListener, java.util.Obs
     //stop usb read connection
     private fun stopUsbReadConnection() {
         setBooleanInPreference(this@MyScreensActivity, USB_DEVICE_CONNECT_STATUS, false)
-        //Toast.makeText(this,"stopUsbReadConnection", Toast.LENGTH_SHORT).show()
+        Toast.makeText(
+            this,
+            resources.getString(R.string.receiver_disconnected),
+            Toast.LENGTH_SHORT
+        ).show()
         sendBroadcast(Intent(STOP_READ_DATA_KEY))
         editActionBar(false)
     }

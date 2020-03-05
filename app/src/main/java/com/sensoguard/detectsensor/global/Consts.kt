@@ -7,6 +7,7 @@ const val ACTION_USB_PERMISSION = "com.android.example.USB_PERMISSION"
 const val ACTION_TOGGLE_TEST_MODE = "toggleTestMode"
 
 const val  GET_CURRENT_LOCATION_KEY ="handle.get.current.location"
+const val GET_CURRENT_SINGLE_LOCATION_KEY = "handle.get.current.single.location"
 const val STOP_ALARM_SOUND = "stop.alarm.sound"
 const val CURRENT_ITEM_TOP_MENU_KEY = "currentItemTopKey"
 const val  READ_DATA_KEY="handle.read.data"
@@ -57,8 +58,8 @@ const val MAIN_MENU_NUM_ITEM = 4
 
 const val ALARM_CAR = "car"
 const val ALARM_INTRUDER = "intruder"
-const val ALARM_SENSOR_OFF = "sensor off"
-const val ALARM_LOW_BATTERY = "low battery"
+const val ALARM_SENSOR_OFF = "sensor disconnected"
+const val ALARM_LOW_BATTERY = "motion"
 
 const val USB_DEVICE_CONNECT_STATUS = "usbDeviceConnect"
 
