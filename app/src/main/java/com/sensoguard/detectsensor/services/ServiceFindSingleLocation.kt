@@ -114,9 +114,9 @@ class ServiceFindSingleLocation : Service() {
             }
 
             val notification = NotificationCompat.Builder(this, CHANNEL_ID)
-                .setContentTitle("")
+                .setContentText("SG-Patrol is running")
                 .setSmallIcon(getNotificationIcon())
-                .setContentText("").build()
+                .build()
 
             startForeground(1, notification)
         }

@@ -117,17 +117,12 @@ class ServiceFindLocation :Service(){
             }
         }
             val notification = NotificationCompat.Builder(this, CHANNEL_ID)
-                .setContentTitle("SG-Patrol is running")
+                .setContentText("SG-Patrol is running")
                 .setSmallIcon(getNotificationIcon())
-                .setContentText("").build()
+                .build()
 
         startForeground(1, notification)
 
     }
 
-    private fun getNotificationIcon(): Int {
-        val useWhiteIcon =
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
-        return if (useWhiteIcon) R.drawable.ic_app_notification else R.mipmap.ic_launcher
-    }
 }
