@@ -1,6 +1,7 @@
 package com.sensoguard.detectsensor.activities
 
 import android.Manifest
+import android.app.AlertDialog
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -10,11 +11,12 @@ import android.hardware.usb.UsbManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.View.OnTouchListener
-import android.widget.Toast
 import android.widget.ToggleButton
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -195,6 +197,8 @@ class MyScreensActivity : AppCompatActivity(), OnFragmentListener, java.util.Obs
                 arg1.action == UsbManager.ACTION_USB_DEVICE_DETACHED -> {
                     //Toast.makeText(this@MyScreensActivity, "detach", Toast.LENGTH_SHORT).show()
                     stopUsbReadConnection()
+                    playVibrate()
+                    showDisconnectUsbDialog()
 
                 }
                 arg1.action == CREATE_ALARM_KEY -> {
@@ -207,17 +211,58 @@ class MyScreensActivity : AppCompatActivity(), OnFragmentListener, java.util.Obs
 
             }
         }
+
+        //show dialog with disconnect usb message
+        private fun showDisconnectUsbDialog() {
+            val builder = AlertDialog.Builder(this@MyScreensActivity)
+            builder.setIcon(R.drawable.ic_alert)
+            builder.setTitle(resources.getString(R.string.receiver_disconnected))
+                .setCancelable(false)
+            val ok = resources.getString(R.string.OK)
+
+            builder.setPositiveButton(ok) { dialog, which ->
+
+                dialog.dismiss()
+            }
+            val alert = builder.create()
+            alert.show()
+        }
+
+        //execute vibrate
+        private fun playVibrate() {
+
+            val isVibrateWhenAlarm =
+                getBooleanInPreference(applicationContext, IS_VIBRATE_WHEN_ALARM_KEY, true)
+            if (isVibrateWhenAlarm) {
+                // Get instance of Vibrator from current Context
+                val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+
+                // Vibrate for 200 milliseconds
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    vibrator.vibrate(
+                        VibrationEffect.createOneShot(
+                            1000,
+                            VibrationEffect.DEFAULT_AMPLITUDE
+                        )
+                    )
+                } else {
+                    vibrator.vibrate(1000)
+                }
+
+            }
+
+        }
     }
 
 
     //stop usb read connection
     private fun stopUsbReadConnection() {
         setBooleanInPreference(this@MyScreensActivity, USB_DEVICE_CONNECT_STATUS, false)
-        Toast.makeText(
-            this,
-            resources.getString(R.string.receiver_disconnected),
-            Toast.LENGTH_SHORT
-        ).show()
+//        Toast.makeText(
+//            this,
+//            resources.getString(R.string.receiver_disconnected),
+//            Toast.LENGTH_SHORT
+//        ).show()
         sendBroadcast(Intent(STOP_READ_DATA_KEY))
         editActionBar(false)
     }

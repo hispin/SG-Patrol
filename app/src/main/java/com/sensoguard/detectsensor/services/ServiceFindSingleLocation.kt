@@ -17,6 +17,7 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
+import com.sensoguard.detectsensor.R
 import com.sensoguard.detectsensor.global.CURRENT_LOCATION
 import com.sensoguard.detectsensor.global.GET_CURRENT_SINGLE_LOCATION_KEY
 
@@ -94,6 +95,11 @@ class ServiceFindSingleLocation : Service() {
 
     //The system allows apps to call Context.startForegroundService() even while the app is in the background. However, the app must call that service's startForeground() method within five seconds after the service is created
     private fun startSysForeGround() {
+        fun getNotificationIcon(): Int {
+            val useWhiteIcon =
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+            return if (useWhiteIcon) R.drawable.ic_app_notification else R.mipmap.ic_launcher
+        }
         if (Build.VERSION.SDK_INT >= 26) {
             val CHANNEL_ID = "my_channel_01"
             val channel = NotificationChannel(
@@ -109,9 +115,11 @@ class ServiceFindSingleLocation : Service() {
 
             val notification = NotificationCompat.Builder(this, CHANNEL_ID)
                 .setContentTitle("")
+                .setSmallIcon(getNotificationIcon())
                 .setContentText("").build()
 
             startForeground(1, notification)
         }
+
     }
 }

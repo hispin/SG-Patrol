@@ -69,4 +69,5 @@
     <string name="delete_all">מחק הכל</string>
     <string name="do_you_realy_want_delete_all_alarm">Do you realy want to delete all alarms</string>
     <string name="receiver_disconnected">המקלט מנותק</string>
+    <string name="OK">אישור</string>
 </resources>

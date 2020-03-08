@@ -1,28 +1,28 @@
 package com.sensoguard.detectsensor.services
 
+//import android.support.v4.app.NotificationCompat
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.app.Service
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.os.Build
-import android.os.IBinder
-//import android.support.v4.app.NotificationCompat
-import android.app.PendingIntent
-import android.hardware.usb.UsbManager
-import android.content.BroadcastReceiver
-import android.hardware.usb.UsbDeviceConnection
-import com.hoho.android.usbserial.driver.UsbSerialDriver
-import com.hoho.android.usbserial.driver.UsbSerialProber
 import android.content.IntentFilter
 import android.hardware.usb.UsbDevice
+import android.hardware.usb.UsbDeviceConnection
+import android.hardware.usb.UsbManager
+import android.os.Build
+import android.os.IBinder
 import android.util.Log
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
+import com.hoho.android.usbserial.driver.UsbSerialDriver
 import com.hoho.android.usbserial.driver.UsbSerialPort
+import com.hoho.android.usbserial.driver.UsbSerialProber
+import com.sensoguard.detectsensor.R
 import com.sensoguard.detectsensor.global.CHECK_AVAILABLE_KEY
 import com.sensoguard.detectsensor.global.STOP_READ_DATA_KEY
-import java.lang.reflect.InvocationTargetException
 
 
 open class ServiceConnectSensor1 : Service() {
@@ -300,6 +300,11 @@ open class ServiceConnectSensor1 : Service() {
 
     //The system allows apps to call Context.startForegroundService() even while the app is in the background. However, the app must call that service's startForeground() method within five seconds after the service is created
     private fun startSysForeGround() {
+        fun getNotificationIcon(): Int {
+            val useWhiteIcon =
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+            return if (useWhiteIcon) R.drawable.ic_app_notification else R.mipmap.ic_launcher
+        }
         if (Build.VERSION.SDK_INT >= 26) {
             val CHANNEL_ID = "my_channel_01"
             val channel = NotificationChannel(
@@ -315,6 +320,7 @@ open class ServiceConnectSensor1 : Service() {
 
             val notification = NotificationCompat.Builder(this, CHANNEL_ID)
                 .setContentTitle("")
+                .setSmallIcon(getNotificationIcon())
                 .setContentText("").build()
 
             startForeground(1, notification)

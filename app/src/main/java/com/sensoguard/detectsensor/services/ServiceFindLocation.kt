@@ -98,6 +98,11 @@ class ServiceFindLocation :Service(){
 
     //The system allows apps to call Context.startForegroundService() even while the app is in the background. However, the app must call that service's startForeground() method within five seconds after the service is created
     private fun startSysForeGround() {
+        fun getNotificationIcon(): Int {
+            val useWhiteIcon =
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+            return if (useWhiteIcon) R.drawable.ic_app_notification else R.mipmap.ic_launcher
+        }
         val CHANNEL_ID = "my_channel_01"
         if (Build.VERSION.SDK_INT >= 26) {
             val channel = NotificationChannel(
@@ -113,7 +118,7 @@ class ServiceFindLocation :Service(){
         }
             val notification = NotificationCompat.Builder(this, CHANNEL_ID)
                 .setContentTitle("SG-Patrol is running")
-                .setSmallIcon(R.mipmap.ic_launcher)
+                .setSmallIcon(getNotificationIcon())
                 .setContentText("").build()
 
         startForeground(1, notification)
@@ -123,6 +128,6 @@ class ServiceFindLocation :Service(){
     private fun getNotificationIcon(): Int {
         val useWhiteIcon =
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
-        return if (useWhiteIcon) R.drawable.ic_crow_white else R.mipmap.ic_launcher
+        return if (useWhiteIcon) R.drawable.ic_app_notification else R.mipmap.ic_launcher
     }
 }
