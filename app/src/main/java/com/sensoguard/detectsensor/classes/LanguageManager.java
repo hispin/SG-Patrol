@@ -16,6 +16,9 @@ public class LanguageManager {
         languagesItems = new ArrayList<>();
         languagesItems.add(new GeneralItemMenu("English", R.drawable.ic_english_small, R.drawable.ic_english_large));
         languagesItems.add(new GeneralItemMenu("Hebrew", R.drawable.ic_hebrew_small, R.drawable.ic_hebrew_large));
+        languagesItems.add(new GeneralItemMenu("French", R.drawable.ic_french_small, R.drawable.ic_french_large));
+        languagesItems.add(new GeneralItemMenu("Italian", R.drawable.ic_italian_small, R.drawable.ic_italian_large));
+        languagesItems.add(new GeneralItemMenu("Spanish", R.drawable.ic_spanish_small, R.drawable.ic_spanish_large));
 
 
         for (int i = 0; i < LanguageList.getHumanReadable().length; i++) {

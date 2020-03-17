@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name" translatable="false">SG-Patrol</string>
+    <string name="app_name">SG-Patrol</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="empty_field_error">This field cannot be blank</string>

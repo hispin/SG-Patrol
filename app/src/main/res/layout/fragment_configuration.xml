@@ -42,6 +42,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
+                android:ems="9"
                 />
 
         <androidx.appcompat.widget.AppCompatEditText
@@ -52,9 +53,9 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintWidth_default="percent"
-                app:layout_constraintWidth_percent=".181"
+                app:layout_constraintHorizontal_bias="0.690"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintHorizontal_bias="0.735"
+                app:layout_constraintWidth_percent=".151"
                 android:inputType="number"
                 android:gravity="center"
                 android:hint="0"
@@ -63,7 +64,7 @@
         />
         <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnSaveSensors"
-                android:layout_width="65.3dp"
+                android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 app:layout_constraintTop_toTopOf="@+id/etSensorValue"
                 app:layout_constraintBottom_toBottomOf="@+id/etSensorValue"
@@ -126,17 +127,16 @@
         />
 
         <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnDefault"
+                style="@style/configContentItem"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@color/transparent"
                 android:text="@string/default_str"
-                style="@style/configContentItem"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintHorizontal_bias="0.654"
-                android:id="@+id/btnDefault"/>
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.730"
+                app:layout_constraintStart_toStartOf="parent" />
 
         <tools:ToggleButton
                 android:id="@+id/togChangeAlarmSound"
@@ -240,6 +240,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/alarm_flickering_time"
                 style="@style/configContentItem"
+                android:ems="9"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -253,9 +254,9 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintWidth_default="percent"
-                app:layout_constraintWidth_percent=".181"
+                app:layout_constraintHorizontal_bias="0.690"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintHorizontal_bias="0.735"
+                app:layout_constraintWidth_percent=".151"
                 android:inputType="number"
                 android:gravity="center"
                 android:hint="0"
@@ -264,7 +265,7 @@
         />
         <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnSaveFlicker"
-                android:layout_width="65.3dp"
+                android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 app:layout_constraintTop_toTopOf="@+id/etAlarmFlickerValue"
                 app:layout_constraintBottom_toBottomOf="@+id/etAlarmFlickerValue"
@@ -311,6 +312,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
+                android:ems="14"
         />
 
         <tools:ToggleButton

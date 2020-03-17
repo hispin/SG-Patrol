@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name" translatable="false">SG-Patrol</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="empty_field_error">Este campo no puede estar vacío</string>
+    <string name="rename">rebautizar</string>
+    <string name="csv">csv</string>
+    <string name="dialog_new_sensor_title">Configurar sensores</string>
+    <string name="invalid_mum_sensors">número inválido de sensores</string>
+    <string name="name_title">NOMBRE</string>
+    <string name="id_title">ID</string>
+    <string name="map_location_title">MAPA DE UBICACIÓN</string>
+    <string name="status_title">ACTIVO</string>
+    <string name="type_title">TIPO</string>
+    <string name="time_title">HORA</string>
+    <string name="yes">si</string>
+    <string name="no">No</string>
+    <string name="content_delete_extra_sensor">El sistema tiene más sensores que los configurados, ¿desea eliminar más?</string>
+    <string name="remove_extra_sensors">Eliminar sensores adicionales</string>
+    <string name="csv_date_title"><![CDATA[Date&Time]]></string>
+    <string name="csv_name_title">Nombre del sensor</string>
+    <string name="csv_id_title">ID</string>
+    <string name="csv_alarm_type_title">Tipo de alarma</string>
+    <string name="csv_latitude_title">latitude</string>
+    <string name="csv_longitude_title">longitude</string>
+    <string name="sensor_table_title">Tabla de sensores</string>
+    <string name="map_title">Mapa</string>
+    <string name="config_title">Configuración</string>
+    <string name="alarm_log_title">Registro de alarma</string>
+    <string name="not_located">No ubicado</string>
+    <string name="located">Situado</string>
+    <string name="date_title">FECHA</string>
+    <string name="save">salvar</string>
+    <string name="define_sensor_amount">Definir cantidad de sensor</string>
+    <string name="choose_alarm_sound">Elegir sonido de alarma</string>
+    <string name="vibration_when_alarm">Vibración cuando alarma</string>
+    <string name="alarm_flickering_time">Tiempo de parpadeo de alarma</string>
+    <string name="default_str">defecto</string>
+
+
+    <string-array name="state_types">
+        <item>coche</item>
+        <item>intruso</item>
+        <item>movimiento</item>
+        <item>Sensor desconectado</item>
+        <item>sistema ok</item>
+        <item>batería baja</item>
+        <item>alarma de doble tecnología</item>
+    </string-array>
+    <string name="load_settings_export_settings">Cargar configuración / exportar configuración</string>
+    <string name="map_view">Vista del mapa</string>
+    <string name="language">Idioma</string>
+    <string name="satellite">satélite</string>
+    <string name="map">mapa</string>
+    <string name="sensors_save_successfully">Los sensores se guardaron correctamente.</string>
+    <string name="time_flickering_save_successfully">El parpadeo del tiempo se ha guardado correctamente.</string>
+    <string name="english">Inglés</string>
+    <string name="no_selected_sound">sin sonido seleccionado</string>
+    <string name="channel_name">my_channel_01_name</string>
+    <string name="channel_description">my_channel_01_description</string>
+    <string name="share">compartir</string>
+    <string name="enter_code">Ingrese código de activación</string>
+    <string name="wrong_activate_code">"código de activación incorrecto</string>
+    <string name="sign_in">registrarse</string>
+    <string name="activate">Activar</string>
+    <string name="error">Error</string>
+    <string name="general_desc">descripción</string>
+    <string name="email_subject">Mi código para la aplicación SG-Patrol</string>
+    <string name="delete_all">Eliminar todos</string>
+    <string name="do_you_realy_want_delete_all_alarm">¿Realmente quieres eliminar todas las alarmas?</string>
+    <string name="receiver_disconnected">Receptor desconectado</string>
+    <string name="OK">Okay</string>
+
+</resources>

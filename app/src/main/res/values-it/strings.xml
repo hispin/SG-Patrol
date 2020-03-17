@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">SG-Patrol</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="empty_field_error">Questo campo non può essere vuoto</string>
+    <string name="rename">rinominare</string>
+    <string name="csv">csv</string>
+    <string name="dialog_new_sensor_title">Configura i sensori</string>
+    <string name="invalid_mum_sensors">numero di sensori non valido</string>
+    <string name="name_title">NOME</string>
+    <string name="id_title">ID</string>
+    <string name="map_location_title">POSIZIONE DELLA MAPPA</string>
+    <string name="status_title">ATTIVO</string>
+    <string name="type_title">GENERE</string>
+    <string name="time_title">TEMPO</string>
+    <string name="yes">sì</string>
+    <string name="no">no</string>
+    <string name="content_delete_extra_sensor">Il sistema ha più sensori di quelli configurati, vuoi eliminare un extraen sorsori?</string>
+    <string name="remove_extra_sensors">Rimuovere i sensori extra</string>
+    <string name="csv_date_title"><![CDATA[Date&Time]]></string>
+    <string name="csv_name_title">Nome sensore</string>
+    <string name="csv_id_title">ID</string>
+    <string name="csv_alarm_type_title">Tipo di allarme</string>
+    <string name="csv_latitude_title">latitude</string>
+    <string name="csv_longitude_title">longitude</string>
+    <string name="sensor_table_title">Tabella dei sensori</string>
+    <string name="map_title">Carta geografica</string>
+    <string name="config_title">Configurazione</string>
+    <string name="alarm_log_title">Registro degli allarmi</string>
+    <string name="not_located">Non situato</string>
+    <string name="located">collocato</string>
+    <string name="date_title">DATA</string>
+    <string name="save">Salva</string>
+    <string name="define_sensor_amount">Definire la quantità del sensore</string>
+    <string name="choose_alarm_sound">Scegli il suono della sveglia</string>
+    <string name="vibration_when_alarm">Vibrazione in caso di allarme</string>
+    <string name="alarm_flickering_time">Tempo di sfarfallio dell\'allarme</string>
+    <string name="default_str">predefinito</string>
+
+
+    <string-array name="state_types">
+        <item>auto</item>
+        <item>intruso</item>
+        <item>movimento</item>
+        <item>sensore disconnesso</item>
+        <item>sistema ok</item>
+        <item>batteria scarica</item>
+        <item>allarme dual tech</item>
+    </string-array>
+    <string name="load_settings_export_settings">Carica impostazioni / esporta impostazioni</string>
+    <string name="map_view">Vista mappa</string>
+    <string name="language">linguaggio</string>
+    <string name="satellite">satellitare</string>
+    <string name="map">carta geografica</string>
+    <string name="sensors_save_successfully">I sensori sono stati salvati con successo</string>
+    <string name="time_flickering_save_successfully">Lo sfarfallio del tempo è stato salvato con successo</string>
+    <string name="english">inglese</string>
+    <string name="no_selected_sound">nessun suono selezionato</string>
+    <string name="channel_name">my_channel_01_name</string>
+    <string name="channel_description">my_channel_01_description</string>
+    <string name="share">Condividere</string>
+    <string name="enter_code">inserire il codice di attivazione</string>
+    <string name="wrong_activate_code">codice di attivazione errato</string>
+    <string name="sign_in">registrati</string>
+    <string name="activate">Attivare</string>
+    <string name="error">Errore</string>
+    <string name="general_desc">descrizione</string>
+    <string name="email_subject">Il mio codice per l\'app SG-Patrol</string>
+    <string name="delete_all">Cancella tutto</string>
+    <string name="do_you_realy_want_delete_all_alarm">DVuoi davvero cancellare tutti gli allarmi?</string>
+    <string name="receiver_disconnected">Ricevitore disconnesso</string>
+    <string name="OK">OK</string>
+</resources>
