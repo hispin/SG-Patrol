@@ -73,8 +73,29 @@ class ServiceHandleAlarms : Service(){
                     return
                 }
 
-                val type=stateTypes?.get(bit[5].toUByte().toInt()-1)
-                Log.d("testIconAlarm", type)
+                //general validate of the bits and get the format
+                val appCode = validateBitsAndGetFormat(bit)
+                //Log.d("testBits", ""+appCode)
+                if (appCode == NONE_VALIDATE_BITS) {
+                    Toast.makeText(context, "the bits are failed", Toast.LENGTH_LONG)
+                        .show()
+                    return
+                }
+
+                var typeIdx = -1
+                if (appCode == SIX_FOTMAT_BITS) {
+                    typeIdx = 4
+                } else if (appCode == TEN_FOTMAT_BITS) {
+                    typeIdx = 5
+                }
+
+                //no validate format
+                if (typeIdx == -1) {
+                    return
+                }
+
+                val type = stateTypes?.get(bit[typeIdx].toUByte().toInt() - 1)
+                //Log.d("testIconAlarm", type)
                 val alarmSensorId = bit[1].toUByte().toString()
 
                 //get locally sensor that match to sensor of alarm
@@ -122,6 +143,24 @@ class ServiceHandleAlarms : Service(){
                 stopPlayingAlarm()
             }
         }
+    }
+
+    //general validate of the bits and get the format
+    private fun validateBitsAndGetFormat(bit: ArrayList<Int>): Int {
+        val stx = bit[0].toUByte().toString()
+        val length = bit[3].toUByte().toString()
+        try {
+            val etx = bit[length.toInt() - 1].toUByte().toString()
+            if (stx != "2" || etx != "3") {
+                return NONE_VALIDATE_BITS
+            }
+            val apCode = bit[2].toUByte().toString()
+            return apCode.toInt()
+        } catch (ex: java.lang.Exception) {
+            ex.printStackTrace()
+            return NONE_VALIDATE_BITS
+        }
+
     }
 
     //add active alarm to history

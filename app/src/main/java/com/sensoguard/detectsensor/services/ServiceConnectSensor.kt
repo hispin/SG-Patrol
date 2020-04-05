@@ -248,7 +248,7 @@ class ServiceConnectSensor : Service() {
             //inn.putExtra("size", bytesArray.size)
             inn.putExtra("data", arr)
             sendBroadcast(inn)
-            arr=ArrayList<Int>(16)
+            arr = ArrayList(16)
         }
 
 
