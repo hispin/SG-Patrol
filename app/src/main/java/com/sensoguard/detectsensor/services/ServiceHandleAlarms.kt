@@ -75,7 +75,7 @@ class ServiceHandleAlarms : Service(){
 
                 //general validate of the bits and get the format
                 val appCode = validateBitsAndGetFormat(bit)
-                //Log.d("testBits", ""+appCode)
+                Log.d("testBits", "" + appCode)
                 if (appCode == NONE_VALIDATE_BITS) {
                     Toast.makeText(context, "the bits are failed", Toast.LENGTH_LONG)
                         .show()
@@ -147,6 +147,11 @@ class ServiceHandleAlarms : Service(){
 
     //general validate of the bits and get the format
     private fun validateBitsAndGetFormat(bit: ArrayList<Int>): Int {
+
+        if (bit == null || bit.size < 4) {
+            return NONE_VALIDATE_BITS
+        }
+
         val stx = bit[0].toUByte().toString()
         val length = bit[3].toUByte().toString()
         try {

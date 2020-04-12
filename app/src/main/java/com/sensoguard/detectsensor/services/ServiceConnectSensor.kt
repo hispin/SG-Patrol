@@ -238,12 +238,19 @@ class ServiceConnectSensor : Service() {
         //sendBroadcast(Intent("handle.read.data"))
 
         if(bytesArray!=null && bytesArray.isNotEmpty()) {
-            for (i in 0 until bytesArray.size) {
-                arr.add(bytesArray[i].toInt())
+            for (element in bytesArray) {
+                arr.add(element.toInt())
             }
         }
 
-        if(arr.size >= 10) {
+        //general validate of the bits and get the format
+        val appCode = validateBitsAndGetFormat(arr)
+
+        if (arr != null && arr.size > 0)
+
+            if ((appCode == TEN_FOTMAT_BITS && arr.size >= 10)
+                || (appCode == SIX_FOTMAT_BITS && arr.size >= 6)
+            ) {
             val inn = Intent(READ_DATA_KEY)
             //inn.putExtra("size", bytesArray.size)
             inn.putExtra("data", arr)
@@ -251,8 +258,8 @@ class ServiceConnectSensor : Service() {
             arr = ArrayList(16)
         }
 
-
     }
+
 
     /*
      * State changes in the CTS line will be received here
@@ -269,4 +276,27 @@ class ServiceConnectSensor : Service() {
         UsbSerialInterface.UsbDSRCallback {
 
         }
+
+    //general validate of the bits and get the format
+    private fun validateBitsAndGetFormat(bit: java.util.ArrayList<Int>): Int {
+
+        if (bit == null || bit.size < 4) {
+            return NONE_VALIDATE_BITS
+        }
+
+        val stx = bit[0].toUByte().toString()
+        val length = bit[3].toUByte().toString()
+        try {
+            val etx = bit[length.toInt() - 1].toUByte().toString()
+            if (stx != "2" || etx != "3") {
+                return NONE_VALIDATE_BITS
+            }
+            val apCode = bit[2].toUByte().toString()
+            return apCode.toInt()
+        } catch (ex: java.lang.Exception) {
+            ex.printStackTrace()
+            return NONE_VALIDATE_BITS
+        }
+
+    }
 }
