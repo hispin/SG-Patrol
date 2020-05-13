@@ -10,7 +10,10 @@ import android.content.IntentFilter
 import android.media.Ringtone
 import android.media.RingtoneManager
 import android.net.Uri
-import android.os.*
+import android.os.Build
+import android.os.IBinder
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.util.Log
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
@@ -55,6 +58,8 @@ class ServiceHandleAlarms : Service(){
     private fun setFilter() {
         val filter = IntentFilter(READ_DATA_KEY)
         filter.addAction(STOP_ALARM_SOUND)
+        filter.addAction(CREATE_ALARM_KEY)
+        filter.addAction(CREATE_ALARM_NOT_DEFINED_KEY)
         registerReceiver(usbReceiver, filter)
     }
 
@@ -139,6 +144,7 @@ class ServiceHandleAlarms : Service(){
                     playAlarmSound()
                     playVibrate()
                 }
+                sendBroadcast(Intent(HANDLE_ALARM_KEY))
             } else if (intent.action == STOP_ALARM_SOUND) {
                 stopPlayingAlarm()
             }
@@ -298,25 +304,27 @@ class ServiceHandleAlarms : Service(){
 
         if (!selectedSound.equals("-1")) {
 
-            try {
-                val uri = Uri.parse(selectedSound)
+            synchronized(this) {
+                try {
+                    val uri = Uri.parse(selectedSound)
 
-                if (rington != null && rington!!.isPlaying) {
-                    //if the sound it is already played,
-                    rington?.stop()
-                    Handler().postDelayed({
+                    if (rington != null) {//&& rington!!.isPlaying) {
+                        //if the sound it is already played,
+                        rington?.stop()
+                        //Handler().postDelayed({
                         rington = RingtoneManager.getRingtone(this, uri)
                         rington?.play()
                         //Toast.makeText(this, "play sound", Toast.LENGTH_LONG).show()
-                    }, 1000)
-                } else {
-                    rington = RingtoneManager.getRingtone(this, uri)
-                    rington?.play()
-                    //Toast.makeText(this, "play sound from Handle alarm", Toast.LENGTH_LONG).show()
+                        //}, 1)
+                    } else {
+                        rington = RingtoneManager.getRingtone(this, uri)
+                        rington?.play()
+                        //Toast.makeText(this, "play sound from Handle alarm", Toast.LENGTH_LONG).show()
+                    }
+                } catch (e: Exception) {
+                    Toast.makeText(this, "exception play sound", Toast.LENGTH_LONG).show()
+                    e.printStackTrace()
                 }
-            } catch (e: Exception) {
-                Toast.makeText(this, "exception play sound", Toast.LENGTH_LONG).show()
-                e.printStackTrace()
             }
         }
 

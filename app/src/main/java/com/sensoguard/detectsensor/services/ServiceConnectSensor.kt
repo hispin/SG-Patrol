@@ -19,7 +19,12 @@ import androidx.core.app.NotificationCompat
 import com.felhr.usbserial.UsbSerialDevice
 import com.felhr.usbserial.UsbSerialInterface
 import com.sensoguard.detectsensor.R
+import com.sensoguard.detectsensor.classes.Alarm
+import com.sensoguard.detectsensor.classes.Sensor
 import com.sensoguard.detectsensor.global.*
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 class ServiceConnectSensor : Service() {
@@ -237,25 +242,30 @@ class ServiceConnectSensor : Service() {
 
         //sendBroadcast(Intent("handle.read.data"))
 
-        if(bytesArray!=null && bytesArray.isNotEmpty()) {
-            for (element in bytesArray) {
-                arr.add(element.toInt())
+        //prevent using arr by two processes in the same time
+        synchronized(this) {
+
+            if (bytesArray != null && bytesArray.isNotEmpty()) {
+                for (element in bytesArray) {
+                    arr.add(element.toInt())
+                }
             }
-        }
 
-        //general validate of the bits and get the format
-        val appCode = validateBitsAndGetFormat(arr)
+            //general validate of the bits and get the format
+            val appCode = validateBitsAndGetFormat(arr)
 
-        if (arr != null && arr.size > 0)
+            if (arr != null && arr.size > 0)
 
-            if ((appCode == TEN_FOTMAT_BITS && arr.size >= 10)
-                || (appCode == SIX_FOTMAT_BITS && arr.size >= 6)
-            ) {
-            val inn = Intent(READ_DATA_KEY)
-            //inn.putExtra("size", bytesArray.size)
-            inn.putExtra("data", arr)
-            sendBroadcast(inn)
-            arr = ArrayList(16)
+                if ((appCode == TEN_FOTMAT_BITS && arr.size >= 10)
+                    || (appCode == SIX_FOTMAT_BITS && arr.size >= 6)
+                ) {
+                    val inn = Intent(READ_DATA_KEY)
+                    //inn.putExtra("size", bytesArray.size)
+                    inn.putExtra("data", arr)
+                    sendBroadcast(inn)
+                    arr = ArrayList(16)
+                }
+
         }
 
     }
@@ -298,5 +308,108 @@ class ServiceConnectSensor : Service() {
             return NONE_VALIDATE_BITS
         }
 
+    }
+
+
+    //get locally sensor that match to sensor of alarm
+    fun getLocallySensorAlarm(alarmSensorId: String): Sensor? {
+        val sensors: java.util.ArrayList<Sensor>?
+        val sensorsListStr = getStringInPreference(this, DETECTORS_LIST_KEY_PREF, ERROR_RESP)
+
+        sensors = if (sensorsListStr.equals(ERROR_RESP)) {
+            java.util.ArrayList()
+        } else {
+            sensorsListStr?.let { convertJsonToSensorList(it) }
+        }
+
+        val iteratorList = sensors?.listIterator()
+        while (iteratorList != null && iteratorList.hasNext()) {
+            val detectorItem = iteratorList.next()
+            if (alarmSensorId == detectorItem.getId()) {
+                return detectorItem
+            }
+        }
+        return null
+    }
+
+    //add not active alarm to history
+    private fun addAlarmToHistory(
+        isLocallyDefined: Boolean,
+        alarmSensorName: String,
+        isArmed: Boolean,
+        alarmSensorId: String,
+        type: String?
+    ) {
+        val tmp = Calendar.getInstance()
+        val resources = this.resources
+        val locale =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) resources.configuration.locales.getFirstMatch(
+                resources.assets.locales
+            )
+            else resources.configuration.locale
+        val dateFormat = SimpleDateFormat("kk:mm dd/MM/yy", locale)
+        val dateString = dateFormat.format(tmp.time)
+
+
+        val alarm =
+            Alarm(alarmSensorId, alarmSensorName, type, dateString, isArmed, tmp.timeInMillis)
+        alarm.isLocallyDefined = isLocallyDefined
+
+        val alarms = populateAlarmsFromLocally()
+        alarms?.add(alarm)
+        alarms?.let { storeAlarmsToLocally(it) }
+    }
+
+    //get the alarms from locally
+    private fun populateAlarmsFromLocally(): java.util.ArrayList<Alarm>? {
+        val alarms: java.util.ArrayList<Alarm>?
+        val alarmListStr = getStringInPreference(this, ALARM_LIST_KEY_PREF, ERROR_RESP)
+
+        alarms = if (alarmListStr.equals(ERROR_RESP)) {
+            java.util.ArrayList()
+        } else {
+            alarmListStr?.let { convertJsonToAlarmList(it) }
+        }
+        return alarms
+    }
+
+    //store the detectors to locally
+    private fun storeAlarmsToLocally(alarms: java.util.ArrayList<Alarm>) {
+        // sort the list of events by date in descending
+        val alarms = java.util.ArrayList(alarms.sortedWith(compareByDescending { it.timeInMillis }))
+        if (alarms != null && alarms.size > 0) {
+            val alarmsJsonStr = convertToAlarmsGson(alarms)
+            setStringInPreference(this, ALARM_LIST_KEY_PREF, alarmsJsonStr)
+        }
+    }
+
+    //add active alarm to history
+    private fun addAlarmToHistory(currentSensorLocally: Sensor, type: String) {
+        val tmp = Calendar.getInstance()
+        val resources = this.resources
+        val locale =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) resources.configuration.locales.getFirstMatch(
+                resources.assets.locales
+            )
+            else resources.configuration.locale
+        val dateFormat = SimpleDateFormat("kk:mm dd/MM/yy", locale)
+        val dateString = dateFormat.format(tmp.time)
+
+        val alarm = Alarm(
+            currentSensorLocally.getId(),
+            currentSensorLocally.getName(),
+            type,
+            dateString,
+            currentSensorLocally.isArmed(),
+            tmp.timeInMillis
+        )
+        alarm.latitude = currentSensorLocally.getLatitude()
+        alarm.longitude = currentSensorLocally.getLongtitude()
+
+        alarm.isLocallyDefined = true
+
+        val alarms = populateAlarmsFromLocally()
+        alarms?.add(alarm)
+        alarms?.let { storeAlarmsToLocally(it) }
     }
 }
