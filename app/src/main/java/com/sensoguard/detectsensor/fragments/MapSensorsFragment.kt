@@ -467,6 +467,18 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
         return true
     }
 
+    //remove alarm sensor if exist
+    private fun removeSensorAlarmById(alarmId: String) {
+
+        val iteratorList = UserSession.instance.alarmSensors?.listIterator()
+        while (iteratorList != null && iteratorList.hasNext()) {
+            val sensorItem = iteratorList.next()
+            if (sensorItem.alarmSensorId == alarmId) {
+                iteratorList.remove()
+            }
+        }
+    }
+
     //check if the sensor is in alarm process
     private fun getSensorAlarmBySensor(sensor: Sensor): AlarmSensor? {
 
@@ -832,16 +844,17 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
                     if( etid!=null &&  validIsEmpty(etid)
                         && etType!=null &&  validIsEmpty(etType)) {
                         val arr = ArrayList<Int>()
-                        arr.add(0, 0)
-                        arr.add(1, 0)
-                        arr.add(2, 0)
-                        arr.add(3, 0)
-                        arr.add(4, 0)
-                        arr.add(5, 0)
-                        arr.add(6, 0)
+                        arr.add(0, 2)
                         arr.add(1, etid.text.toString().toInt())
+                        arr.add(2, 202)
+                        arr.add(3, 10)
+                        arr.add(4, 0)
                         arr.add(5, etType.text.toString().toInt())
-                        val inn = Intent(READ_DATA_KEY)
+                        arr.add(6, 0)
+                        arr.add(7, 0)
+                        arr.add(8, 0)
+                        arr.add(9, 3)
+                        val inn = Intent(READ_DATA_KEY_TEST)
                         inn.putExtra("data", arr)
                         context?.sendBroadcast(Intent(inn))
                         dialog.dismiss()
@@ -887,6 +900,9 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
                         val alarmSensorId = inn.getStringExtra(CREATE_ALARM_ID_KEY)
                         val type = inn.getStringExtra(CREATE_ALARM_TYPE_KEY)
                         val isArmed = inn.getBooleanExtra(CREATE_ALARM_IS_ARMED, false)
+
+                        //prevent duplicate alarm at the same sensor at the same time
+                        removeSensorAlarmById(alarmSensorId)
 
                         //add alarm process to queue
                         UserSession.instance.alarmSensors?.add(alarmSensorId.let {

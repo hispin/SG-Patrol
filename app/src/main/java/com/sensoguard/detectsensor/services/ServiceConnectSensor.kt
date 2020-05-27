@@ -14,6 +14,7 @@ import android.hardware.usb.UsbManager
 import android.media.Ringtone
 import android.os.Build
 import android.os.IBinder
+import android.util.Log
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import com.felhr.usbserial.UsbSerialDevice
@@ -236,15 +237,15 @@ class ServiceConnectSensor : Service() {
         }
     }
 
-    var arr=ArrayList<Int>(16)
+    var arr = ArrayList<Int>()
 
     private val mCallback = UsbSerialInterface.UsbReadCallback { bytesArray ->
 
-        //sendBroadcast(Intent("handle.read.data"))
 
         //prevent using arr by two processes in the same time
         synchronized(this) {
 
+            //Log.d("testMulti","start")
             if (bytesArray != null && bytesArray.isNotEmpty()) {
                 for (element in bytesArray) {
                     arr.add(element.toInt())
@@ -254,20 +255,148 @@ class ServiceConnectSensor : Service() {
             //general validate of the bits and get the format
             val appCode = validateBitsAndGetFormat(arr)
 
+            //Log.d("testMulti","ServiceConnect size:"+arr.size+" appCode:"+appCode)
+
             if (arr != null && arr.size > 0)
 
-                if ((appCode == TEN_FOTMAT_BITS && arr.size >= 10)
-                    || (appCode == SIX_FOTMAT_BITS && arr.size >= 6)
-                ) {
-                    val inn = Intent(READ_DATA_KEY)
-                    //inn.putExtra("size", bytesArray.size)
-                    inn.putExtra("data", arr)
-                    sendBroadcast(inn)
-                    arr = ArrayList(16)
+                if (appCode == TEN_FOTMAT_BITS && arr.size % 10 == 0) {
+
+                    while (arr.size >= 10) {
+                        val arrTen = ArrayList<Int>()
+
+                        //make queue for each ten bits
+                        var i = 0
+                        val iteratorList = arr.listIterator()
+                        while (iteratorList != null && iteratorList.hasNext() && i < 10) {
+                            i++
+                            val bitsItem = iteratorList.next()
+                            arrTen.add(bitsItem)
+                            iteratorList.remove()
+                        }
+                        parsingBits(arrTen)
+                    }
+                    arr = ArrayList()
+
+                } else if (appCode == SIX_FOTMAT_BITS && arr.size % 6 == 0) {
+                    while (arr.size >= 6) {
+                        val arrSix = ArrayList<Int>()
+
+                        //make queue for each six bits
+                        var i = 0
+                        val iteratorList = arr.listIterator()
+                        while (iteratorList != null && iteratorList.hasNext() && i < 6) {
+                            i++
+                            val bitsItem = iteratorList.next()
+                            arrSix.add(bitsItem)
+                            iteratorList.remove()
+                        }
+                        parsingBits(arrSix)
+                    }
+                    arr = ArrayList()
                 }
+
+            // Log.d("testMulti","end")
+//                if ((appCode == TEN_FOTMAT_BITS && arr.size >= 10)
+//                    || (appCode == SIX_FOTMAT_BITS && arr.size >= 6)
+//                ) {
+//                    val inn = Intent(READ_DATA_KEY)
+//                    //inn.putExtra("size", bytesArray.size)
+//                    inn.putExtra("data", arr)
+//                    sendBroadcast(inn)
+//                    arr = ArrayList(16)
+//                }
 
         }
 
+    }
+
+    private fun parsingBits(bit: ArrayList<Int>) {
+        val stateTypes = resources?.getStringArray(R.array.state_types)
+
+
+        //general validate of the bits and get the format
+        val appCode = validateBitsAndGetFormat(bit)
+
+        if (appCode == NONE_VALIDATE_BITS) {
+            Log.d("testMulti", "the bits are failed")
+            return
+        }
+
+        var typeIdx = -1
+        if (appCode == SIX_FOTMAT_BITS) {
+            typeIdx = 4
+        } else if (appCode == TEN_FOTMAT_BITS) {
+            typeIdx = 5
+        }
+
+        //no validate format
+        if (typeIdx == -1) {
+            return
+        }
+
+        val typeIndex = bit[typeIdx].toUByte().toInt() - 1
+        if (stateTypes != null && typeIndex >= stateTypes.size) {
+            return
+        }
+
+        val type = stateTypes?.get(typeIndex)
+
+        val alarmSensorId = bit[1].toUByte().toString()
+
+        //get locally sensor that match to sensor of alarm
+        val currentSensorLocally = getLocallySensorAlarm(alarmSensorId)
+
+        // for  toast ,that cannot showed here because it is not UI thread
+        val innAlarmNotDefined = Intent(CREATE_ALARM_NOT_DEFINED_KEY)
+        innAlarmNotDefined.putExtra(CREATE_ALARM_ID_KEY, alarmSensorId)
+        innAlarmNotDefined.putExtra(CREATE_ALARM_TYPE_KEY, type)
+        //add alarm to history and send alarm if active
+        if (currentSensorLocally == null) {
+            sendBroadcast(Intent(RESET_MARKERS_KEY))
+            // for  toast ,that cannot showed here because it is not UI thread
+            sendBroadcast(innAlarmNotDefined)
+            addAlarmToHistory(
+                false,
+                "undefined",
+                isArmed = false,
+                alarmSensorId = alarmSensorId,
+                type = type
+            )
+        } else if (!currentSensorLocally.isArmed()) {
+            sendBroadcast(Intent(RESET_MARKERS_KEY))
+            // for  toast ,that cannot showed here because it is not UI thread
+            sendBroadcast(innAlarmNotDefined)
+            currentSensorLocally.getName()?.let {
+                addAlarmToHistory(
+                    true,
+                    it, isArmed = false, alarmSensorId = alarmSensorId, type = type
+                )
+            }
+            // the sensor id exist but is not located
+        } else if (currentSensorLocally.getLatitude() == null
+            || currentSensorLocally.getLongtitude() == null
+        ) {
+            sendBroadcast(Intent(RESET_MARKERS_KEY))
+            // for  toast ,that cannot showed here because it is not UI thread
+            sendBroadcast(innAlarmNotDefined)
+            currentSensorLocally.getName()?.let {
+                addAlarmToHistory(
+                    true,
+                    it, isArmed = false, alarmSensorId = alarmSensorId, type = type
+                )
+            }
+        } else {
+            type?.let { addAlarmToHistory(currentSensorLocally, it) }
+
+            //send to create alarm :map,sound ect...
+            val inn = Intent(CREATE_ALARM_KEY)
+            inn.putExtra(CREATE_ALARM_ID_KEY, currentSensorLocally.getId())
+            inn.putExtra(CREATE_ALARM_NAME_KEY, currentSensorLocally.getName())
+            inn.putExtra(CREATE_ALARM_IS_ARMED, currentSensorLocally.isArmed())
+            inn.putExtra(CREATE_ALARM_TYPE_KEY, type)
+            sendBroadcast(inn)
+        }
+        sendBroadcast(Intent(HANDLE_ALARM_KEY))
     }
 
 
@@ -295,13 +424,17 @@ class ServiceConnectSensor : Service() {
         }
 
         val stx = bit[0].toUByte().toString()
+        Log.d("testMulti", "stx:$stx")
         val length = bit[3].toUByte().toString()
+        Log.d("testMulti", "length:$length")
         try {
             val etx = bit[length.toInt() - 1].toUByte().toString()
+            Log.d("testMulti", "etx:$etx")
             if (stx != "2" || etx != "3") {
                 return NONE_VALIDATE_BITS
             }
             val apCode = bit[2].toUByte().toString()
+            Log.d("testMulti", "apCode:$apCode")
             return apCode.toInt()
         } catch (ex: java.lang.Exception) {
             ex.printStackTrace()

@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "306288689616",
+    "firebase_url": "https://friends-531d7.firebaseio.com",
+    "project_id": "friends-531d7",
+    "storage_bucket": "friends-531d7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:306288689616:android:1b9593dbb5d283273db9d5",
+        "android_client_info": {
+          "package_name": "com.hispin.friends"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "306288689616-qsogr1s0lqantpm63i596k9hdmok6f5f.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.hispin.friends",
+            "certificate_hash": "bc291d7ef4d59024a5c3aaa298d02929fa21abf3"
+          }
+        },
+        {
+          "client_id": "306288689616-ilbb465qf4d0k1gmthaji0bo1dj7bcu5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCaLREdRPJH4xOLaJCdY1OXJKltPNjJ9T0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "306288689616-ilbb465qf4d0k1gmthaji0bo1dj7bcu5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

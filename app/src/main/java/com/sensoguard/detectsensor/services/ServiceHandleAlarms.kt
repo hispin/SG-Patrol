@@ -57,6 +57,7 @@ class ServiceHandleAlarms : Service(){
 
     private fun setFilter() {
         val filter = IntentFilter(READ_DATA_KEY)
+        filter.addAction(READ_DATA_KEY_TEST)
         filter.addAction(STOP_ALARM_SOUND)
         filter.addAction(CREATE_ALARM_KEY)
         filter.addAction(CREATE_ALARM_NOT_DEFINED_KEY)
@@ -66,22 +67,39 @@ class ServiceHandleAlarms : Service(){
     private val usbReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             Log.d(TAG,"accept alarm")
-            //accept alarm
-            if (intent.action == READ_DATA_KEY) {
-                val bit=intent.getIntegerArrayListExtra("data")
+            if (intent.action == CREATE_ALARM_KEY) {
+                val alarmSensorId = intent.getStringExtra(CREATE_ALARM_ID_KEY)
+                val type = intent.getStringExtra(CREATE_ALARM_TYPE_KEY)
+                Toast.makeText(context, "$type alarm from unit $alarmSensorId ", Toast.LENGTH_LONG)
+                    .show()
+                //play sound and vibrate
+                playAlarmSound()
+                playVibrate()
+
+            } else if (intent.action == CREATE_ALARM_NOT_DEFINED_KEY) {
+                val alarmSensorId = intent.getStringExtra(CREATE_ALARM_ID_KEY)
+                val type = intent.getStringExtra(CREATE_ALARM_TYPE_KEY)
+                Toast.makeText(context, "$type alarm from unit $alarmSensorId ", Toast.LENGTH_LONG)
+                    .show()
+                //accept test alarm
+            } else if (intent.action == READ_DATA_KEY_TEST) {
+                val bit = intent.getIntegerArrayListExtra("data")
+
+                Log.d("testMulti", "ServiceHandleAlarms size:" + bit.size)
 
                 val stateTypes = resources?.getStringArray(R.array.state_types)
 
-                val idx = bit[5].toUByte().toInt()-1
-
-                if (stateTypes != null && idx >= stateTypes.size) {
-                    return
-                }
+//                val idx = bit[5].toUByte().toInt()-1
+//
+//                if (stateTypes != null && idx >= stateTypes.size) {
+//                    return
+//                }
 
                 //general validate of the bits and get the format
                 val appCode = validateBitsAndGetFormat(bit)
                 Log.d("testBits", "" + appCode)
                 if (appCode == NONE_VALIDATE_BITS) {
+                    Log.d("testMulti", "the bits are failed")
                     Toast.makeText(context, "the bits are failed", Toast.LENGTH_LONG)
                         .show()
                     return
@@ -99,27 +117,32 @@ class ServiceHandleAlarms : Service(){
                     return
                 }
 
-                val type = stateTypes?.get(bit[typeIdx].toUByte().toInt() - 1)
+                val typeIndex = bit[typeIdx].toUByte().toInt() - 1
+                if (stateTypes != null && typeIndex >= stateTypes.size) {
+                    return
+                }
+
+                val type = stateTypes?.get(typeIndex)
                 //Log.d("testIconAlarm", type)
                 val alarmSensorId = bit[1].toUByte().toString()
 
                 //get locally sensor that match to sensor of alarm
-                val currentSensorLocally=getLocallySensorAlarm(alarmSensorId)
+                val currentSensorLocally = getLocallySensorAlarm(alarmSensorId)
 
                 Toast.makeText(context, "$type alarm from unit $alarmSensorId ", Toast.LENGTH_LONG)
                     .show()
 
                 //add alarm to history and send alarm if active
                 if(currentSensorLocally==null){
-                     sendBroadcast(Intent(RESET_MARKERS_KEY))
-                     addAlarmToHistory(false,"undefined", isArmed = false, alarmSensorId = alarmSensorId, type = type)
+                    sendBroadcast(Intent(RESET_MARKERS_KEY))
+                    addAlarmToHistory(false,"undefined", isArmed = false, alarmSensorId = alarmSensorId, type = type)
                 }else if(!currentSensorLocally.isArmed()){
-                     sendBroadcast(Intent(RESET_MARKERS_KEY))
+                    sendBroadcast(Intent(RESET_MARKERS_KEY))
                     currentSensorLocally.getName()?.let {
                         addAlarmToHistory(true,
                             it, isArmed = false, alarmSensorId = alarmSensorId, type = type)
                     }
-               // the sensor id exist but is not located
+                    // the sensor id exist but is not located
                 }else if(currentSensorLocally.getLatitude()==null
                     || currentSensorLocally.getLongtitude()==null) {
                     sendBroadcast(Intent(RESET_MARKERS_KEY))
