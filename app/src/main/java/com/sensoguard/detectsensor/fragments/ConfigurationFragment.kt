@@ -19,6 +19,7 @@ import androidx.appcompat.widget.AppCompatEditText
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import com.sensoguard.detectsensor.R
+import com.sensoguard.detectsensor.activities.DownloadOfflineTilesActivity
 import com.sensoguard.detectsensor.adapters.GeneralItemMenuAdapter
 import com.sensoguard.detectsensor.classes.GeneralItemMenu
 import com.sensoguard.detectsensor.classes.LanguageManager
@@ -48,6 +49,7 @@ open class ConfigurationFragment : Fragment(),CallToParentInterface{
     private var constLangView:ConstraintLayout?=null
     private var languageValue:TextView?=null
     private var listener: OnFragmentListener? = null
+    private var btnSaveOffline: AppCompatButton? = null
 
 
     override fun onAttach(context: Context) {
@@ -137,8 +139,8 @@ open class ConfigurationFragment : Fragment(),CallToParentInterface{
             val packageName = "android.resource://${activity?.packageName}/raw/alarm_sound"
             val uri=Uri.parse(packageName)
             setStringInPreference(activity, SELECTED_NOTIFICATION_SOUND_KEY, uri.toString())
-            title=getSelectedNotificationSound()
-            txtAlarmSoundValue?.text=title
+            title = getSelectedNotificationSound()
+            txtAlarmSoundValue?.text = title
         }
 
 //        ivSelectLanguage=view.findViewById(R.id.ivSelectLanguage)
@@ -146,12 +148,23 @@ open class ConfigurationFragment : Fragment(),CallToParentInterface{
 //            showPopupList(it)
 //        }
 
-        constLangView=view.findViewById(R.id.constLangView)
-        constLangView?.setOnClickListener{
+        constLangView = view.findViewById(R.id.constLangView)
+        constLangView?.setOnClickListener {
             showPopupList(it)
         }
 
-        languageValue=view.findViewById(R.id.languageValue)
+        languageValue = view.findViewById(R.id.languageValue)
+
+        btnSaveOffline = view.findViewById(R.id.btnSaveOffline)
+        btnSaveOffline?.setOnClickListener {
+            startActivity(
+                Intent(
+                    requireActivity(),
+                    DownloadOfflineTilesActivity::class.java
+                )
+            )
+        }
+
 
         return view
     }
@@ -324,7 +337,7 @@ open class ConfigurationFragment : Fragment(),CallToParentInterface{
                 createLanguagesItemsDeliver(LanguageManager.languagesItems),
                 this
             )
-            listPopupWindow = ListPopupWindow(context)
+            listPopupWindow = context?.let { ListPopupWindow(it) }
             listPopupWindow?.isModal = true
             listPopupWindow?.animationStyle = R.style.winPopupAnimation
             listPopupWindow?.setAdapter(generalItemMenuAdapter)

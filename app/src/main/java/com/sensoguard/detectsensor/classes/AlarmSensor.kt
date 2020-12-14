@@ -1,6 +1,7 @@
 package com.sensoguard.detectsensor.classes
 
 import com.google.android.gms.maps.model.Marker
+import com.mapbox.geojson.Feature
 import java.util.*
 
 class AlarmSensor(
@@ -9,5 +10,6 @@ class AlarmSensor(
     var type: String,
     var isSensorArmed: Boolean
 ) {
-    var marker: Marker?=null
+    var marker: Marker? = null
+    var markerFeature: Feature? = null
 }

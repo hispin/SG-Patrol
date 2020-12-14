@@ -70,4 +70,12 @@
     <string name="do_you_realy_want_delete_all_alarm">Do you realy want to delete all alarms</string>
     <string name="receiver_disconnected">המקלט מנותק</string>
     <string name="OK">אישור</string>
+    <string name="basic_offline_deleted_toast">basic offline deleted toast</string>
+    <string name="no_selected_location">לא נבחרו מקומות</string>
+    <string name="camera_details">פרטי המצלמה</string>
+    <string name="save_offline_map">שמור מפה לא מקוונת</string>
+    <string name="results">תוצאות</string>
+    <string name="save_map">שמור מפה</string>
+    <string name="delete_last_map">מחק את המפה האחרונה</string>
+    <string name="simple_offline_end_progress_success">סיום תהליך של שמירת מפות לא מקוונות</string>
 </resources>

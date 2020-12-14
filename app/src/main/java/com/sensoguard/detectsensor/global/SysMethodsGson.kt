@@ -5,11 +5,11 @@ import com.google.gson.Gson
 import com.google.gson.JsonIOException
 import com.google.gson.JsonParser
 import com.google.gson.JsonSyntaxException
-import org.json.JSONArray
-import org.json.JSONException
 import com.google.gson.reflect.TypeToken
 import com.sensoguard.detectsensor.classes.Alarm
 import com.sensoguard.detectsensor.classes.Sensor
+import org.json.JSONArray
+import org.json.JSONException
 
 
 fun convertToGson(detectorsArr:ArrayList<Sensor>): String? {
@@ -21,9 +21,9 @@ fun convertToGson(detectorsArr:ArrayList<Sensor>): String? {
         //TODO : how to get response about set shared preference
 
     } catch (ex: JSONException) {
-        Log.i("exception", ex.message)
+        ex.message?.let { Log.i("exception", it) }
     } catch (ex: java.lang.Exception) {
-        Log.i("exception", ex.message)
+        ex.message?.let { Log.i("exception", it) }
     }
     return ERROR_RESP
 }
@@ -37,9 +37,9 @@ fun convertToAlarmsGson(alarmsArr:ArrayList<Alarm>): String? {
         //TODO : how to get response about set shared preference
 
     } catch (ex: JSONException) {
-        Log.i("exception", ex.message)
+        ex.message?.let { Log.i("exception", it) }
     } catch (ex: java.lang.Exception) {
-        Log.i("exception", ex.message)
+        ex.message?.let { Log.i("exception", it) }
     }
     return ERROR_RESP
 }
@@ -60,7 +60,7 @@ fun convertJsonToSensorList(inputJsonArrayString: String): ArrayList<Sensor>? {
         jsonArr= JSONArray(inputJsonArrayString)
     } catch (e: JSONException) {
         e.printStackTrace()
-        Log.e("convertJsonToUriList", e.message)
+        e.message?.let { Log.e("convertJsonToUriList", it) }
     }
 
     try {
@@ -70,13 +70,13 @@ fun convertJsonToSensorList(inputJsonArrayString: String): ArrayList<Sensor>? {
         mySensors?.addAll(Gson().fromJson(jsonArr.toString(), listType) as ArrayList<Sensor>)
     }catch(e:JsonIOException){
         e.printStackTrace()
-        Log.e("convertJsonToUriList", e.message)
+        e.message?.let { Log.e("convertJsonToUriList", it) }
     }catch(e:JsonSyntaxException){
         e.printStackTrace()
-        Log.e("convertJsonToUriList", e.message)
+        e.message?.let { Log.e("convertJsonToUriList", it) }
     }catch (e: JSONException) {
         e.printStackTrace()
-        Log.e("convertJsonToUriList", e.message)
+        e.message?.let { Log.e("convertJsonToUriList", it) }
     }
 
     return mySensors
@@ -92,7 +92,7 @@ fun convertJsonToAlarmList(inputJsonArrayString: String): ArrayList<Alarm>? {
         jsonArr= JSONArray(inputJsonArrayString)
     } catch (e: JSONException) {
         e.printStackTrace()
-        Log.e("convertJsonToUriList", e.message)
+        e.message?.let { Log.e("convertJsonToUriList", it) }
     }
 
     try {
@@ -102,10 +102,10 @@ fun convertJsonToAlarmList(inputJsonArrayString: String): ArrayList<Alarm>? {
         myAlarms = Gson().fromJson(jsonArr.toString(), listType) as ArrayList<Alarm>
     }catch(e:JsonIOException){
         e.printStackTrace()
-        Log.e("convertJsonToAlarmList", e.message)
+        e.message?.let { Log.e("convertJsonToAlarmList", it) }
     }catch(e:JsonSyntaxException){
         e.printStackTrace()
-        Log.e("convertJsonToAlarmList", e.message)
+        e.message?.let { Log.e("convertJsonToAlarmList", it) }
     }
 
     return myAlarms

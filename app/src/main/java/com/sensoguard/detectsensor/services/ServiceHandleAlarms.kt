@@ -85,7 +85,7 @@ class ServiceHandleAlarms : Service(){
             } else if (intent.action == READ_DATA_KEY_TEST) {
                 val bit = intent.getIntegerArrayListExtra("data")
 
-                Log.d("testMulti", "ServiceHandleAlarms size:" + bit.size)
+                Log.d("testMulti", "ServiceHandleAlarms size:" + bit?.size)
 
                 val stateTypes = resources?.getStringArray(R.array.state_types)
 
@@ -96,7 +96,7 @@ class ServiceHandleAlarms : Service(){
 //                }
 
                 //general validate of the bits and get the format
-                val appCode = validateBitsAndGetFormat(bit)
+                val appCode = bit?.let { validateBitsAndGetFormat(it) }
                 Log.d("testBits", "" + appCode)
                 if (appCode == NONE_VALIDATE_BITS) {
                     Log.d("testMulti", "the bits are failed")
@@ -117,14 +117,16 @@ class ServiceHandleAlarms : Service(){
                     return
                 }
 
-                val typeIndex = bit[typeIdx].toUByte().toInt() - 1
-                if (stateTypes != null && typeIndex >= stateTypes.size) {
-                    return
+                val typeIndex = bit?.get(typeIdx)?.toUByte()?.toInt()?.minus(1)
+                if (typeIndex != null) {
+                    if (stateTypes != null && typeIndex >= stateTypes.size) {
+                        return
+                    }
                 }
 
-                val type = stateTypes?.get(typeIndex)
+                val type = typeIndex?.let { stateTypes?.get(it) }
                 //Log.d("testIconAlarm", type)
-                val alarmSensorId = bit[1].toUByte().toString()
+                val alarmSensorId = bit?.get(1)?.toUByte().toString()
 
                 //get locally sensor that match to sensor of alarm
                 val currentSensorLocally = getLocallySensorAlarm(alarmSensorId)

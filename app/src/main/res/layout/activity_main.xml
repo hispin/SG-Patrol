@@ -20,18 +20,29 @@
 
             >
 
-       <androidx.appcompat.widget.AppCompatImageView
-               android:layout_width="wrap_content"
-               android:layout_height="wrap_content"
-               app:srcCompat="@drawable/logo_big"
-               android:contentDescription="@+id/appwidget_label"
-               app:layout_constraintStart_toStartOf="parent"
-               app:layout_constraintEnd_toEndOf="parent"
-               app:layout_constraintTop_toTopOf="parent"
-               app:layout_constraintBottom_toBottomOf="parent"
-               app:layout_constraintVertical_bias="0.553"
+        <!--        <androidx.appcompat.widget.AppCompatButton-->
+        <!--                android:id="@+id/btnTest"-->
+        <!--                android:layout_height="wrap_content"-->
+        <!--                android:layout_width="wrap_content"-->
+        <!--                app:layout_constraintStart_toStartOf="parent"-->
+        <!--                android:layout_marginStart="5dp"-->
+        <!--                android:text="test"-->
+        <!--                app:layout_constraintTop_toTopOf="parent"-->
+        <!--                app:layout_constraintBottom_toBottomOf="parent"-->
 
-       />
+        <!--                />-->
+        <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@+id/appwidget_label"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.553"
+                app:srcCompat="@drawable/logo_big"
+
+                />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout> <!--container 1-->
@@ -86,7 +97,6 @@
                     app:layout_constraintTop_toBottomOf="@+id/ivSensorTable"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintVertical_bias="0.239"
-                    android:fontFamily="@font/arialmt"
             />
 
             <androidx.appcompat.widget.AppCompatImageView
@@ -142,7 +152,6 @@
                 app:layout_constraintTop_toBottomOf="@+id/ivMap"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintVertical_bias="0.461"
-                android:fontFamily="@font/arialmt"
         />
 
         <androidx.appcompat.widget.AppCompatImageView
@@ -197,7 +206,6 @@
                 app:layout_constraintTop_toBottomOf="@+id/ivConfiguration"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintVertical_bias="0.481"
-                android:fontFamily="@font/arialmt"
         />
 
         <androidx.appcompat.widget.AppCompatImageView
@@ -249,7 +257,6 @@
                 app:layout_constraintTop_toBottomOf="@+id/ivAlarmLog"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintVertical_bias="0.372"
-                android:fontFamily="@font/arialmt"
         />
 
         <androidx.appcompat.widget.AppCompatImageView
@@ -287,7 +294,12 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintVertical_bias="0.148"
-    />
+            app:layout_constraintVertical_bias="0.148" />
+
+
+    <FrameLayout
+            android:id="@+id/flTestMapmob"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

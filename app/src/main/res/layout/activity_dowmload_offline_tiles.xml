@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:mapbox="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".activities.DownloadOfflineTilesActivity">
+
+    <!--    mapbox:mapbox_cameraTargetLat="37.73359"-->
+    <!--    mapbox:mapbox_cameraTargetLng="-119.58410"-->
+    <com.mapbox.mapboxsdk.maps.MapView
+            android:id="@+id/mapView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            mapbox:mapbox_cameraTargetLat="32.941484"
+            mapbox:mapbox_cameraTargetLng="35.795603"
+            mapbox:mapbox_cameraZoom="5"
+            mapbox:mapbox_cameraZoomMin="2" />
+
+    <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_gravity="bottom"
+            android:background="@color/white">
+
+        <ProgressBar
+                android:id="@+id/progress_bar"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="25dp"
+                android:layout_gravity="center"
+                android:paddingLeft="25dp"
+                android:paddingRight="25dp"
+                android:visibility="gone" />
+    </FrameLayout>
+
+    <!--    <androidx.appcompat.widget.AppCompatButton-->
+    <!--            android:layout_width="wrap_content"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:id="@+id/btnTakeLocal"-->
+    <!--            android:text="take from local"-->
+    <!--    />-->
+    <!--    <androidx.appcompat.widget.AppCompatEditText-->
+    <!--            android:layout_width="wrap_content"-->
+    <!--            android:layout_height="20dp"-->
+    <!--            android:id="@+id/etMinZoom"-->
+    <!--            android:background="@color/white"-->
+    <!--            android:textColor="@color/black"-->
+    <!--            android:textStyle="bold"-->
+    <!--            android:hint="minimum zoom"-->
+    <!--            android:inputType="number"-->
+    <!--            android:layout_marginStart="16dp"-->
+    <!--            android:layout_marginTop="60dp"-->
+    <!--            />-->
+    <!--    <androidx.appcompat.widget.AppCompatEditText-->
+    <!--            android:layout_width="wrap_content"-->
+    <!--            android:layout_height="20dp"-->
+    <!--            android:id="@+id/etMaxZoom"-->
+    <!--            android:background="@color/white"-->
+    <!--            android:inputType="number"-->
+    <!--            android:textColor="@color/black"-->
+    <!--            android:textStyle="bold"-->
+    <!--            android:hint="maximum zoom"-->
+    <!--            android:layout_marginStart="16dp"-->
+    <!--            android:layout_marginTop="100dp"-->
+    <!--            />-->
+    <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnDownload"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="60dp"
+            android:layout_marginEnd="16dp"
+            android:text="@string/save_map" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvResults"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:background="@color/white"
+            android:gravity="center_vertical"
+            android:hint="@string/results"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+    <!--    <androidx.appcompat.widget.AppCompatButton-->
+    <!--            android:layout_width="wrap_content"-->
+    <!--            android:layout_height="wrap_content"-->
+    <!--            android:id="@+id/btnTotalTiles"-->
+    <!--            android:text="delete"-->
+    <!--            android:layout_marginTop="220dp"-->
+    <!--            />-->
+
+    <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnDelete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="60dp"
+            android:layout_marginEnd="16dp"
+            android:text="@string/delete_last_map" />
+</FrameLayout>

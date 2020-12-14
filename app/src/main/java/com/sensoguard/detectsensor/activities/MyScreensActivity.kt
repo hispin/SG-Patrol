@@ -32,10 +32,7 @@ import com.sensoguard.detectsensor.R
 import com.sensoguard.detectsensor.classes.AlarmSensor
 import com.sensoguard.detectsensor.classes.GeneralItemMenu
 import com.sensoguard.detectsensor.controler.ViewModelListener
-import com.sensoguard.detectsensor.fragments.AlarmsLogFragment
-import com.sensoguard.detectsensor.fragments.ConfigurationFragment
-import com.sensoguard.detectsensor.fragments.MainUartFragment
-import com.sensoguard.detectsensor.fragments.MapSensorsFragment
+import com.sensoguard.detectsensor.fragments.*
 import com.sensoguard.detectsensor.global.*
 import com.sensoguard.detectsensor.interfaces.OnFragmentListener
 import com.sensoguard.detectsensor.services.ServiceConnectSensor
@@ -474,7 +471,7 @@ class MyScreensActivity : AppCompatActivity(), OnFragmentListener, java.util.Obs
                     }
                 }
                 1 -> {
-                    fragment = MapSensorsFragment()
+                    fragment = MapmobFragment()//MapSensorsFragment()//MapmobFragment()
                     fragment.arguments = Bundle().apply {
                         // Our object is just an integer :-P
                         putInt("ARG_OBJECT", position + 1)

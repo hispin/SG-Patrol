@@ -70,5 +70,7 @@ const val NONE_VALIDATE_BITS = -1
 const val SIX_FOTMAT_BITS = 203
 const val TEN_FOTMAT_BITS = 202
 
+const val TABLAYOUT_HEIGHT_DEFAULT = 72
+
 
 

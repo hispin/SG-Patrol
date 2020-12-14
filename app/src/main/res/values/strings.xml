@@ -72,5 +72,16 @@
     <string name="do_you_realy_want_delete_all_alarm">Do you realy want to delete all alarms</string>
     <string name="receiver_disconnected">Receiver Disconnected</string>
     <string name="OK">OK</string>
+    <string name="mapbox_access_token" translatable="false">pk.eyJ1IjoiaGFnc3dlYWQiLCJhIjoiY2tob3JhdTllMDh4dDJ5bWp2cHA5cWJyeCJ9.T_XNJsVjZrcNE27n9Ieb8g</string>
+    <string name="simple_offline_end_progress_success">simple offline end progress success</string>
+    <string name="basic_offline_deleted_toast">basic offline deleted toast</string>
+    <string name="no_selected_location">No places selected</string>
+    <string name="camera_details">Camera details</string>
+    <string name="save_offline_map">Save offline map</string>
+    <string name="results">results</string>
+    <string name="save_map">save map</string>
+    <string name="delete_last_map">delete the last map</string>
+    <!-- TODO: Remove or change this placeholder text -->
+
 
 </resources>

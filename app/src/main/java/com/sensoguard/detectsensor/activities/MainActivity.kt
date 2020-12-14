@@ -1,5 +1,6 @@
 package com.sensoguard.detectsensor.activities
 
+//import com.crashlytics.android.Crashlytics
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
@@ -9,22 +10,26 @@ import android.os.Bundle
 import android.view.WindowManager
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.AppCompatButton
 import androidx.constraintlayout.widget.ConstraintLayout
-import com.crashlytics.android.Crashlytics
+import androidx.fragment.app.Fragment
 import com.sensoguard.detectsensor.classes.GeneralItemMenu
 import com.sensoguard.detectsensor.classes.LanguageManager
 import com.sensoguard.detectsensor.classes.MyExceptionHandler
 import com.sensoguard.detectsensor.global.*
-import io.fabric.sdk.android.Fabric
+
+//import io.fabric.sdk.android.Fabric
 
 
 class MainActivity : AppCompatActivity() {
 
-    private var clickConsSensorTable:ConstraintLayout?=null
-    private var clickConsMap:ConstraintLayout?=null
-    private var clickConsConfiguration:ConstraintLayout?=null
-    private var clickAlarmLog:ConstraintLayout?=null
+    private var clickConsSensorTable: ConstraintLayout? = null
+    private var clickConsMap: ConstraintLayout? = null
+    private var clickConsConfiguration: ConstraintLayout? = null
+    private var clickAlarmLog: ConstraintLayout? = null
     private var tvShowVer: TextView? = null
+    private var btnTest: AppCompatButton? = null
+    //private var ivOfflineMap : AppCompatImageView?=null
 
 //    @Override
 //    protected override fun attachBaseContext(newBase:Context) {
@@ -43,7 +48,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
 
         configureGeneralCatch()
-        Fabric.with(this, Crashlytics())
+        //Fabric.with(this, Crashlytics())
 
         super.onCreate(savedInstanceState)
 
@@ -131,11 +136,21 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initViews() {
-        clickConsSensorTable=findViewById(com.sensoguard.detectsensor.R.id.clickConsSensorTable)
-        clickConsMap=findViewById(com.sensoguard.detectsensor.R.id.clickConsMap)
-        clickConsConfiguration=findViewById(com.sensoguard.detectsensor.R.id.clickConsConfiguration)
-        clickAlarmLog=findViewById(com.sensoguard.detectsensor.R.id.clickAlarmLog)
+        clickConsSensorTable = findViewById(com.sensoguard.detectsensor.R.id.clickConsSensorTable)
+        clickConsMap = findViewById(com.sensoguard.detectsensor.R.id.clickConsMap)
+        clickConsConfiguration =
+            findViewById(com.sensoguard.detectsensor.R.id.clickConsConfiguration)
+        clickAlarmLog = findViewById(com.sensoguard.detectsensor.R.id.clickAlarmLog)
         tvShowVer = findViewById(com.sensoguard.detectsensor.R.id.tvShowVer)
+//        btnTest = findViewById(com.sensoguard.detectsensor.R.id.btnTest)
+//        btnTest?.setOnClickListener {
+//            //CustomMapTileProvider(ivOfflineMap,this)
+//            startActivity(Intent(this@MainActivity,
+//                DownloadOfflineTilesActivity::class.java))
+//
+//            //replaceFragment(R.id.flTestMapmob, MapmobFragment(),true,"MapmobFragment")
+//        }
+
     }
 
     private fun configurationLanguage() {
@@ -153,4 +168,35 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    //Change View of fragment
+    private fun replaceFragment(
+        resId: Int,
+        fragment: Fragment,
+        add_to_back_stack: Boolean,
+        tag: String
+    ) {
+        try {
+            val fragmentManager = supportFragmentManager
+            val fragmentTransaction = fragmentManager.beginTransaction()
+
+
+//            when (tag) {
+//                "enterReservationFragment" -> {
+//                    fragmentTransaction.setCustomAnimations(R.animator.slide_up_in, 0)
+//                }
+//            }
+
+            if (add_to_back_stack) {
+                fragmentTransaction.addToBackStack(fragment.tag)
+            }
+
+            fragmentTransaction.replace(resId, fragment, tag)
+
+            //fragmentTransaction.show(fragment)
+            fragmentTransaction.commit()
+        } catch (ex: IllegalStateException) {
+            ex.printStackTrace()
+        }
+
+    }
 }

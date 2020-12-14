@@ -53,7 +53,6 @@
                   android:elevation="6dp"
                   android:textSize="13.3sp"
                   android:textColor="@color/gray2"
-                  android:fontFamily="@font/arialmt"
                   app:layout_constraintEnd_toEndOf="parent"
                   app:layout_constraintBottom_toBottomOf="parent"
                   android:layout_marginBottom="36dp"

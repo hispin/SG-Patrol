@@ -18,7 +18,6 @@
             app:layout_constraintHorizontal_bias="0.100"
             android:textSize="13.3sp"
             android:textColor="@color/black"
-            android:fontFamily="@font/arialmt"
     />
     <TextView
             android:layout_width="wrap_content"
@@ -31,7 +30,6 @@
             app:layout_constraintHorizontal_bias="0.235"
             android:textSize="13.3sp"
             android:textColor="@color/black"
-            android:fontFamily="@font/arialmt"
     />
     <TextView
             android:layout_width="wrap_content"
@@ -44,7 +42,6 @@
             app:layout_constraintHorizontal_bias="0.640"
             android:textSize="13.3sp"
             android:textColor="@color/black"
-            android:fontFamily="@font/arialmt"
     />
     <TextView
             android:layout_width="wrap_content"
@@ -57,7 +54,6 @@
             app:layout_constraintHorizontal_bias="0.920"
             android:textSize="13.3sp"
             android:textColor="@color/black"
-            android:fontFamily="@font/arialmt"
     />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

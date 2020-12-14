@@ -25,15 +25,12 @@
             android:label="@string/app_name"
             android:roundIcon="@drawable/ic_launcher"
             android:supportsRtl="true"
-            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
-
-            >
-
-        <!--        <meta-data android:name="com.google.firebase.messaging.default_notification_icon"-->
-
-        <!--                android:resource="@mipmap/ic_launcher" />-->
-
-        <activity android:name=".activities.InitAppActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+        <activity android:name=".activities.DownloadOfflineTilesActivity"></activity>
+        <activity android:name=".activities.MapmobActivity" /> <!-- <meta-data android:name="com.google.firebase.messaging.default_notification_icon" -->
+        <!-- android:resource="@mipmap/ic_launcher" /> -->
+        <activity
+                android:name=".activities.InitAppActivity"
                 android:screenOrientation="portrait"
                 android:theme="@style/Theme.AppCompat.NoActionBar">
             <intent-filter>
@@ -45,10 +42,7 @@
         </activity>
         <activity
                 android:name=".activities.ActivationActivity"
-                android:screenOrientation="portrait"
-                >
-
-        </activity>
+                android:screenOrientation="portrait" />
         <activity
                 android:name=".activities.MainActivity"
                 android:screenOrientation="portrait" />
@@ -81,9 +75,7 @@
 
         <meta-data
                 android:name="io.fabric.ApiKey"
-                android:value="a2ca8d68e6eb68bf1b812b6e6f088bb62a139961" />
-
-        <!--        android:authorities="${applicationId}.contentprovider"-->
+                android:value="a2ca8d68e6eb68bf1b812b6e6f088bb62a139961" /> <!-- android:authorities="${applicationId}.contentprovider" -->
         <provider
                 android:name="androidx.core.content.FileProvider"
                 android:authorities="com.example.homefolder.example.provider"

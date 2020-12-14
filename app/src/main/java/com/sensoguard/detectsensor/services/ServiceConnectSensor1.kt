@@ -98,7 +98,7 @@ open class ServiceConnectSensor1 : Service() {
             usbSerialProber = UsbSerialProber.getDefaultProber()
             //val usbSerialTable = UsbSerialProber.getDefaultProbeTable()
         }catch (ex:Exception){
-            Log.d("testCrash",ex.message)
+            ex.message?.let { Log.d("testCrash", it) }
             Toast.makeText(this,"no driver",Toast.LENGTH_LONG).show()
             return
         }

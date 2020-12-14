@@ -15,7 +15,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintHeight_default="percent"
-            app:layout_constraintHeight_percent=".125"
+            app:layout_constraintHeight_percent=".111"
             app:layout_constraintTop_toTopOf="parent"
     >
         <androidx.appcompat.widget.AppCompatImageView
@@ -73,7 +73,6 @@
                 android:text="@string/save"
                 android:textColor="@color/gray2"
                 android:textSize="13.3sp"
-                android:fontFamily="@font/arialmt"
          />
 
 
@@ -85,7 +84,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintHeight_default="percent"
-            app:layout_constraintHeight_percent=".125"
+            app:layout_constraintHeight_percent=".111"
             app:layout_constraintTop_toBottomOf="@+id/constSensorAmount"
             android:clickable="true"
             android:focusable="true">
@@ -118,7 +117,6 @@
                 android:text="@string/choose_alarm_sound"
                 android:textColor="@color/turquoise_blue"
                 android:textSize="10sp"
-                android:fontFamily="@font/arialmt"
                 android:layout_marginStart="64.7dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -168,7 +166,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintHeight_default="percent"
-            app:layout_constraintHeight_percent=".125"
+            app:layout_constraintHeight_percent=".111"
             app:layout_constraintTop_toBottomOf="@+id/constAlarmSound"
     >
         <androidx.appcompat.widget.AppCompatImageView
@@ -221,7 +219,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintHeight_default="percent"
-            app:layout_constraintHeight_percent=".125"
+            app:layout_constraintHeight_percent=".111"
             app:layout_constraintTop_toBottomOf="@+id/constVibAlarm"
     >
         <androidx.appcompat.widget.AppCompatImageView
@@ -274,7 +272,6 @@
                 android:text="@string/save"
                 android:textColor="@color/gray2"
                 android:textSize="13.3sp"
-                android:fontFamily="@font/arialmt"
         />
 
         <View android:layout_width="match_parent"
@@ -290,7 +287,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintHeight_default="percent"
-            app:layout_constraintHeight_percent=".125"
+            app:layout_constraintHeight_percent=".111"
             app:layout_constraintTop_toBottomOf="@+id/constAlarmFlicker"
     >
         <androidx.appcompat.widget.AppCompatImageView
@@ -344,7 +341,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintHeight_default="percent"
-            app:layout_constraintHeight_percent=".125"
+            app:layout_constraintHeight_percent=".111"
             app:layout_constraintTop_toBottomOf="@+id/constLoadSettings"
     >
         <androidx.appcompat.widget.AppCompatImageView
@@ -383,7 +380,6 @@
                 android:textColor="@drawable/selected_text_color_status"
                 android:textAllCaps="false"
                 android:textSize="10sp"
-                android:fontFamily="@font/arialmt"
         />
 
         <androidx.appcompat.widget.AppCompatButton
@@ -401,7 +397,6 @@
                 android:textAllCaps="false"
                 android:textColor="@drawable/selected_text_color_status"
                 android:textSize="10sp"
-                android:fontFamily="@font/arialmt"
                 android:enabled="false"
 
         />
@@ -419,7 +414,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintHeight_default="percent"
-            app:layout_constraintHeight_percent=".125"
+            app:layout_constraintHeight_percent=".111"
             app:layout_constraintTop_toBottomOf="@+id/constMapView"
             android:clickable="true"
             android:focusable="true">
@@ -453,20 +448,64 @@
                 android:text="@string/english"
                 android:textColor="@color/turquoise_blue"
                 android:textSize="10sp"
-                android:fontFamily="@font/arialmt"
                 android:layout_marginStart="64.7dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.65"
-                app:layout_constraintStart_toStartOf="parent"
-        />
+                app:layout_constraintStart_toStartOf="parent" />
 
-        <View android:layout_width="match_parent"
-              android:layout_height="0.7dp"
-              app:layout_constraintBottom_toBottomOf="parent"
-              android:layout_marginStart="10.7dp"
-              android:layout_marginEnd="10.7dp"
-              android:background="@color/gray4"/>
+        <View
+                android:layout_width="match_parent"
+                android:layout_height="0.7dp"
+                android:layout_marginStart="10.7dp"
+                android:layout_marginEnd="10.7dp"
+                android:background="@color/gray4"
+                app:layout_constraintBottom_toBottomOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!--save offline map-->
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constSaveOfflineMap"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintHeight_default="percent"
+            app:layout_constraintHeight_percent=".111"
+            app:layout_constraintTop_toBottomOf="@+id/constLangView">
+
+        <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/ivSaveOfflineMap"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.041"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/config_ic_language" />
+
+
+        <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnSaveOffline"
+                style="@style/configContentItem"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:background="@color/turquoise_blue"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:text="@string/save_offline_map"
+                android:textColor="@color/gray2"
+                android:textSize="13.3sp"
+                app:layout_constraintBottom_toBottomOf="@+id/ivSaveOfflineMap"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/ivSaveOfflineMap" />
+
+        <View
+                android:layout_width="match_parent"
+                android:layout_height="0.7dp"
+                android:layout_marginStart="10.7dp"
+                android:layout_marginEnd="10.7dp"
+                android:background="@color/gray4"
+                app:layout_constraintBottom_toBottomOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

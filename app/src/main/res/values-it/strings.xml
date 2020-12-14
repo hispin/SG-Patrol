@@ -71,4 +71,12 @@
     <string name="do_you_realy_want_delete_all_alarm">DVuoi davvero cancellare tutti gli allarmi?</string>
     <string name="receiver_disconnected">Ricevitore disconnesso</string>
     <string name="OK">OK</string>
+    <string name="simple_offline_end_progress_success">simple offline end progress success</string>
+    <string name="basic_offline_deleted_toast">basic offline deleted toast</string>
+    <string name="no_selected_location">No places selected</string>
+    <string name="camera_details">Camera details</string>
+    <string name="save_offline_map">Save offline map</string>
+    <string name="results">results</string>
+    <string name="save_map">save map</string>
+    <string name="delete_last_map">delete the last map</string>
 </resources>

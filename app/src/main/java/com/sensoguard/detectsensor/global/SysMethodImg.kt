@@ -11,14 +11,20 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 
 
 //convert bitmap to bitmap discriptor
-fun convertBitmapToBitmapDiscriptor(context:Context,resId:Int): BitmapDescriptor? {
+fun convertBitmapToBitmapDiscriptor(context: Context, resId: Int): BitmapDescriptor? {
     val bitmap = context.let { getBitmapFromVectorDrawable(it, resId) }
     return BitmapDescriptorFactory.fromBitmap(bitmap)
 }
 
+//convert drawable to bitmap
+fun convertBitmapToBitmap(context: Context, resId: Int): Bitmap? {
+    val bitmap = context.let { getBitmapFromVectorDrawable(it, resId) }
+    return bitmap
+}
+
 //convert resId to bitmap
 fun getBitmapFromVectorDrawable(context: Context, drawableId: Int): Bitmap? {
-    var drawable =  AppCompatResources.getDrawable(context, drawableId)
+    var drawable = AppCompatResources.getDrawable(context, drawableId)
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
         drawable = (drawable?.let { DrawableCompat.wrap(it) })?.mutate()
     }
@@ -26,7 +32,8 @@ fun getBitmapFromVectorDrawable(context: Context, drawableId: Int): Bitmap? {
     val bitmap = drawable?.intrinsicWidth?.let {
         Bitmap.createBitmap(
             it,
-            drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
+            drawable.intrinsicHeight, Bitmap.Config.ARGB_8888
+        )
     } ?: return null
 
     val canvas = Canvas(bitmap)

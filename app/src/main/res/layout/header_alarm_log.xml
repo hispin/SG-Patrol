@@ -18,7 +18,6 @@
             app:layout_constraintHorizontal_bias="0.044"
             android:textSize="13.3sp"
             android:textColor="@color/black"
-            android:fontFamily="@font/arialmt"
     />
     <TextView
             android:layout_width="wrap_content"
@@ -31,7 +30,6 @@
             app:layout_constraintHorizontal_bias="0.286"
             android:textSize="13.3sp"
             android:textColor="@color/black"
-            android:fontFamily="@font/arialmt"
     />
     <TextView
             android:layout_width="wrap_content"
@@ -44,7 +42,6 @@
             app:layout_constraintHorizontal_bias="0.450"
             android:textSize="13.3sp"
             android:textColor="@color/black"
-            android:fontFamily="@font/arialmt"
     />
     <TextView
             android:id="@+id/tvName"
@@ -58,7 +55,6 @@
             app:layout_constraintHorizontal_bias="0.642"
             android:textSize="13.3sp"
             android:textColor="@color/black"
-            android:fontFamily="@font/arialmt"
     />
 
     <!--app:layout_constraintHorizontal_bias="0.832"-->
@@ -72,7 +68,6 @@
             android:layout_marginStart="30dp"
             android:textSize="13.3sp"
             android:textColor="@color/black"
-            android:fontFamily="@font/arialmt"
     />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

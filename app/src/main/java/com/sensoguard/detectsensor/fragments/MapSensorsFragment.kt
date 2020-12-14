@@ -36,10 +36,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
@@ -98,6 +95,7 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
     private var fbChangeMapType:FloatingActionButton?=null
     private var mapType=GoogleMap.MAP_TYPE_SATELLITE
     private var flickering: Animation?=null
+    //private var ibOfflineMap:AppCompatImageButton?=null
 
 
 
@@ -115,21 +113,27 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
     //start listener to timer
     private fun startTimerListener() {
         activity?.let {
-            ViewModelProviders.of(it).get(ViewModelListener::class.java).startCurrentCalendarListener()?.observe(this,androidx.lifecycle.Observer {calendar->
+            ViewModelProviders.of(it).get(ViewModelListener::class.java)
+                .startCurrentCalendarListener()?.observe(
+                    this,
+                    androidx.lifecycle.Observer { calendar ->
 
-                //Log.d("testTimer","tick in MapSensorsFragment")
-                //if there is no alarm in process then shut down the timer
-                if(UserSession.instance.alarmSensors==null ||  UserSession.instance.alarmSensors?.isEmpty()!!) {
-                    activity?.let {act-> ViewModelProviders.of(act).get(ViewModelListener::class.java).shutDownTimer() }
-                    //stopPlayingAlarm()
-                    //refresh markers
-                    showMarkers()
-                }else{
-                    //remove all the time out sensors alarm and show them with regular sensor marker
-                    replaceSensorAlarmTimeOutToSensorMarker()
-                }
+                        //Log.d("testTimer","tick in MapSensorsFragment")
+                        //if there is no alarm in process then shut down the timer
+                        if (UserSession.instance.alarmSensors == null || UserSession.instance.alarmSensors?.isEmpty()!!) {
+                            activity?.let { act ->
+                                ViewModelProviders.of(act).get(ViewModelListener::class.java)
+                                    .shutDownTimer()
+                            }
+                            //stopPlayingAlarm()
+                            //refresh markers
+                            showMarkers()
+                        } else {
+                            //remove all the time out sensors alarm and show them with regular sensor marker
+                            replaceSensorAlarmTimeOutToSensorMarker()
+                        }
 
-            })
+                    })
 
         }
     }
@@ -141,23 +145,28 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
         // Inflate the layout for this fragment
         val view= inflater.inflate(R.layout.fragment_map_detects, container, false)
 
-        fbRefresh=view.findViewById(R.id.fbRefresh)
+        fbRefresh = view.findViewById(R.id.fbRefresh1)
         fbRefresh?.setOnClickListener {
             //gotoMyLocation()
             gotoMySingleLocation()
         }
 
-        fbTest=view.findViewById(R.id.fbTest)
+        fbTest = view.findViewById(R.id.fbTest1)
         fbTest?.setOnClickListener {
             showTestEventDialog()
         }
 
+//        ibOfflineMap=view.findViewById(R.id.ibOfflineMap)
+//        ibOfflineMap?.setOnClickListener {
+//            setUpMap()
+//        }
+
         //toggle the type of the map
-        fbChangeMapType=view.findViewById(R.id.fbChangeMapType)
+        fbChangeMapType = view.findViewById(R.id.fbChangeMapType)
         fbChangeMapType?.setOnClickListener {
-            if(mMap?.mapType == GoogleMap.MAP_TYPE_NORMAL) {
+            if (mMap?.mapType == GoogleMap.MAP_TYPE_NORMAL) {
                 mapType = GoogleMap.MAP_TYPE_SATELLITE
-            }else{
+            } else {
                 mapType = GoogleMap.MAP_TYPE_NORMAL
             }
             mMap?.mapType = mapType
@@ -203,7 +212,7 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
 
     //configureActivation map type
     private fun initMapType() {
-        val _mapType = getIntInPreference(activity,MAP_SHOW_VIEW_TYPE_KEY,-1)
+        val _mapType = getIntInPreference(activity, MAP_SHOW_VIEW_TYPE_KEY, -1)
         Log.d("testMapView", "_mapType:$_mapType")
         if(_mapType==MAP_SHOW_NORMAL_VALUE){
             mapType= GoogleMap.MAP_TYPE_NORMAL
@@ -214,7 +223,8 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
         //when the map is already loaded
         try {
             mMap?.mapType = mapType
-        }catch (ex:Exception){}
+        } catch (ex: Exception) {
+        }
     }
 
     //when the app start rotate ,then invoke this method and save the map type
@@ -383,14 +393,19 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
     //execute vibrate
     private fun playVibrate() {
 
-        val isVibrateWhenAlarm=getBooleanInPreference(activity,IS_VIBRATE_WHEN_ALARM_KEY,true)
+        val isVibrateWhenAlarm = getBooleanInPreference(activity, IS_VIBRATE_WHEN_ALARM_KEY, true)
         if(isVibrateWhenAlarm){
             // Get instance of Vibrator from current Context
            val vibrator =   activity?.getSystemService(Context.VIBRATOR_SERVICE)  as Vibrator
 
             // Vibrate for 200 milliseconds
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                vibrator.vibrate(VibrationEffect.createOneShot(1000, VibrationEffect.DEFAULT_AMPLITUDE))
+                vibrator.vibrate(
+                    VibrationEffect.createOneShot(
+                        1000,
+                        VibrationEffect.DEFAULT_AMPLITUDE
+                    )
+                )
             } else {
                 vibrator.vibrate(1000)
             }
@@ -402,7 +417,7 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
     //create timeout for reset sensor to regular icon and cancel the alarm icon
     private fun startTimer() {
 
-        Log.d("testTimer","start timer")
+        Log.d("testTimer", "start timer")
 
         activity?.let {
             ViewModelProviders.of(it).get(ViewModelListener::class.java).startTimer()
@@ -439,7 +454,7 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
                         showSensorMarker(sensorItem)
                     }else{
                         //save the marker for update after timeout
-                        sensorAlarm.marker=showSensorAlarmMarker(sensorItem,sensorAlarm.type)
+                        sensorAlarm.marker = showSensorAlarmMarker(sensorItem, sensorAlarm.type)
                     }
 
                 }else{
@@ -452,13 +467,17 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
     }
 
     //check if the alarm sensor is in duration
-    private fun isSensorAlarmTimeout(alarmProcess: AlarmSensor?):Boolean{
+    private fun isSensorAlarmTimeout(alarmProcess: AlarmSensor?): Boolean {
 
-        val timeout= getLongInPreference(activity,ALARM_FLICKERING_DURATION_KEY,ALARM_FLICKERING_DURATION_DEFAULT_VALUE_SECONDS)
-        val futureTimeout = timeout?.let{alarmProcess?.alarmTime?.timeInMillis?.plus(it*1000)}
+        val timeout = getLongInPreference(
+            activity,
+            ALARM_FLICKERING_DURATION_KEY,
+            ALARM_FLICKERING_DURATION_DEFAULT_VALUE_SECONDS
+        )
+        val futureTimeout = timeout?.let { alarmProcess?.alarmTime?.timeInMillis?.plus(it * 1000) }
 
         if (futureTimeout != null) {
-            val calendar=Calendar.getInstance()
+            val calendar = Calendar.getInstance()
             return when {
                 futureTimeout < calendar.timeInMillis -> true
                 else -> false
@@ -501,13 +520,33 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
        }
 
        //set icon according to type alarm
-       val alarmTypeIcon=
-           when(type){
-               ALARM_CAR->context?.let { con -> convertBitmapToBitmapDiscriptor(con,R.drawable.ic_alarm_car)}
-               ALARM_INTRUDER->context?.let { con -> convertBitmapToBitmapDiscriptor(con,R.drawable.ic_alarm_intruder)}
-               ALARM_SENSOR_OFF->context?.let { con -> convertBitmapToBitmapDiscriptor(con,R.drawable.ic_alarm_sensor_off)}
+       val alarmTypeIcon =
+           when (type) {
+               ALARM_CAR -> context?.let { con ->
+                   convertBitmapToBitmapDiscriptor(
+                       con,
+                       R.drawable.ic_alarm_car
+                   )
+               }
+               ALARM_INTRUDER -> context?.let { con ->
+                   convertBitmapToBitmapDiscriptor(
+                       con,
+                       R.drawable.ic_alarm_intruder
+                   )
+               }
+               ALARM_SENSOR_OFF -> context?.let { con ->
+                   convertBitmapToBitmapDiscriptor(
+                       con,
+                       R.drawable.ic_alarm_sensor_off
+                   )
+               }
                //ALARM_LOW_BATTERY->context?.let { con -> convertBitmapToBitmapDiscriptor(con,R.drawable.ic_alarm_low_battery)}
-               else -> context?.let { con -> convertBitmapToBitmapDiscriptor(con,R.drawable.ic_sensor_alarm)}
+               else -> context?.let { con ->
+                   convertBitmapToBitmapDiscriptor(
+                       con,
+                       R.drawable.ic_sensor_alarm
+                   )
+               }
            }
 
 
@@ -535,32 +574,32 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
 
     var myLocatioMarker: Marker? = null
 
-   //show marker of current location
-   private fun showCurrentLocationMarker(){
+    //show marker of current location
+    private fun showCurrentLocationMarker() {
 
-           if(mMap==null){
-               return
-           }
+        if (mMap == null) {
+            return
+        }
 
-       if (myLocate == null) {
-           return
-       }
+        if (myLocate == null) {
+            return
+        }
 
-       myLocatioMarker?.remove()
+        myLocatioMarker?.remove()
 
-       myLocatioMarker = mMap?.addMarker(
-           myLocate?.let {
-               MarkerOptions()
-                   .position(it)
-                   .draggable(true)
-                   .icon(context?.let { con ->
-                       convertBitmapToBitmapDiscriptor(
-                           con,
-                           R.drawable.ic_my_locate
-                       )
-                   })
-           }
-       )
+        myLocatioMarker = mMap?.addMarker(
+            myLocate?.let {
+                MarkerOptions()
+                    .position(it)
+                    .draggable(true)
+                    .icon(context?.let { con ->
+                        convertBitmapToBitmapDiscriptor(
+                            con,
+                            R.drawable.ic_my_locate
+                        )
+                    })
+            }
+        )
    }
 
     //show marker of sensor
@@ -677,12 +716,12 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
 
     private fun playAlarmSound() {
 
-        val isNotificationSound=getBooleanInPreference(activity,IS_NOTIFICATION_SOUND_KEY,true)
+        val isNotificationSound = getBooleanInPreference(activity, IS_NOTIFICATION_SOUND_KEY, true)
         if(!isNotificationSound){
             return
         }
 
-        val selectedSound =getStringInPreference(activity,SELECTED_NOTIFICATION_SOUND_KEY,"-1")
+        val selectedSound = getStringInPreference(activity, SELECTED_NOTIFICATION_SOUND_KEY, "-1")
 
         if(!selectedSound.equals("-1")) {
 
@@ -700,7 +739,7 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
                     rington = RingtoneManager.getRingtone(activity, uri)
                     rington?.play()
                 }
-            } catch ( e:Exception) {
+            } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
@@ -780,7 +819,7 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
 
                 sensorsDialogAdapter=activity?.let { adapter ->
                     sensors?.let { arr ->
-                        SensorsDialogAdapter(arr, adapter,this) { _ ->
+                        SensorsDialogAdapter(arr, adapter, this) { _ ->
 
                         }
                     }
@@ -809,20 +848,25 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
                     //fillSensorsMarkers()
                 }
 
-                val itemDecorator= DividerItemDecoration(context!!, DividerItemDecoration.VERTICAL)
-                itemDecorator.setDrawable(ContextCompat.getDrawable(context!!, R.drawable.divider)!!)
-                rvDetector?.addItemDecoration(itemDecorator)
+       val itemDecorator = DividerItemDecoration(context!!, DividerItemDecoration.VERTICAL)
+       itemDecorator.setDrawable(
+           ContextCompat.getDrawable(
+               context!!,
+               R.drawable.divider
+           )!!
+       )
+       rvDetector?.addItemDecoration(itemDecorator)
 
-                sensorsDialogAdapter?.itemClick = { detector ->
+       sensorsDialogAdapter?.itemClick = { detector ->
 
-                }
+       }
 
-                // Add some item here to show the list.
-                rvDetector?.adapter = sensorsDialogAdapter
-                val mLayoutManager = LinearLayoutManager(context)
-                rvDetector?.layoutManager = mLayoutManager
-                dialog?.show()
-            }
+       // Add some item here to show the list.
+       rvDetector?.adapter = sensorsDialogAdapter
+       val mLayoutManager = LinearLayoutManager(context)
+       rvDetector?.layoutManager = mLayoutManager
+       dialog?.show()
+   }
 
    private fun showTestEventDialog() {
 
@@ -865,54 +909,59 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
             }
 
    private fun validIsEmpty(editText: EditText): Boolean {
-                var isValid=true
+       var isValid = true
 
-                if (editText.text.isNullOrBlank()) {
-                    editText.error=resources.getString(com.sensoguard.detectsensor.R.string.empty_field_error)
-                    isValid=false
+       if (editText.text.isNullOrBlank()) {
+           editText.error =
+               resources.getString(com.sensoguard.detectsensor.R.string.empty_field_error)
+           isValid = false
+       }
+
+       return isValid
+   }
+
+    private fun saveLatLongDetector(sensor: Sensor) {
+        val sensorsArr = activity?.let { getSensorsFromLocally(it) }
+        if (sensorsArr != null) {
+
+            val iteratorList = sensorsArr.listIterator()
+            while (iteratorList != null && iteratorList.hasNext()) {
+                val sensorItem = iteratorList.next()
+                if (sensorItem.getId() == sensor.getId()) {
+                    sensor.getLatitude()?.let { sensorItem.setLatitude(it) }
+                    sensor.getLongtitude()?.let { sensorItem.setLongtitude(it) }
                 }
-
-                return isValid
             }
 
-   private fun saveLatLongDetector(sensor:Sensor){
-                val sensorsArr= activity?.let { getSensorsFromLocally(it) }
-                if (sensorsArr != null) {
-
-                    val iteratorList=sensorsArr.listIterator()
-                    while (iteratorList != null && iteratorList.hasNext()) {
-                        val sensorItem = iteratorList.next()
-                        if(sensorItem.getId() == sensor.getId()){
-                            sensor.getLatitude()?.let { sensorItem.setLatitude(it) }
-                            sensor.getLongtitude()?.let { sensorItem.setLongtitude(it) }
-                        }
-                    }
-
-                }
+        }
                 sensorsArr?.let { activity?.let { context -> storeSensorsToLocally(it, context) } }
             }
 
     private val usbReceiver = object : BroadcastReceiver() {
-                override fun onReceive(arg0: Context, inn: Intent) {
-                    //accept currentAlarm
-                    if (inn.action == CREATE_ALARM_KEY) {
+        override fun onReceive(arg0: Context, inn: Intent) {
+            //accept currentAlarm
+            if (inn.action == CREATE_ALARM_KEY) {
 
-                        val alarmSensorId = inn.getStringExtra(CREATE_ALARM_ID_KEY)
-                        val type = inn.getStringExtra(CREATE_ALARM_TYPE_KEY)
-                        val isArmed = inn.getBooleanExtra(CREATE_ALARM_IS_ARMED, false)
+                val alarmSensorId = inn.getStringExtra(CREATE_ALARM_ID_KEY)
+                val type = inn.getStringExtra(CREATE_ALARM_TYPE_KEY)
+                val isArmed = inn.getBooleanExtra(CREATE_ALARM_IS_ARMED, false)
 
-                        //prevent duplicate alarm at the same sensor at the same time
-                        removeSensorAlarmById(alarmSensorId)
+                //prevent duplicate alarm at the same sensor at the same time
+                alarmSensorId?.let { removeSensorAlarmById(it) }
 
-                        //add alarm process to queue
-                        UserSession.instance.alarmSensors?.add(alarmSensorId.let {
+                //add alarm process to queue
+                alarmSensorId.let {
+                    it?.let { it1 ->
+                        type?.let { it2 ->
                             AlarmSensor(
-                                it,
+                                it1,
                                 Calendar.getInstance(),
-                                type,
+                                it2,
                                 isArmed
                             )
-                        })
+                        }
+                    }
+                }?.let { UserSession.instance.alarmSensors?.add(it) }
 
 //                        Toast.makeText(activity, "start sound", Toast.LENGTH_LONG).show()
 //                        playAlarmSound()
@@ -921,7 +970,7 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
 //
 //                        startTimer()
 
-                        showMarkers()
+                showMarkers()
 
 
                     }else if(inn.action == GET_CURRENT_LOCATION_KEY){
@@ -1011,22 +1060,30 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
             }
 
     //rename the sensor name ,from the adapter
-    override  fun saveNameSensor(detector:Sensor){
-                val detectorsArr= activity?.let { getSensorsFromLocally(it) }
-                if (detectorsArr != null) {
+    override fun saveNameSensor(detector: Sensor) {
+        val detectorsArr = activity?.let { getSensorsFromLocally(it) }
+        if (detectorsArr != null) {
 
-                    val iteratorList=detectorsArr.listIterator()
-                    while (iteratorList != null && iteratorList.hasNext()) {
-                        val detectorItem = iteratorList.next()
-                        if(detectorItem.getId() == detector.getId()){
-                            detector.getName()?.let { detectorItem.setName(it) }
-                        }
-                    }
-
+            val iteratorList = detectorsArr.listIterator()
+            while (iteratorList != null && iteratorList.hasNext()) {
+                val detectorItem = iteratorList.next()
+                if (detectorItem.getId() == detector.getId()) {
+                    detector.getName()?.let { detectorItem.setName(it) }
                 }
-                detectorsArr?.let { activity?.let { context -> storeSensorsToLocally(it, context) } }
-                showDialogSensorsList()
             }
+
+        }
+        detectorsArr?.let { activity?.let { context -> storeSensorsToLocally(it, context) } }
+        showDialogSensorsList()
+    }
+
+//    private fun setUpMap() {
+//        mMap!!.mapType = GoogleMap.MAP_TYPE_NONE
+//        if(ibOfflineMap!=null)
+//            mMap!!.addTileOverlay(TileOverlayOptions().tileProvider(CustomMapTileProvider(ibOfflineMap,requireContext())))
+//        //val upd: CameraUpdate = CameraUpdateFactory.newLatLngZoom(LatLng(LAT, LON), ZOOM)
+//        //mMap!!.moveCamera(upd)
+//    }
 
 
 }
