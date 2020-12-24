@@ -52,20 +52,20 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  *
  */
-class MainUartFragment : Fragment() ,OnAdapterListener {
-
+class MainUartFragment : ParentFragment(), OnAdapterListener {
 
 
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+
     //private var listener: OnAdapterListener? = null
-    var tvShowLogs:TextView?=null
-    var bs: StringBuilder?=null
-    private var floatAddSensor: FloatingActionButton?=null
-    private var sensors:ArrayList<Sensor>?=null
-    private var rvSensor: RecyclerView?=null
-    private var sensorsAdapter: SensorsAdapter?=null
+    var tvShowLogs: TextView? = null
+    var bs: StringBuilder? = null
+    private var floatAddSensor: FloatingActionButton? = null
+    private var sensors: ArrayList<Sensor>? = null
+    private var rvSensor: RecyclerView? = null
+    private var sensorsAdapter: SensorsAdapter? = null
     private val listenerPref: SharedPreferences.OnSharedPreferenceChangeListener? = null
 
 
@@ -90,22 +90,22 @@ class MainUartFragment : Fragment() ,OnAdapterListener {
 
     private fun initSensorsAdapter() {
 
-        sensors= ArrayList()
+        sensors = ArrayList()
 
         //sensors?.add(Sensor(resources.getString(R.string.id_title),resources.getString(R.string.name_title)))
 
-        val itemDecorator= DividerItemDecoration(context!!, DividerItemDecoration.VERTICAL)
-        itemDecorator.setDrawable(ContextCompat.getDrawable(context!!, R.drawable.divider)!!)
+        val itemDecorator = DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
+        itemDecorator.setDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.divider)!!)
         rvSensor?.addItemDecoration(itemDecorator)
 
-        sensorsAdapter=activity?.let { adapter ->
+        sensorsAdapter = activity?.let { adapter ->
             sensors?.let { arr ->
                 SensorsAdapter(arr, adapter, MainUartFragment@ this) { _ ->
 
                 }
             }
         }
-        rvSensor?.adapter=sensorsAdapter
+        rvSensor?.adapter = sensorsAdapter
         val layoutManager= LinearLayoutManager(activity)
         rvSensor?.layoutManager=layoutManager
 
@@ -147,7 +147,7 @@ class MainUartFragment : Fragment() ,OnAdapterListener {
                         }
                     }
 
-                    sensors?.let { sen -> storeSensorsToLocally(sen, activity!!) }
+                    sensors?.let { sen -> storeSensorsToLocally(sen, requireActivity()) }
                     dialog.dismiss()
                 }
 
@@ -163,7 +163,7 @@ class MainUartFragment : Fragment() ,OnAdapterListener {
             return
         }
 
-        val dialog = Dialog(activity!!)
+        val dialog = Dialog(requireActivity())
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.setCancelable(false)
         dialog.setContentView(R.layout.dialog_new_sensor)
@@ -210,7 +210,7 @@ class MainUartFragment : Fragment() ,OnAdapterListener {
                     && numSensorsRequest!! < sensors.size){
                     askBeforeDeleteExtraSensor()
                 }else if(activity!=null) {
-                    sensors?.let { sen -> storeSensorsToLocally(sen, activity!!) }
+                    sensors?.let { sen -> storeSensorsToLocally(sen, requireActivity()) }
                 }
 
                 dialog.dismiss()

@@ -1,7 +1,11 @@
 package com.sensoguard.detectsensor.activities;
 
+import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.PointF;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -9,9 +13,9 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatTextView;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 
 import com.mapbox.mapboxsdk.Mapbox;
@@ -43,6 +47,10 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import static com.sensoguard.detectsensor.global.ConstsKt.CURRENT_LATITUDE_PREF;
+import static com.sensoguard.detectsensor.global.ConstsKt.CURRENT_LONGTUDE_PREF;
+import static com.sensoguard.detectsensor.global.SysMethodsSharedPrefKt.getStringInPreference;
+
 //import com.mapbox.mapboxandroiddemo.R;
 //import com.mapbox.mapboxsdk.plugins.annotation.OnSymbolDragListener;
 //import com.mapbox.mapboxsdk.plugins.annotation.Symbol;
@@ -50,7 +58,7 @@ import java.util.Iterator;
 //import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions;
 
 //import timber.log.Timber;
-public class DownloadOfflineTilesActivity extends AppCompatActivity implements MapboxMap.OnMapClickListener {
+public class DownloadOfflineTilesActivity extends ParentActivity implements MapboxMap.OnMapClickListener {
 
     // JSON encoding/decoding
     public static final String JSON_CHARSET = "UTF-8";
@@ -73,6 +81,10 @@ public class DownloadOfflineTilesActivity extends AppCompatActivity implements M
     private LatLng myTopRight;
     private LatLng myBottomLeft;
     private Iterator<LatLng> polyRegions;
+
+
+    private LatLng myLocate = null;
+    private LocationManager locationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,22 +124,40 @@ public class DownloadOfflineTilesActivity extends AppCompatActivity implements M
 
                 myMapboxMap = mapboxMap;
 
+                mapboxMap.getUiSettings().setCompassEnabled(true);
+                mapboxMap.getUiSettings().setCompassFadeFacingNorth(false);
+
                 mapboxMap.setStyle(Style.SATELLITE_STREETS, new Style.OnStyleLoaded() {
                     @Override
                     public void onStyleLoaded(@NonNull Style style) {
 
                         myStyle = style;
-                        mapboxMap.animateCamera(
-                                CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder()
-                                        .zoom(3)
-                                        .build()), 2000);
+//                        mapboxMap.animateCamera(
+//                                CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder()
+//                                        .zoom(10)
+//                                        .build()), 2000);
 
+
+                        //go to last location
+                        Location location = initFindLocation();
+
+
+                        //set last location if exist
+                        if (location != null) {
+                            myLocate =
+                                    new LatLng(location.getLatitude(), location.getLongitude());
+                        }
+
+                        showLocation(location);
+
+                        //myTopRight = new LatLng(myLocate.getLatitude()+10,myLocate.getLongitude()+10);
+                        //myBottomLeft = new LatLng(myLocate.getLatitude()-10,myLocate.getLongitude()-10);
 
                         int viewportWidth = mapView.getWidth();
                         int viewportHeight = mapView.getHeight();
-                        myTopRight = myMapboxMap.getProjection().fromScreenLocation(new PointF(viewportWidth - 200, 200));
-                        myBottomLeft = myMapboxMap.getProjection().fromScreenLocation(new PointF(200, viewportHeight - 200));
 
+                        myTopRight = myMapboxMap.getProjection().fromScreenLocation(new PointF((viewportWidth) / 2, viewportHeight / 4));
+                        myBottomLeft = myMapboxMap.getProjection().fromScreenLocation(new PointF((viewportWidth) / 4, viewportHeight / 2));
 
                         addMarkerIconsToMap(style);
                         drawRectangle();
@@ -135,6 +165,94 @@ public class DownloadOfflineTilesActivity extends AppCompatActivity implements M
                 });
             }
         });
+    }
+
+    //get last location
+    private Location initFindLocation() {
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+
+        if (
+                ContextCompat.checkSelfPermission(
+                        this,
+                        android.Manifest.permission.ACCESS_FINE_LOCATION
+                )
+                        == PackageManager.PERMISSION_GRANTED
+        ) {
+
+            return locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        }
+
+        return null;
+    }
+
+    // move the camera to ic_mark location
+    private void showLocation(Location location) {
+
+        if (location != null) {
+            setMyLocate(
+                    new LatLng(
+                            location.getLatitude(),
+                            location.getLongitude()
+                    )
+            );
+        } else {
+
+            myLocate = getLastLocationLocally();
+
+            if (myLocate == null) {
+                //set default location (london)
+                myLocate = new LatLng(51.509865, -0.118092);
+                //set default location (london) if there is no last location
+                setMyLocate(new LatLng(51.509865, -0.118092));
+            }
+        }
+        //add marker at the focus of the map
+        if (myLocate != null) {
+            //load the camera
+            if (myLocate != null
+            ) {
+
+                CameraPosition cameraPosition = new CameraPosition.Builder()
+                        .target(new LatLng(myLocate.getLatitude(), myLocate.getLongitude()))
+                        .zoom(15.0)
+                        .tilt(20.0)
+                        .build();
+
+
+                // Move camera to new position
+                myMapboxMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
+                //howMarkers()
+
+            }
+
+        }
+
+    }
+
+    private void setMyLocate(LatLng myLocate) {
+        this.myLocate = myLocate;
+    }
+
+    //get last location from shared preference
+    private LatLng getLastLocationLocally() {
+        String latitude = getStringInPreference(this, CURRENT_LATITUDE_PREF, "-1");
+        String longtude = getStringInPreference(this, CURRENT_LONGTUDE_PREF, "-1");
+        double lat = 0;
+        double lon = 0;
+
+        if (!latitude.equals("-1") && !longtude.equals("-1")) {
+            try {
+                lat = Double.parseDouble(latitude);
+                lon = Double.parseDouble(longtude);
+                return new LatLng(lat, lon);
+            } catch (NumberFormatException ex) {
+            }
+
+        }
+        return null;
+
     }
 
     //draw rectangle for selecting offline region
@@ -254,12 +372,14 @@ public class DownloadOfflineTilesActivity extends AppCompatActivity implements M
 
         tvResults.setText("");
 
-        int minZoom = 10;
+        int minZoom = 1;
         int maxZoom = 15;
 
         // Set up the OfflineManager
         offlineManager = OfflineManager.getInstance(DownloadOfflineTilesActivity.this);
-        offlineManager.setOfflineMapboxTileCountLimit(10000);
+
+        //to minimize the tiles count limit
+        //offlineManager.setOfflineMapboxTileCountLimit(10000);
 
         ArrayList<LatLng> locations = new ArrayList<>();
         while (polyRegions != null && polyRegions.hasNext()) {
@@ -513,7 +633,7 @@ public class DownloadOfflineTilesActivity extends AppCompatActivity implements M
                 .withLatLng(myTopRight)//new LatLng(new LatLng(32.173001, 34.842284)))//32.941484, 35.795603)))
                 .withIconImage("icon-id")
                 .withDraggable(true)
-                .withIconSize(2.0f));
+                .withIconSize(1.5f));
         symbolManager1.addDragListener(new OnSymbolDragListener() {
             @Override
             public void onAnnotationDragStarted(Symbol annotation) {
@@ -543,7 +663,7 @@ public class DownloadOfflineTilesActivity extends AppCompatActivity implements M
                 .withLatLng(myBottomLeft)//new LatLng(new LatLng(32.173001, 34.842284)))//32.941484, 35.795603)))
                 .withIconImage("icon-id")
                 .withDraggable(true)
-                .withIconSize(2.0f));
+                .withIconSize(1.5f));
         symbolManager2.addDragListener(new OnSymbolDragListener() {
             @Override
             public void onAnnotationDragStarted(Symbol annotation) {

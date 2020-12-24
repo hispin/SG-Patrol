@@ -69,34 +69,34 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  *
  */
-class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
+class MapSensorsFragment : ParentFragment(), OnMapReadyCallback, OnAdapterListener {
 
     override fun saveDetector(detector: Sensor) {}
 
 
-    private var dialog: Dialog?=null
-    var sensorsDialogAdapter: SensorsDialogAdapter?=null
+    private var dialog: Dialog? = null
+    var sensorsDialogAdapter: SensorsDialogAdapter? = null
 
 
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
     private var listener: OnFragmentListener? = null
-    private var mMap : GoogleMap?=null
-    private var mMapFragment:SupportMapFragment?=null
+    private var mMap: GoogleMap? = null
+    private var mMapFragment: SupportMapFragment? = null
     private val TAG = "MapSensorsFragment"
     private var mCenterLatLong: LatLng? = null
+
     @Volatile
     private var myLocate: LatLng? = null
-    private var currentLongitude: Double?=null
-    private var currentLatitude: Double?=null
-    private var fbRefresh: FloatingActionButton?=null
-    private var fbTest:FloatingActionButton?=null
-    private var fbChangeMapType:FloatingActionButton?=null
-    private var mapType=GoogleMap.MAP_TYPE_SATELLITE
-    private var flickering: Animation?=null
+    private var currentLongitude: Double? = null
+    private var currentLatitude: Double? = null
+    private var fbRefresh: FloatingActionButton? = null
+    private var fbTest: FloatingActionButton? = null
+    private var fbChangeMapType: FloatingActionButton? = null
+    private var mapType = GoogleMap.MAP_TYPE_SATELLITE
+    private var flickering: Animation? = null
     //private var ibOfflineMap:AppCompatImageButton?=null
-
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -449,12 +449,13 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
                 if(sensorAlarm!=null){
 
                     //if time out then remove the sensor from alarm list
-                    if(isSensorAlarmTimeout(sensorAlarm)){
+                    if (isSensorAlarmTimeout(sensorAlarm)) {
                         UserSession.instance.alarmSensors?.remove(sensorAlarm)
                         showSensorMarker(sensorItem)
-                    }else{
+                    } else {
                         //save the marker for update after timeout
-                        sensorAlarm.marker = showSensorAlarmMarker(sensorItem, sensorAlarm.type)
+                        sensorAlarm.marker =
+                            showSensorAlarmMarker(sensorItem, sensorAlarm.type, sensorAlarm.typeIdx)
                     }
 
                 }else{
@@ -504,7 +505,7 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
         val iteratorList=UserSession.instance.alarmSensors?.listIterator()
         while (iteratorList != null && iteratorList.hasNext()) {
             val sensorItem = iteratorList.next()
-            if(sensorItem.alarmSensorId == sensor.getId()){
+            if (sensorItem.alarmSensorId == sensor.getId()) {
                 return sensorItem
             }
         }
@@ -512,62 +513,62 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
     }
 
 
-   //show marker of sensor alarm
-   private fun showSensorAlarmMarker(sensorItem: Sensor, type: String): Marker? {
+    //show marker of sensor alarm
+    private fun showSensorAlarmMarker(sensorItem: Sensor, type: String, typeIdx: Int?): Marker? {
 
-       if(mMap==null){
-           return null
-       }
+        if (mMap == null) {
+            return null
+        }
 
-       //set icon according to type alarm
-       val alarmTypeIcon =
-           when (type) {
-               ALARM_CAR -> context?.let { con ->
-                   convertBitmapToBitmapDiscriptor(
-                       con,
-                       R.drawable.ic_alarm_car
-                   )
-               }
-               ALARM_INTRUDER -> context?.let { con ->
-                   convertBitmapToBitmapDiscriptor(
-                       con,
-                       R.drawable.ic_alarm_intruder
-                   )
-               }
-               ALARM_SENSOR_OFF -> context?.let { con ->
-                   convertBitmapToBitmapDiscriptor(
-                       con,
-                       R.drawable.ic_alarm_sensor_off
-                   )
-               }
-               //ALARM_LOW_BATTERY->context?.let { con -> convertBitmapToBitmapDiscriptor(con,R.drawable.ic_alarm_low_battery)}
-               else -> context?.let { con ->
-                   convertBitmapToBitmapDiscriptor(
-                       con,
-                       R.drawable.ic_sensor_alarm
-                   )
-               }
-           }
+        //set icon according to type alarm
+        val alarmTypeIcon =
+            when (typeIdx) {
+                ALARM_CAR -> context?.let { con ->
+                    convertBitmapToBitmapDiscriptor(
+                        con,
+                        R.drawable.ic_alarm_car
+                    )
+                }
+                ALARM_INTRUDER -> context?.let { con ->
+                    convertBitmapToBitmapDiscriptor(
+                        con,
+                        R.drawable.ic_alarm_intruder
+                    )
+                }
+                ALARM_SENSOR_OFF -> context?.let { con ->
+                    convertBitmapToBitmapDiscriptor(
+                        con,
+                        R.drawable.ic_alarm_sensor_off
+                    )
+                }
+                //ALARM_LOW_BATTERY->context?.let { con -> convertBitmapToBitmapDiscriptor(con,R.drawable.ic_alarm_low_battery)}
+                else -> context?.let { con ->
+                    convertBitmapToBitmapDiscriptor(
+                        con,
+                        R.drawable.ic_sensor_alarm
+                    )
+                }
+            }
 
 
-       val loc:LatLng? = LatLng(sensorItem.getLatitude()!!, sensorItem.getLongtitude()!!)
+        val loc: LatLng? = LatLng(sensorItem.getLatitude()!!, sensorItem.getLongtitude()!!)
 
-       mMap!!.setOnMarkerClickListener(object : GoogleMap.OnMarkerClickListener {
-           override fun onMarkerClick(marker: Marker): Boolean {
-               marker.showInfoWindow()
-               return true
-           }
-       })
+        mMap!!.setOnMarkerClickListener(object : GoogleMap.OnMarkerClickListener {
+            override fun onMarkerClick(marker: Marker): Boolean {
+                marker.showInfoWindow()
+                return true
+            }
+        })
 
-       if(loc!=null) {
-           return mMap?.addMarker(
-               MarkerOptions()
-                   .position(loc)
-                   .draggable(true)
-                   .icon(context?.let { alarmTypeIcon })
-                   .title("Id:" + sensorItem.getId() + "  Name:" + sensorItem.getName())
+        if (loc != null) {
+            return mMap?.addMarker(
+                MarkerOptions()
+                    .position(loc)
+                    .draggable(true)
+                    .icon(context?.let { alarmTypeIcon })
+                    .title("Id:" + sensorItem.getId() + "  Name:" + sensorItem.getName())
 
-           )
+            )
        }
        return null
    }
@@ -848,10 +849,10 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
                     //fillSensorsMarkers()
                 }
 
-       val itemDecorator = DividerItemDecoration(context!!, DividerItemDecoration.VERTICAL)
+       val itemDecorator = DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
        itemDecorator.setDrawable(
            ContextCompat.getDrawable(
-               context!!,
+               requireContext(),
                R.drawable.divider
            )!!
        )
@@ -944,13 +945,14 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
 
                 val alarmSensorId = inn.getStringExtra(CREATE_ALARM_ID_KEY)
                 val type = inn.getStringExtra(CREATE_ALARM_TYPE_KEY)
+                val typeIdx = inn.getIntExtra(CREATE_ALARM_TYPE_INDEX_KEY, -1)
                 val isArmed = inn.getBooleanExtra(CREATE_ALARM_IS_ARMED, false)
 
                 //prevent duplicate alarm at the same sensor at the same time
                 alarmSensorId?.let { removeSensorAlarmById(it) }
 
                 //add alarm process to queue
-                alarmSensorId.let {
+                val sensorAlarm = alarmSensorId.let {
                     it?.let { it1 ->
                         type?.let { it2 ->
                             AlarmSensor(
@@ -961,7 +963,9 @@ class MapSensorsFragment : Fragment() ,OnMapReadyCallback,OnAdapterListener{
                             )
                         }
                     }
-                }?.let { UserSession.instance.alarmSensors?.add(it) }
+                }
+                sensorAlarm?.typeIdx = typeIdx
+                sensorAlarm?.let { UserSession.instance.alarmSensors?.add(it) }
 
 //                        Toast.makeText(activity, "start sound", Toast.LENGTH_LONG).show()
 //                        playAlarmSound()

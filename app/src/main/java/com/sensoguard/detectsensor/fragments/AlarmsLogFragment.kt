@@ -13,7 +13,6 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -28,7 +27,8 @@ import java.util.*
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 
-class AlarmsLogFragment : Fragment(), OnAdapterListener {
+class AlarmsLogFragment : ParentFragment(), OnAdapterListener {
+
     override fun saveDetector(detector: Sensor) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
@@ -59,8 +59,8 @@ class AlarmsLogFragment : Fragment(), OnAdapterListener {
     private fun initAlarmsAdapter() {
         alarms = ArrayList()
         //alarms?.add(Alarm("ID", "NAME", "TYPE", "TIME", false, -1))
-        val itemDecorator = DividerItemDecoration(context!!, DividerItemDecoration.VERTICAL)
-        itemDecorator.setDrawable(ContextCompat.getDrawable(context!!, R.drawable.divider)!!)
+        val itemDecorator = DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
+        itemDecorator.setDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.divider)!!)
         rvAlarm?.addItemDecoration(itemDecorator)
 
         alarmAdapter = activity?.let { adapter ->
@@ -170,10 +170,10 @@ class AlarmsLogFragment : Fragment(), OnAdapterListener {
     //show dialog before delete alarms log
     private fun showDeleteDialog() {
         val builder = AlertDialog.Builder(context)
-        builder.setTitle(context!!.resources.getString(R.string.delete_all))
-        val yes = context!!.resources.getString(R.string.yes)
-        val no = context!!.resources.getString(R.string.no)
-        builder.setMessage(context!!.resources.getString(R.string.do_you_realy_want_delete_all_alarm))
+        builder.setTitle(requireContext().resources.getString(R.string.delete_all))
+        val yes = requireContext().resources.getString(R.string.yes)
+        val no = requireContext().resources.getString(R.string.no)
+        builder.setMessage(requireContext().resources.getString(R.string.do_you_really_want_delete_all_alarm))
             .setCancelable(false)
         builder.setPositiveButton(yes) { dialog, which ->
 

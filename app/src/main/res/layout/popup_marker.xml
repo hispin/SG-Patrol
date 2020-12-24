@@ -14,7 +14,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="@string/camera_details"
+            android:text="@string/sensor_details"
             android:textAlignment="gravity"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textSize="14sp"

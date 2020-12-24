@@ -2,7 +2,6 @@ package com.sensoguard.detectsensor.services
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.Service
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -11,7 +10,6 @@ import android.media.Ringtone
 import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Build
-import android.os.IBinder
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.util.Log
@@ -25,30 +23,28 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class ServiceHandleAlarms : Service(){
-        private val TAG="ServiceHandleAlarms"
+class ServiceHandleAlarms : ParentService() {
+    private val TAG = "ServiceHandleAlarms"
 
 
-
-        override fun onBind(intent: Intent?): IBinder? {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-        }
-
-
-        override fun onCreate() {
-            super.onCreate()
-            startSysForeGround()
-
-        }
+//        override fun onBind(intent: Intent?): IBinder? {
+//            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+//        }
 
 
+    override fun onCreate() {
+        super.onCreate()
+        startSysForeGround()
+    }
 
-        override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-            //FusedLocationProviderClient is for interacting with the location using fused location
-            setFilter()
 
-            return START_NOT_STICKY
-        }
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        super.onStartCommand(intent, flags, startId)
+        //FusedLocationProviderClient is for interacting with the location using fused location
+        setFilter()
+
+        return START_NOT_STICKY
+    }
 
     override fun onDestroy() {
         super.onDestroy()
@@ -138,31 +134,37 @@ class ServiceHandleAlarms : Service(){
                 if(currentSensorLocally==null){
                     sendBroadcast(Intent(RESET_MARKERS_KEY))
                     addAlarmToHistory(false,"undefined", isArmed = false, alarmSensorId = alarmSensorId, type = type)
-                }else if(!currentSensorLocally.isArmed()){
+                }else if (!currentSensorLocally.isArmed()) {
                     sendBroadcast(Intent(RESET_MARKERS_KEY))
                     currentSensorLocally.getName()?.let {
-                        addAlarmToHistory(true,
-                            it, isArmed = false, alarmSensorId = alarmSensorId, type = type)
+                        addAlarmToHistory(
+                            true,
+                            it, isArmed = false, alarmSensorId = alarmSensorId, type = type
+                        )
                     }
                     // the sensor id exist but is not located
-                }else if(currentSensorLocally.getLatitude()==null
-                    || currentSensorLocally.getLongtitude()==null) {
+                } else if (currentSensorLocally.getLatitude() == null
+                    || currentSensorLocally.getLongtitude() == null
+                ) {
                     sendBroadcast(Intent(RESET_MARKERS_KEY))
                     currentSensorLocally.getName()?.let {
-                        addAlarmToHistory(true,
-                            it, isArmed = false, alarmSensorId = alarmSensorId, type = type)
+                        addAlarmToHistory(
+                            true,
+                            it, isArmed = false, alarmSensorId = alarmSensorId, type = type
+                        )
                     }
-                }else{
+                } else {
                     type?.let { addAlarmToHistory(currentSensorLocally, it) }
 
                     //send to create alarm :map,sound ect...
                     val inn = Intent(CREATE_ALARM_KEY)
-                    inn.putExtra(CREATE_ALARM_ID_KEY,currentSensorLocally.getId())
-                    inn.putExtra(CREATE_ALARM_NAME_KEY,currentSensorLocally.getName())
+                    inn.putExtra(CREATE_ALARM_ID_KEY, currentSensorLocally.getId())
+                    inn.putExtra(CREATE_ALARM_NAME_KEY, currentSensorLocally.getName())
                     inn.putExtra(CREATE_ALARM_IS_ARMED, currentSensorLocally.isArmed())
                     //inn.putExtra(CREATE_ALARM_LATITUDE_KEY,currentSensorLocally.getLatitude())
                     //inn.putExtra(CREATE_ALARM_LONGTITUDE_KEY,currentSensorLocally.getLongtitude())
-                    inn.putExtra(CREATE_ALARM_TYPE_KEY,type)
+                    inn.putExtra(CREATE_ALARM_TYPE_KEY, type)
+                    inn.putExtra(CREATE_ALARM_TYPE_INDEX_KEY, typeIndex)
                     sendBroadcast(inn)
 
                     //play sound and vibrate
@@ -202,13 +204,16 @@ class ServiceHandleAlarms : Service(){
     //add active alarm to history
     private fun addAlarmToHistory(currentSensorLocally: Sensor,type:String) {
         val tmp = Calendar.getInstance()
-        val resources=this.resources
-        val locale=if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) resources.configuration.locales.getFirstMatch(resources.assets.locales)
-        else resources.configuration.locale
-        val dateFormat= SimpleDateFormat("kk:mm dd/MM/yy", locale)
-        val dateString=dateFormat.format(tmp.time)
+        val resources = this.resources
+        val locale =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) resources.configuration.locales.getFirstMatch(
+                resources.assets.locales
+            )
+            else resources.configuration.locale
+        val dateFormat = SimpleDateFormat("kk:mm:ss dd/MM/yy", locale)
+        val dateString = dateFormat.format(tmp.time)
 
-        val alarm= Alarm(
+        val alarm = Alarm(
             currentSensorLocally.getId(),
             currentSensorLocally.getName(),
             type,
@@ -216,12 +221,12 @@ class ServiceHandleAlarms : Service(){
             currentSensorLocally.isArmed(),
             tmp.timeInMillis
         )
-        alarm.latitude=currentSensorLocally.getLatitude()
-        alarm.longitude=currentSensorLocally.getLongtitude()
+        alarm.latitude = currentSensorLocally.getLatitude()
+        alarm.longitude = currentSensorLocally.getLongtitude()
 
-        alarm.isLocallyDefined=true
+        alarm.isLocallyDefined = true
 
-        val alarms=populateAlarmsFromLocally()
+        val alarms = populateAlarmsFromLocally()
         alarms?.add(alarm)
         alarms?.let { storeAlarmsToLocally(it) }
     }
@@ -236,18 +241,21 @@ class ServiceHandleAlarms : Service(){
         type: String?
     ) {
         val tmp = Calendar.getInstance()
-        val resources=this.resources
-        val locale=if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) resources.configuration.locales.getFirstMatch(resources.assets.locales)
-        else resources.configuration.locale
-        val dateFormat= SimpleDateFormat("kk:mm dd/MM/yy", locale)
-        val dateString=dateFormat.format(tmp.time)
+        val resources = this.resources
+        val locale =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) resources.configuration.locales.getFirstMatch(
+                resources.assets.locales
+            )
+            else resources.configuration.locale
+        val dateFormat = SimpleDateFormat("kk:mm:ss dd/MM/yy", locale)
+        val dateString = dateFormat.format(tmp.time)
 
 
+        val alarm =
+            Alarm(alarmSensorId, alarmSensorName, type, dateString, isArmed, tmp.timeInMillis)
+        alarm.isLocallyDefined = isLocallyDefined
 
-        val alarm= Alarm(alarmSensorId,alarmSensorName,type, dateString,isArmed,tmp.timeInMillis)
-        alarm.isLocallyDefined=isLocallyDefined
-
-        val alarms=populateAlarmsFromLocally()
+        val alarms = populateAlarmsFromLocally()
         alarms?.add(alarm)
         alarms?.let { storeAlarmsToLocally(it) }
     }
@@ -263,37 +271,37 @@ class ServiceHandleAlarms : Service(){
             sensorsListStr?.let { convertJsonToSensorList(it) }
         }
 
-        val iteratorList=sensors?.listIterator()
+        val iteratorList = sensors?.listIterator()
         while (iteratorList != null && iteratorList.hasNext()) {
             val detectorItem = iteratorList.next()
-            if(alarmSensorId == detectorItem.getId()){
+            if (alarmSensorId == detectorItem.getId()) {
                 return detectorItem
             }
         }
         return null
     }
 
-    //get the detectors from locally
-    private fun populateDetectorsFromLocally(): ArrayList<Sensor>?  {
-        val detectors: ArrayList<Sensor>?
-        val detectorListStr= getStringInPreference(this, DETECTORS_LIST_KEY_PREF, ERROR_RESP)
-
-        detectors = if(detectorListStr.equals(ERROR_RESP)){
-            ArrayList()
-        }else {
-            detectorListStr?.let { convertJsonToSensorList(it) }
-        }
-        return detectors
-    }
+//    //get the detectors from locally
+//    private fun populateDetectorsFromLocally(): ArrayList<Sensor>?  {
+//        val detectors: ArrayList<Sensor>?
+//        val detectorListStr= getStringInPreference(this, DETECTORS_LIST_KEY_PREF, ERROR_RESP)
+//
+//        detectors = if(detectorListStr.equals(ERROR_RESP)){
+//            ArrayList()
+//        }else {
+//            detectorListStr?.let { convertJsonToSensorList(it) }
+//        }
+//        return detectors
+//    }
 
     //get the alarms from locally
-    private fun populateAlarmsFromLocally(): ArrayList<Alarm>?  {
+    private fun populateAlarmsFromLocally(): ArrayList<Alarm>? {
         val alarms: ArrayList<Alarm>?
-        val alarmListStr= getStringInPreference(this, ALARM_LIST_KEY_PREF, ERROR_RESP)
+        val alarmListStr = getStringInPreference(this, ALARM_LIST_KEY_PREF, ERROR_RESP)
 
-        alarms = if(alarmListStr.equals(ERROR_RESP)){
+        alarms = if (alarmListStr.equals(ERROR_RESP)) {
             ArrayList()
-        }else {
+        } else {
             alarmListStr?.let { convertJsonToAlarmList(it) }
         }
         return alarms
@@ -321,7 +329,7 @@ class ServiceHandleAlarms : Service(){
 
         val isNotificationSound = getBooleanInPreference(this, IS_NOTIFICATION_SOUND_KEY, true)
         if (!isNotificationSound) {
-            Toast.makeText(this, "fail start sound", Toast.LENGTH_LONG).show()
+            //Toast.makeText(this, "fail start sound", Toast.LENGTH_LONG).show()
             return
         }
 

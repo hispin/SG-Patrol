@@ -11,6 +11,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.ToggleButton
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.sensoguard.detectsensor.R
 import com.sensoguard.detectsensor.classes.Sensor
@@ -158,9 +159,15 @@ class SensorsDialogAdapter (private var sensors: ArrayList<Sensor>, val context:
 //            }
 
 
+            if (sensor.getLongtitude() != null && sensor.getLatitude() != null) {
+                tvName?.setTextColor(ContextCompat.getColor(context, R.color.turquoise_blue))
+                tvId?.setTextColor(ContextCompat.getColor(context, R.color.turquoise_blue))
+            }
+
+
             tvId?.text = sensor.getId()
             tvName?.text = sensor.getName()
-            etName?.hint= sensor.getName()
+            etName?.hint = sensor.getName()
 
         }
     }

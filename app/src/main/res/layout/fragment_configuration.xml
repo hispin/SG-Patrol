@@ -15,7 +15,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintHeight_default="percent"
-            app:layout_constraintHeight_percent=".111"
+            app:layout_constraintHeight_percent=".1"
             app:layout_constraintTop_toTopOf="parent"
     >
         <androidx.appcompat.widget.AppCompatImageView
@@ -84,7 +84,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintHeight_default="percent"
-            app:layout_constraintHeight_percent=".111"
+            app:layout_constraintHeight_percent=".1"
             app:layout_constraintTop_toBottomOf="@+id/constSensorAmount"
             android:clickable="true"
             android:focusable="true">
@@ -166,7 +166,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintHeight_default="percent"
-            app:layout_constraintHeight_percent=".111"
+            app:layout_constraintHeight_percent=".1"
             app:layout_constraintTop_toBottomOf="@+id/constAlarmSound"
     >
         <androidx.appcompat.widget.AppCompatImageView
@@ -219,7 +219,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintHeight_default="percent"
-            app:layout_constraintHeight_percent=".111"
+            app:layout_constraintHeight_percent=".1"
             app:layout_constraintTop_toBottomOf="@+id/constVibAlarm"
     >
         <androidx.appcompat.widget.AppCompatImageView
@@ -287,7 +287,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintHeight_default="percent"
-            app:layout_constraintHeight_percent=".111"
+            app:layout_constraintHeight_percent=".1"
             app:layout_constraintTop_toBottomOf="@+id/constAlarmFlicker"
     >
         <androidx.appcompat.widget.AppCompatImageView
@@ -341,7 +341,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintHeight_default="percent"
-            app:layout_constraintHeight_percent=".111"
+            app:layout_constraintHeight_percent=".1"
             app:layout_constraintTop_toBottomOf="@+id/constLoadSettings"
     >
         <androidx.appcompat.widget.AppCompatImageView
@@ -414,7 +414,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintHeight_default="percent"
-            app:layout_constraintHeight_percent=".111"
+            app:layout_constraintHeight_percent=".1"
             app:layout_constraintTop_toBottomOf="@+id/constMapView"
             android:clickable="true"
             android:focusable="true">
@@ -469,7 +469,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintHeight_default="percent"
-            app:layout_constraintHeight_percent=".111"
+            app:layout_constraintHeight_percent=".1"
             app:layout_constraintTop_toBottomOf="@+id/constLangView">
 
         <androidx.appcompat.widget.AppCompatImageView
@@ -498,6 +498,59 @@
                 app:layout_constraintBottom_toBottomOf="@+id/ivSaveOfflineMap"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/ivSaveOfflineMap" />
+
+        <View
+                android:layout_width="match_parent"
+                android:layout_height="0.7dp"
+                android:layout_marginStart="10.7dp"
+                android:layout_marginEnd="10.7dp"
+                android:background="@color/gray4"
+                app:layout_constraintBottom_toBottomOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!--Sensor name always show-->
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/IsSensorAlwaysShow"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintHeight_default="percent"
+            app:layout_constraintHeight_percent=".1"
+            app:layout_constraintTop_toBottomOf="@+id/constSaveOfflineMap">
+
+        <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.041"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/config_ic_map" />
+
+        <TextView
+                style="@style/configContentItem"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ems="14"
+                android:text="@string/always_show_sensor_name"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        <tools:ToggleButton
+                android:id="@+id/togIsSensorAlwaysShow"
+                android:layout_width="44dp"
+                android:layout_height="25dp"
+                android:background="@color/transparent"
+                android:button="@drawable/toggle_selector_active"
+                android:text="ToggleButton"
+                android:textOff=""
+                android:textOn=""
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.954"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
         <View
                 android:layout_width="match_parent"

@@ -12,4 +12,5 @@ class AlarmSensor(
 ) {
     var marker: Marker? = null
     var markerFeature: Feature? = null
+    var typeIdx: Int? = null
 }

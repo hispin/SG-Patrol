@@ -17,7 +17,6 @@ import android.widget.ToggleButton
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.fragment.app.Fragment
 import com.sensoguard.detectsensor.R
 import com.sensoguard.detectsensor.activities.DownloadOfflineTilesActivity
 import com.sensoguard.detectsensor.adapters.GeneralItemMenuAdapter
@@ -29,27 +28,29 @@ import com.sensoguard.detectsensor.interfaces.CallToParentInterface
 import com.sensoguard.detectsensor.interfaces.OnFragmentListener
 
 
-open class ConfigurationFragment : Fragment(),CallToParentInterface{
+open class ConfigurationFragment : ParentFragment(), CallToParentInterface {
 
 
-    private var listPopupWindow: ListPopupWindow?=null
-    private var generalItemMenuAdapter: GeneralItemMenuAdapter?=null
-    private var etSensorValue: AppCompatEditText?=null
-    private var btnSaveSensors: AppCompatButton?=null
-    private var togChangeAlarmVibrate: ToggleButton?=null
-    private var ibSatelliteMode:AppCompatButton?=null
-    private var ibNormalMode:AppCompatButton?=null
-    private var etAlarmFlickerValue:AppCompatEditText?=null
-    private var btnSaveFlicker:AppCompatButton?=null
-    private var constAlarmSound:ConstraintLayout?=null
-    private var txtAlarmSoundValue:TextView?=null
-    private var togChangeAlarmSound:ToggleButton?=null
-    private var btnDefault: AppCompatButton?=null
+    private var listPopupWindow: ListPopupWindow? = null
+    private var generalItemMenuAdapter: GeneralItemMenuAdapter? = null
+    private var etSensorValue: AppCompatEditText? = null
+    private var btnSaveSensors: AppCompatButton? = null
+    private var togChangeAlarmVibrate: ToggleButton? = null
+    private var ibSatelliteMode: AppCompatButton? = null
+    private var ibNormalMode: AppCompatButton? = null
+    private var etAlarmFlickerValue: AppCompatEditText? = null
+    private var btnSaveFlicker: AppCompatButton? = null
+    private var constAlarmSound: ConstraintLayout? = null
+    private var txtAlarmSoundValue: TextView? = null
+    private var togChangeAlarmSound: ToggleButton? = null
+    private var btnDefault: AppCompatButton? = null
+
     //private var ivSelectLanguage: AppCompatImageView?=null
-    private var constLangView:ConstraintLayout?=null
-    private var languageValue:TextView?=null
+    private var constLangView: ConstraintLayout? = null
+    private var languageValue: TextView? = null
     private var listener: OnFragmentListener? = null
     private var btnSaveOffline: AppCompatButton? = null
+    private var togIsSensorAlwaysShow: ToggleButton? = null
 
 
     override fun onAttach(context: Context) {
@@ -67,77 +68,98 @@ open class ConfigurationFragment : Fragment(),CallToParentInterface{
         savedInstanceState: Bundle?
     ): View? {
 
-        val view = inflater.inflate(com.sensoguard.detectsensor.R.layout.fragment_configuration, container, false)
+        val view = inflater.inflate(R.layout.fragment_configuration, container, false)
 
-        etSensorValue = view.findViewById(com.sensoguard.detectsensor.R.id.etSensorValue)
-        val currentNumSensors=getCurrentNumSensorsFromLocally()
-        if(currentNumSensors!=null) {
+        etSensorValue = view.findViewById(R.id.etSensorValue)
+        val currentNumSensors = getCurrentNumSensorsFromLocally()
+        if (currentNumSensors != null) {
             etSensorValue?.setText(currentNumSensors.toString())
         }
 
-        btnSaveSensors = view.findViewById(com.sensoguard.detectsensor.R.id.btnSaveSensors)
-        btnSaveSensors?.setOnClickListener{
+        btnSaveSensors = view.findViewById(R.id.btnSaveSensors)
+        btnSaveSensors?.setOnClickListener {
             addSensors()
         }
 
-        togChangeAlarmVibrate= view.findViewById(com.sensoguard.detectsensor.R.id.togChangeAlarmVibrate)
-        togChangeAlarmVibrate?.isChecked=getBooleanInPreference(activity,IS_VIBRATE_WHEN_ALARM_KEY,true)
+        togChangeAlarmVibrate = view.findViewById(R.id.togChangeAlarmVibrate)
+        togChangeAlarmVibrate?.isChecked =
+            getBooleanInPreference(activity, IS_VIBRATE_WHEN_ALARM_KEY, true)
         togChangeAlarmVibrate?.setOnCheckedChangeListener { buttonView, isChecked ->
             //update the status of the alarm vibrate : on/off
-            setBooleanInPreference(activity,IS_VIBRATE_WHEN_ALARM_KEY,isChecked)
+            setBooleanInPreference(activity, IS_VIBRATE_WHEN_ALARM_KEY, isChecked)
         }
 
-        ibSatelliteMode= view.findViewById(com.sensoguard.detectsensor.R.id.ibSatelliteMode)
-        ibSatelliteMode?.setOnClickListener{
+        ibSatelliteMode = view.findViewById(R.id.ibSatelliteMode)
+        ibSatelliteMode?.setOnClickListener {
             setMapSatellite()
         }
 
-        ibNormalMode= view.findViewById(com.sensoguard.detectsensor.R.id.ibNormalMode)
-        ibNormalMode?.setOnClickListener{
+        ibNormalMode = view.findViewById(R.id.ibNormalMode)
+        ibNormalMode?.setOnClickListener {
             setMapNormal()
         }
-        val mapType = getIntInPreference(activity,MAP_SHOW_VIEW_TYPE_KEY,-1)
-        if(mapType==MAP_SHOW_NORMAL_VALUE){
+        val mapType = getIntInPreference(activity, MAP_SHOW_VIEW_TYPE_KEY, -1)
+        if (mapType == MAP_SHOW_NORMAL_VALUE) {
             setMapNormal()
-        }else if(mapType== MAP_SHOW_SATELLITE_VALUE){
+        } else if (mapType == MAP_SHOW_SATELLITE_VALUE) {
             setMapSatellite()
         }
 
-        etAlarmFlickerValue= view.findViewById(com.sensoguard.detectsensor.R.id.etAlarmFlickerValue)
-        etAlarmFlickerValue?.setText(getLongInPreference(activity,ALARM_FLICKERING_DURATION_KEY,-1L).toString())
+        etAlarmFlickerValue = view.findViewById(R.id.etAlarmFlickerValue)
+        etAlarmFlickerValue?.setText(
+            getLongInPreference(
+                activity,
+                ALARM_FLICKERING_DURATION_KEY,
+                -1L
+            ).toString()
+        )
 
-        btnSaveFlicker= view.findViewById(com.sensoguard.detectsensor.R.id.btnSaveFlicker)
+        btnSaveFlicker = view.findViewById(R.id.btnSaveFlicker)
         //update the time flickering
-        btnSaveFlicker?.setOnClickListener{
+        btnSaveFlicker?.setOnClickListener {
             try {
-                val timeFlicker=etAlarmFlickerValue?.text.toString().toLong()
-                setLongInPreference(activity,ALARM_FLICKERING_DURATION_KEY,timeFlicker)
-                Toast.makeText(activity,resources.getString(com.sensoguard.detectsensor.R.string.time_flickering_save_successfully),Toast.LENGTH_SHORT).show()
-            }catch (ex:NumberFormatException){}
+                val timeFlicker = etAlarmFlickerValue?.text.toString().toLong()
+                setLongInPreference(activity, ALARM_FLICKERING_DURATION_KEY, timeFlicker)
+                Toast.makeText(
+                    activity,
+                    resources.getString(com.sensoguard.detectsensor.R.string.time_flickering_save_successfully),
+                    Toast.LENGTH_SHORT
+                ).show()
+            } catch (ex: NumberFormatException) {
+            }
 
         }
 
-        constAlarmSound= view.findViewById(com.sensoguard.detectsensor.R.id.constAlarmSound)
-        constAlarmSound?.setOnClickListener{
+        constAlarmSound = view.findViewById(R.id.constAlarmSound)
+        constAlarmSound?.setOnClickListener {
             openSoundsMenu()
         }
-        txtAlarmSoundValue= view.findViewById(com.sensoguard.detectsensor.R.id.txtAlarmSoundValue)
+        txtAlarmSoundValue = view.findViewById(R.id.txtAlarmSoundValue)
 
-        var title=getSelectedNotificationSound()
-        txtAlarmSoundValue?.text=title
+        var title = getSelectedNotificationSound()
+        txtAlarmSoundValue?.text = title
 
-        togChangeAlarmSound=view.findViewById(com.sensoguard.detectsensor.R.id.togChangeAlarmSound)
-        togChangeAlarmSound?.isChecked= getBooleanInPreference(activity,IS_NOTIFICATION_SOUND_KEY,true)
+        togChangeAlarmSound = view.findViewById(R.id.togChangeAlarmSound)
+        togChangeAlarmSound?.isChecked =
+            getBooleanInPreference(activity, IS_NOTIFICATION_SOUND_KEY, true)
         togChangeAlarmSound?.setOnCheckedChangeListener { buttonView, isChecked ->
             //update the status of the alarm vibrate : on/off
-            setBooleanInPreference(activity,IS_NOTIFICATION_SOUND_KEY,isChecked)
+            setBooleanInPreference(activity, IS_NOTIFICATION_SOUND_KEY, isChecked)
         }
 
-        btnDefault=view.findViewById(R.id.btnDefault)
-        btnDefault?.setOnClickListener{
+        togIsSensorAlwaysShow = view.findViewById(R.id.togIsSensorAlwaysShow)
+        togIsSensorAlwaysShow?.isChecked =
+            getBooleanInPreference(activity, IS_SENSOR_NAME_ALWAYS_KEY, false)
+        togIsSensorAlwaysShow?.setOnCheckedChangeListener { buttonView, isChecked ->
+            //update the status of the alarm vibrate : on/off
+            setBooleanInPreference(activity, IS_SENSOR_NAME_ALWAYS_KEY, isChecked)
+        }
+
+        btnDefault = view.findViewById(R.id.btnDefault)
+        btnDefault?.setOnClickListener {
             //return the alarm to default sound
             val packageName = "android.resource://${activity?.packageName}/raw/alarm_sound"
-            val uri=Uri.parse(packageName)
+            val uri = Uri.parse(packageName)
             setStringInPreference(activity, SELECTED_NOTIFICATION_SOUND_KEY, uri.toString())
             title = getSelectedNotificationSound()
             txtAlarmSoundValue?.text = title
@@ -281,7 +303,7 @@ open class ConfigurationFragment : Fragment(),CallToParentInterface{
                         Toast.makeText(activity,resources.getString(R.string.sensors_save_successfully),Toast.LENGTH_SHORT).show()
                     }
 
-                    sensors?.let { sen -> storeSensorsToLocally(sen, activity!!) }
+                    sensors?.let { sen -> storeSensorsToLocally(sen, requireActivity()) }
                     dialog.dismiss()
                 }
 
@@ -323,7 +345,7 @@ open class ConfigurationFragment : Fragment(),CallToParentInterface{
             && numSensorsRequest < sensors.size){
             askBeforeDeleteExtraSensor()
         }else if(activity!=null) {
-            sensors?.let { sen -> storeSensorsToLocally(sen, activity!!) }
+            sensors?.let { sen -> storeSensorsToLocally(sen, requireActivity()) }
             Toast.makeText(activity,resources.getString(R.string.sensors_save_successfully),Toast.LENGTH_SHORT).show()
         }
 

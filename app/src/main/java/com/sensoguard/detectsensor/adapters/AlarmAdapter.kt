@@ -64,29 +64,31 @@ class AlarmAdapter (private var alarms: ArrayList<Alarm>, val context: Context, 
             tvTime = _itemView.findViewById(R.id.tvTime)
 
 
-            if(alarm.isArmed!=null
+            if (alarm.isArmed != null
                 && alarm.isArmed!!
-                && alarm.isLocallyDefined!=null
+                && alarm.isLocallyDefined != null
                 && alarm.isLocallyDefined
-            ){
-                tvName?.setTextColor( ContextCompat.getColor(context,R.color.red))
-                tvDate?.setTextColor( ContextCompat.getColor(context,R.color.red))
-                tvId?.setTextColor( ContextCompat.getColor(context,R.color.red))
-                tvType?.setTextColor( ContextCompat.getColor(context,R.color.red))
-                tvTime?.setTextColor( ContextCompat.getColor(context,R.color.red))
-            }else{
-                tvName?.setTextColor( ContextCompat.getColor(context,R.color.black))
-                tvDate?.setTextColor( ContextCompat.getColor(context,R.color.black))
-                tvId?.setTextColor( ContextCompat.getColor(context,R.color.black))
-                tvType?.setTextColor( ContextCompat.getColor(context,R.color.black))
-                tvTime?.setTextColor( ContextCompat.getColor(context,R.color.black))
+            ) {
+                tvName?.setTextColor(ContextCompat.getColor(context, R.color.red))
+                tvDate?.setTextColor(ContextCompat.getColor(context, R.color.red))
+                tvId?.setTextColor(ContextCompat.getColor(context, R.color.red))
+                tvType?.setTextColor(ContextCompat.getColor(context, R.color.red))
+                tvTime?.setTextColor(ContextCompat.getColor(context, R.color.red))
+            } else {
+                tvName?.setTextColor(ContextCompat.getColor(context, R.color.black))
+                tvDate?.setTextColor(ContextCompat.getColor(context, R.color.black))
+                tvId?.setTextColor(ContextCompat.getColor(context, R.color.black))
+                tvType?.setTextColor(ContextCompat.getColor(context, R.color.black))
+                tvTime?.setTextColor(ContextCompat.getColor(context, R.color.black))
             }
 
 
-            tvDate?.text= alarm.timeInMillis?.let { getStrDateTimeByMilliSeconds(it,"dd/MM/yy",context) }
-            tvTime?.text= alarm.timeInMillis?.let { getStrDateTimeByMilliSeconds(it,"kk:mm",context) }
-            tvId?.text=alarm.id
-            tvType?.text=alarm.type
+            tvDate?.text =
+                alarm.timeInMillis?.let { getStrDateTimeByMilliSeconds(it, "dd/MM/yy", context) }
+            tvTime?.text =
+                alarm.timeInMillis?.let { getStrDateTimeByMilliSeconds(it, "kk:mm:ss", context) }
+            tvId?.text = alarm.id
+            tvType?.text = alarm.type
             tvName?.text = alarm.name
 
 

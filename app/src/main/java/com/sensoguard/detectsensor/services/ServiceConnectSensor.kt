@@ -3,7 +3,6 @@ package com.sensoguard.detectsensor.services
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
-import android.app.Service
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -28,17 +27,22 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 
-class ServiceConnectSensor : Service() {
+class ServiceConnectSensor : ParentService() {
 
-    var manager:UsbManager?=null
+    var manager: UsbManager? = null
 
     //private val ACTION_USB_PERMISSION1 = "com.android.USB_PERMISSION"
-    var connection:UsbDeviceConnection?=null
+    var connection: UsbDeviceConnection? = null
     private var usbDevice: UsbDevice? = null
     private var serialPort: UsbSerialDevice? = null
-    var numBytesCount=0
-    var readData :ArrayList<Int>?=null
+    var numBytesCount = 0
+    var readData: ArrayList<Int>? = null
     private var rington: Ringtone? = null
+
+    override fun onTaskRemoved(rootIntent: Intent?) {
+        super.onTaskRemoved(rootIntent)
+        this@ServiceConnectSensor.stopSelf()
+    }
 
     override fun onCreate() {
         super.onCreate()
@@ -47,6 +51,7 @@ class ServiceConnectSensor : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        super.onStartCommand(intent, flags, startId)
 
         findUsbDevices()
 
@@ -59,16 +64,25 @@ class ServiceConnectSensor : Service() {
                 arg1.action == CHECK_AVAILABLE_KEY -> {
                     findUsbDevices()
                 }
+                arg1.action == DISCONNECT_USB_PROCESS_KEY -> {
+                    //setBooleanInPreference(this@ServiceConnectSensor,USB_DEVICE_CONNECT,false)
+                    serialPort?.close()
+                    this@ServiceConnectSensor.stopSelf()
+                }
                 arg1.action == STOP_READ_DATA_KEY -> {
                     //setBooleanInPreference(this@ServiceConnectSensor,USB_DEVICE_CONNECT,false)
                     serialPort?.close()
                     //this@ServiceConnectSensor.stopSelf()
                 }
                 arg1.action == HANDLE_READ_DATA_EXCEPTION -> {
-                    val msg=arg1.getStringExtra("data")
-                    Toast.makeText(applicationContext, "handle read bit int: $msg",Toast.LENGTH_LONG).show()
+                    val msg = arg1.getStringExtra("data")
+                    Toast.makeText(
+                        applicationContext,
+                        "handle read bit int: $msg",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
-                arg1.action == ACTION_USB_PERMISSION ->{
+                arg1.action == ACTION_USB_PERMISSION -> {
                     openConnection()
                 }
 //                arg1.action == CREATE_ALARM_KEY -> {
@@ -104,6 +118,7 @@ class ServiceConnectSensor : Service() {
         filter.addAction(HANDLE_READ_DATA_EXCEPTION)
         filter.addAction(STOP_READ_DATA_KEY)
         filter.addAction(ACTION_USB_PERMISSION)
+        filter.addAction(DISCONNECT_USB_PROCESS_KEY)
         //filter.addAction(CREATE_ALARM_KEY)
         registerReceiver(usbReceiver, filter)
     }
@@ -350,6 +365,7 @@ class ServiceConnectSensor : Service() {
         val innAlarmNotDefined = Intent(CREATE_ALARM_NOT_DEFINED_KEY)
         innAlarmNotDefined.putExtra(CREATE_ALARM_ID_KEY, alarmSensorId)
         innAlarmNotDefined.putExtra(CREATE_ALARM_TYPE_KEY, type)
+        innAlarmNotDefined.putExtra(CREATE_ALARM_TYPE_INDEX_KEY, typeIndex)
         //add alarm to history and send alarm if active
         if (currentSensorLocally == null) {
             sendBroadcast(Intent(RESET_MARKERS_KEY))
@@ -394,6 +410,7 @@ class ServiceConnectSensor : Service() {
             inn.putExtra(CREATE_ALARM_NAME_KEY, currentSensorLocally.getName())
             inn.putExtra(CREATE_ALARM_IS_ARMED, currentSensorLocally.isArmed())
             inn.putExtra(CREATE_ALARM_TYPE_KEY, type)
+            inn.putExtra(CREATE_ALARM_TYPE_INDEX_KEY, typeIndex)
             sendBroadcast(inn)
         }
         sendBroadcast(Intent(HANDLE_ALARM_KEY))
@@ -525,7 +542,7 @@ class ServiceConnectSensor : Service() {
                 resources.assets.locales
             )
             else resources.configuration.locale
-        val dateFormat = SimpleDateFormat("kk:mm dd/MM/yy", locale)
+        val dateFormat = SimpleDateFormat("kk:mm:ss dd/MM/yy", locale)
         val dateString = dateFormat.format(tmp.time)
 
         val alarm = Alarm(

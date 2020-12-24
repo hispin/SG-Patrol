@@ -1,6 +1,7 @@
 package com.sensoguard.detectsensor.activities
 
 //import com.crashlytics.android.Crashlytics
+import android.app.AlertDialog
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
@@ -9,10 +10,10 @@ import android.os.Build
 import android.os.Bundle
 import android.view.WindowManager
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
+import com.sensoguard.detectsensor.R
 import com.sensoguard.detectsensor.classes.GeneralItemMenu
 import com.sensoguard.detectsensor.classes.LanguageManager
 import com.sensoguard.detectsensor.classes.MyExceptionHandler
@@ -21,7 +22,7 @@ import com.sensoguard.detectsensor.global.*
 //import io.fabric.sdk.android.Fabric
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : ParentActivity() {
 
     private var clickConsSensorTable: ConstraintLayout? = null
     private var clickConsMap: ConstraintLayout? = null
@@ -35,7 +36,6 @@ class MainActivity : AppCompatActivity() {
 //    protected override fun attachBaseContext(newBase:Context) {
 //        configurationLanguage()
 //    }
-
 
     override fun onStart() {
         super.onStart()
@@ -54,7 +54,7 @@ class MainActivity : AppCompatActivity() {
 
         configurationLanguage()
 
-        setContentView(com.sensoguard.detectsensor.R.layout.activity_main)
+        setContentView(R.layout.activity_main)
 
 
         //hide unwanted badge of app icon
@@ -77,13 +77,14 @@ class MainActivity : AppCompatActivity() {
         val name = getString(com.sensoguard.detectsensor.R.string.channel_name)
         val descriptionText = getString(com.sensoguard.detectsensor.R.string.channel_description)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        val importance = NotificationManager.IMPORTANCE_LOW
-        val mChannel =
-            NotificationChannel(id, name, importance).apply {
-                description = descriptionText
-                setShowBadge(false)
-            }
-            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val importance = NotificationManager.IMPORTANCE_LOW
+            val mChannel =
+                NotificationChannel(id, name, importance).apply {
+                    description = descriptionText
+                    setShowBadge(false)
+                }
+            val notificationManager =
+                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(mChannel)
         } else {
 
@@ -92,20 +93,45 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        super.onBackPressed()
-        //disconnect usb device
-        sendBroadcast(Intent(STOP_READ_DATA_KEY))
-        setBooleanInPreference(this@MainActivity, USB_DEVICE_CONNECT_STATUS, false)
+        showConformDialog()
+    }
+
+    //show confirm dialog before stop usb process
+    private fun showConformDialog() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle(resources.getString(R.string.disconnect_usb))
+        val yes = resources.getString(R.string.yes)
+        val no = resources.getString(R.string.no)
+        builder.setMessage(resources.getString(R.string.this_will_disconnect_the_usb))
+            .setCancelable(false)
+        builder.setPositiveButton(yes) { dialog, which ->
+
+            super.onBackPressed()
+            //disconnect usb device and stop the process
+            sendBroadcast(Intent(DISCONNECT_USB_PROCESS_KEY))
+            setBooleanInPreference(this@MainActivity, USB_DEVICE_CONNECT_STATUS, false)
+
+            dialog.dismiss()
+
+        }
+
+
+        // Display a negative button on alert dialog
+        builder.setNegativeButton(no) { dialog, which ->
+            dialog.dismiss()
+        }
+        val alert = builder.create()
+        alert.show()
     }
 
     private fun configureGeneralCatch() {
-        Thread.setDefaultUncaughtExceptionHandler(MyExceptionHandler(MyScreensActivity@ this))
+        Thread.setDefaultUncaughtExceptionHandler(MyExceptionHandler(this))
     }
 
     private fun setOnClickSensorTable() {
-        clickConsSensorTable?.setOnClickListener{
-            val inn=Intent(this,MyScreensActivity::class.java)
-            inn.putExtra(CURRENT_ITEM_TOP_MENU_KEY,0)
+        clickConsSensorTable?.setOnClickListener {
+            val inn = Intent(this, MyScreensActivity::class.java)
+            inn.putExtra(CURRENT_ITEM_TOP_MENU_KEY, 0)
             inn.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
             startActivity(inn)
         }

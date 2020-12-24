@@ -3,7 +3,6 @@ package com.sensoguard.detectsensor.activities
 import android.os.Bundle
 import android.util.Log
 import android.widget.ProgressBar
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.geometry.LatLng
@@ -15,7 +14,7 @@ import com.mapbox.mapboxsdk.offline.*
 import com.sensoguard.detectsensor.R
 
 
-class MapmobActivity : AppCompatActivity() {
+class MapmobActivity : ParentActivity() {
     private var isEndNotified = false
     private var progressBar: ProgressBar? = null
     private var mapView: MapView? = null

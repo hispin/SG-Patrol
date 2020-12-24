@@ -8,7 +8,6 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatTextView
@@ -20,13 +19,14 @@ import com.sensoguard.detectsensor.global.setStringInPreference
 import org.apache.commons.lang3.StringUtils
 
 
-class ActivationActivity : AppCompatActivity() {
+class ActivationActivity : ParentActivity() {
 
-    private var myImei: String?=null
-    var tvImei: AppCompatTextView?=null
-    var btnShare: AppCompatButton?=null
-    var etEnterCode:AppCompatEditText?=null
-    var btnSignIn:AppCompatButton?=null
+    private var myImei: String? = null
+    var tvImei: AppCompatTextView? = null
+    var btnShare: AppCompatButton? = null
+    var etEnterCode: AppCompatEditText? = null
+    var btnSignIn: AppCompatButton? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,7 +34,7 @@ class ActivationActivity : AppCompatActivity() {
 
         init()
 
-        myImei=intent.getStringExtra(IMEI_KEY)
+        myImei = intent.getStringExtra(IMEI_KEY)
 
         tvImei?.text = myImei
 

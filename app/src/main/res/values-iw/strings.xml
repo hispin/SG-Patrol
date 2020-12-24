@@ -17,12 +17,12 @@
     <string name="content_delete_extra_sensor">במערכת מוגדרים יותר חיישנים כרגע, האם למחוק את המיותרים ?
     </string>
     <string name="remove_extra_sensors">מחק חיישנים מיותרים</string>
-    <string name="csv_date_title"><![CDATA[Date&Time]]></string>
+    <string name="csv_date_title"><![CDATA[תאריך&שעה]]></string>
     <string name="csv_name_title">שם חיישן</string>
     <string name="csv_id_title">מספר</string>
     <string name="csv_alarm_type_title">סוג אירוע</string>
-    <string name="csv_latitude_title">latitude</string>
-    <string name="csv_longitude_title">longitude</string>
+    <string name="csv_latitude_title">קו רוחב</string>
+    <string name="csv_longitude_title">קו אורך</string>
     <string name="sensor_table_title">חיישנים</string>
     <string name="map_title">מפה</string>
     <string name="config_title">הגדרות</string>
@@ -67,15 +67,20 @@
     <string name="general_desc">description</string>
     <string name="email_subject">My Code for SG-Patrol App</string>
     <string name="delete_all">מחק הכל</string>
-    <string name="do_you_realy_want_delete_all_alarm">Do you realy want to delete all alarms</string>
+    <string name="do_you_really_want_delete_all_alarm">Do you realy want to delete all alarms</string>
     <string name="receiver_disconnected">המקלט מנותק</string>
     <string name="OK">אישור</string>
     <string name="basic_offline_deleted_toast">basic offline deleted toast</string>
     <string name="no_selected_location">לא נבחרו מקומות</string>
-    <string name="camera_details">פרטי המצלמה</string>
+    <string name="sensor_details">פרטי החיישן</string>
     <string name="save_offline_map">שמור מפה לא מקוונת</string>
     <string name="results">תוצאות</string>
     <string name="save_map">שמור מפה</string>
     <string name="delete_last_map">מחק את המפה האחרונה</string>
     <string name="simple_offline_end_progress_success">סיום תהליך של שמירת מפות לא מקוונות</string>
+    <string name="disconnect_usb">ניתוק של הusb</string>
+    <string name="this_will_disconnect_the_usb">פעולה זו תנתק את ה usb</string>
+    <string name="always_show_sensor_name">הראה תמיד את שם חיישן</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
 </resources>

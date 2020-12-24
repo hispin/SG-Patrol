@@ -16,7 +16,6 @@ import android.os.Bundle
 import android.view.*
 import android.widget.*
 import androidx.core.content.ContextCompat
-import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -34,17 +33,16 @@ import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
-import com.mapbox.mapboxsdk.maps.Style.OnStyleLoaded
 import com.mapbox.mapboxsdk.offline.OfflineRegion
 import com.mapbox.mapboxsdk.plugins.annotation.Symbol
-import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions
 import com.mapbox.mapboxsdk.plugins.markerview.MarkerViewManager
 import com.mapbox.mapboxsdk.style.expressions.Expression
+import com.mapbox.mapboxsdk.style.expressions.Expression.get
+import com.mapbox.mapboxsdk.style.layers.Property.*
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.*
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
-import com.mapbox.mapboxsdk.utils.BitmapUtils
 import com.sensoguard.detectsensor.R
 import com.sensoguard.detectsensor.adapters.SensorsDialogAdapter
 import com.sensoguard.detectsensor.classes.AlarmSensor
@@ -69,7 +67,7 @@ private const val ARG_PARAM2 = "param2"
  * Use the [MapmobFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class MapmobFragment : Fragment(), OnAdapterListener, MapboxMap.OnMoveListener {
+class MapmobFragment : ParentFragment(), OnAdapterListener, MapboxMap.OnMoveListener {
     private var popup: PopupWindow? = null
     private var currentLocationMarker: Feature? = null
     private var markersList: ArrayList<Feature>? = null
@@ -134,7 +132,7 @@ class MapmobFragment : Fragment(), OnAdapterListener, MapboxMap.OnMoveListener {
             ViewModelProviders.of(it).get(ViewModelListener::class.java)
                 .startCurrentCalendarListener()?.observe(
                     this,
-                    androidx.lifecycle.Observer { calendar ->
+                    { calendar ->
 
                         //Log.d("testTimer","tick in MapSensorsFragment")
                         //if there is no alarm in process then shut down the timer
@@ -164,6 +162,7 @@ class MapmobFragment : Fragment(), OnAdapterListener, MapboxMap.OnMoveListener {
 
         mapView = view.findViewById(R.id.mapView)
         mapView?.onCreate(savedInstanceState)
+
 
         fbRefresh = view.findViewById(R.id.fbRefresh1)
         fbRefresh?.setOnClickListener {
@@ -279,7 +278,8 @@ class MapmobFragment : Fragment(), OnAdapterListener, MapboxMap.OnMoveListener {
                         //save the marker for update after timeout
                         sensorAlarm.markerFeature = showSensorAlarmMarker(
                             sensorItem,
-                            sensorAlarm.type
+                            sensorAlarm.type,
+                            sensorAlarm.typeIdx
                         )
                     }
 
@@ -396,7 +396,7 @@ class MapmobFragment : Fragment(), OnAdapterListener, MapboxMap.OnMoveListener {
     }
 
     //show marker of sensor alarm
-    private fun showSensorAlarmMarker(sensorItem: Sensor, type: String): Feature? {
+    private fun showSensorAlarmMarker(sensorItem: Sensor, type: String, typeIdx: Int?): Feature? {
 
         if (mapView == null) {
             return null
@@ -410,7 +410,7 @@ class MapmobFragment : Fragment(), OnAdapterListener, MapboxMap.OnMoveListener {
 
         //set icon according to type alarm
         val alarmTypeIcon: Feature? =
-            when (type) {
+            when (typeIdx) {
                 ALARM_CAR -> {
                     loc?.let { addMarker(it, CAR_ICON_ID, sensorItem.getName()) }
                 }
@@ -582,139 +582,109 @@ class MapmobFragment : Fragment(), OnAdapterListener, MapboxMap.OnMoveListener {
             Point.fromLngLat(location.longitude, location.latitude)
         )
 
+
+        val isSensorAlwaysShow = getBooleanInPreference(activity, IS_SENSOR_NAME_ALWAYS_KEY, false)
+        if (!cameraName.equals("myLocate") && isSensorAlwaysShow) {
+            feature.addStringProperty(PROPERTY_NAME, cameraName)
+        }
+        feature.addStringProperty(PROPERTY_NAME_WIN, cameraName)
+
         feature.addStringProperty(ICON_PROPERTY, iconId)
-        feature.addStringProperty(PROPERTY_NAME, cameraName)
 
         markersList?.add(
             feature
         )
 
         if (markersList != null && markersList?.size!! > 0) {
-            myMapboxMap?.setStyle(Style.Builder()
-                .fromUri(mapType)//"mapbox://styles/mapbox/cjf4m44iw0uza2spb3q0a7s41")
+            myMapboxMap?.setStyle(
+                Style.Builder()
+                    .fromUri(mapType)//"mapbox://styles/mapbox/cjf4m44iw0uza2spb3q0a7s41")
 
-                // Add the SymbolLayer icon image to the map style
-                .withImage(
-                    GREEN_ICON_ID, BitmapFactory.decodeResource(
-                        requireActivity().resources, R.drawable.ic_sensor_item
+                    // Add the SymbolLayer icon image to the map style
+                    .withImage(
+                        GREEN_ICON_ID, BitmapFactory.decodeResource(
+                            requireActivity().resources, R.drawable.ic_sensor_item
+                        )
                     )
-                )
-                .withImage(
-                    BLUE_ICON_ID, BitmapFactory.decodeResource(
-                        requireActivity().resources, R.drawable.ic_my_locate
+                    .withImage(
+                        BLUE_ICON_ID, BitmapFactory.decodeResource(
+                            requireActivity().resources, R.drawable.ic_my_locate
+                        )
                     )
-                )
-                .withImage(
-                    GRAY_ICON_ID, BitmapFactory.decodeResource(
-                        requireActivity().resources, R.drawable.ic_sensor_item_disable
+                    .withImage(
+                        GRAY_ICON_ID, BitmapFactory.decodeResource(
+                            requireActivity().resources, R.drawable.ic_sensor_item_disable
+                        )
                     )
-                )
-                .withImage(
-                    CAR_ICON_ID, BitmapFactory.decodeResource(
-                        requireActivity().resources, R.drawable.ic_alarm_car
+                    .withImage(
+                        CAR_ICON_ID, BitmapFactory.decodeResource(
+                            requireActivity().resources, R.drawable.ic_alarm_car
+                        )
                     )
-                )
-                .withImage(
-                    INTRUDER_ICON_ID, BitmapFactory.decodeResource(
-                        requireActivity().resources, R.drawable.ic_alarm_intruder
+                    .withImage(
+                        INTRUDER_ICON_ID, BitmapFactory.decodeResource(
+                            requireActivity().resources, R.drawable.ic_alarm_intruder
+                        )
                     )
-                )
-                .withImage(
-                    SENSOR_OFF_ICON_ID, BitmapFactory.decodeResource(
-                        requireActivity().resources, R.drawable.ic_alarm_sensor_off
+                    .withImage(
+                        SENSOR_OFF_ICON_ID, BitmapFactory.decodeResource(
+                            requireActivity().resources, R.drawable.ic_alarm_sensor_off
+                        )
                     )
-                )
-                .withImage(
-                    RED_ICON_ID, BitmapFactory.decodeResource(
-                        requireActivity().resources, R.drawable.ic_sensor_alarm
+                    .withImage(
+                        RED_ICON_ID, BitmapFactory.decodeResource(
+                            requireActivity().resources, R.drawable.ic_sensor_alarm
+                        )
                     )
-                )
 
-                // Adding a GeoJson source for the SymbolLayer icons.
-                .withSource(
-                    GeoJsonSource(
-                        SOURCE_ID,
-                        FeatureCollection.fromFeatures(markersList!!)
+                    // Adding a GeoJson source for the SymbolLayer icons.
+                    .withSource(
+                        GeoJsonSource(
+                            SOURCE_ID,
+                            FeatureCollection.fromFeatures(markersList!!)
+                        )
                     )
-                )
 
 // Adding the actual SymbolLayer to the map style. An offset is added that the bottom of the red
 // marker icon gets fixed to the coordinate, rather than the middle of the icon being fixed to
 // the coordinate point. This is offset is not always needed and is dependent on the image
 // that you use for the SymbolLayer icon.
-                .withLayer(
-                    SymbolLayer(LAYER_ID, SOURCE_ID)
-                        .withProperties(
-                            iconImage(
-                                Expression.match(
-                                    Expression.get(ICON_PROPERTY),
-                                    Expression.literal(GREEN_ICON_ID),
-                                    Expression.stop(GRAY_ICON_ID, GRAY_ICON_ID),
-                                    Expression.stop(BLUE_ICON_ID, BLUE_ICON_ID),
-                                    Expression.stop(GREEN_ICON_ID, GREEN_ICON_ID),
-                                    Expression.stop(CAR_ICON_ID, CAR_ICON_ID),
-                                    Expression.stop(INTRUDER_ICON_ID, INTRUDER_ICON_ID),
-                                    Expression.stop(SENSOR_OFF_ICON_ID, SENSOR_OFF_ICON_ID),
-                                    Expression.stop(RED_ICON_ID, RED_ICON_ID)
-                                )
-                            ),
-                            iconAllowOverlap(true),
-                            iconIgnorePlacement(true)
-                        )
-                ), Style.OnStyleLoaded {
-            })
+                    .withLayer(
+                        SymbolLayer(LAYER_ID, SOURCE_ID)
+                            .withProperties(
+                                iconImage(
+                                    Expression.match(
+                                        Expression.get(ICON_PROPERTY),
+                                        Expression.literal(GREEN_ICON_ID),
+                                        Expression.stop(GRAY_ICON_ID, GRAY_ICON_ID),
+                                        Expression.stop(BLUE_ICON_ID, BLUE_ICON_ID),
+                                        Expression.stop(GREEN_ICON_ID, GREEN_ICON_ID),
+                                        Expression.stop(CAR_ICON_ID, CAR_ICON_ID),
+                                        Expression.stop(INTRUDER_ICON_ID, INTRUDER_ICON_ID),
+                                        Expression.stop(SENSOR_OFF_ICON_ID, SENSOR_OFF_ICON_ID),
+                                        Expression.stop(RED_ICON_ID, RED_ICON_ID)
+                                    )
+                                ),
+                                iconAllowOverlap(true),
+                                iconIgnorePlacement(true),
+                                textOffset(FloatArray(2) { 0f;-2.5f }.toTypedArray()),
+                                textIgnorePlacement(true),
+                                textAllowOverlap(true),
+                                textHaloColor(
+                                    ContextCompat.getColor(
+                                        requireContext(),
+                                        R.color.white
+                                    )
+                                ),
+                                textHaloWidth(2f),
+                                textVariableAnchor(Array(4) { TEXT_ANCHOR_TOP }),//; TEXT_ANCHOR_BOTTOM; TEXT_ANCHOR_LEFT; TEXT_ANCHOR_RIGHT}),
+                                //textJustify(TEXT_JUSTIFY_AUTO),
+                                textField(Expression.concat(get(PROPERTY_NAME)))
+                            )
+                    ), Style.OnStyleLoaded {
+                })
         }//end checking the array
         return feature
-    }
-
-    private fun addMarker2(location: LatLng, icon: Int) {
-        val myId = "999"//Date().time.toString()
-        BitmapUtils.getBitmapFromDrawable(
-            ResourcesCompat.getDrawable(
-                resources,
-                icon,
-                null
-            )
-        )?.let {
-            loadedMapStyle?.addImage(
-                myId, it
-            )
-        }
-
-        myMapboxMap?.getStyle(OnStyleLoaded { style ->
-
-            //val test = style.getSource(CURRENT_LOC_SOURCE)
-            style.removeSource(CURRENT_LOC_SOURCE)
-            loadedMapStyle?.addSource(GeoJsonSource(CURRENT_LOC_SOURCE))
-
-            val symbolManager1 = loadedMapStyle?.let {
-                SymbolManager(
-                    mapView!!,
-                    myMapboxMap!!,
-                    it
-                )
-            }
-
-            symbolManager1?.iconAllowOverlap = true
-            symbolManager1?.iconIgnorePlacement = true
-
-
-            symbolOption = SymbolOptions()
-                .withLatLng(location)//new LatLng(new LatLng(32.173001, 34.842284)))//32.941484, 35.795603)))
-                .withIconImage(myId)
-                .withDraggable(false)
-                .withIconSize(1.0f)
-
-            // Add symbol at top right
-            val symbol = symbolManager1?.create(
-                symbolOption
-            )
-
-            mySymbolCurrLocation = symbol
-
-        })
-
-
     }
 
 
@@ -836,10 +806,10 @@ class MapmobFragment : Fragment(), OnAdapterListener, MapboxMap.OnMoveListener {
 
         }
 
-        val itemDecorator = DividerItemDecoration(context!!, DividerItemDecoration.VERTICAL)
+        val itemDecorator = DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
         itemDecorator.setDrawable(
             ContextCompat.getDrawable(
-                context!!,
+                requireContext(),
                 R.drawable.divider
             )!!
         )
@@ -904,11 +874,14 @@ class MapmobFragment : Fragment(), OnAdapterListener, MapboxMap.OnMoveListener {
         if (isAdded) {
             mapView?.getMapAsync {
                 mapView?.getMapAsync { mapboxMap ->
+                    mapboxMap.uiSettings.isCompassEnabled = true
+                    mapboxMap.uiSettings.setCompassFadeFacingNorth(false)
                     mapboxMap.setStyle(mapType) {
 
                         loadedMapStyle = it
                         loadedMapStyle?.addSource(GeoJsonSource("source-id"))
                         myMapboxMap = mapboxMap
+
                         myMapboxMap?.addOnMapClickListener { point ->
 
                             val result = handleClickIcon(
@@ -1003,6 +976,7 @@ class MapmobFragment : Fragment(), OnAdapterListener, MapboxMap.OnMoveListener {
 
     override fun onPause() {
         super.onPause()
+        popup?.dismiss()
         mapView?.onPause()
         activity?.stopService(Intent(context, ServiceFindLocation::class.java))
     }
@@ -1051,13 +1025,14 @@ class MapmobFragment : Fragment(), OnAdapterListener, MapboxMap.OnMoveListener {
 
                 val alarmSensorId = inn.getStringExtra(CREATE_ALARM_ID_KEY)
                 val type = inn.getStringExtra(CREATE_ALARM_TYPE_KEY)
+                val typeIdx = inn.getIntExtra(CREATE_ALARM_TYPE_INDEX_KEY, -1)
                 val isArmed = inn.getBooleanExtra(CREATE_ALARM_IS_ARMED, false)
 
                 //prevent duplicate alarm at the same sensor at the same time
                 alarmSensorId?.let { removeSensorAlarmById(it) }
 
                 //add alarm process to queue
-                alarmSensorId.let {
+                val alarmSensor = alarmSensorId.let {
                     it?.let { it1 ->
                         type?.let { it2 ->
                             AlarmSensor(
@@ -1068,7 +1043,9 @@ class MapmobFragment : Fragment(), OnAdapterListener, MapboxMap.OnMoveListener {
                             )
                         }
                     }
-                }?.let { UserSession.instance.alarmSensors?.add(it) }
+                }
+                alarmSensor?.typeIdx = typeIdx
+                alarmSensor?.let { UserSession.instance.alarmSensors?.add(it) }
                 showMarkers()
 
             } else if (inn.action == GET_CURRENT_LOCATION_KEY) {
@@ -1126,14 +1103,17 @@ class MapmobFragment : Fragment(), OnAdapterListener, MapboxMap.OnMoveListener {
     }
 
     private val PROPERTY_NAME = "name"
+    private val PROPERTY_NAME_WIN = "name_win"
 
     private fun handleClickIcon(screenPoint: PointF, point: LatLng): Boolean {
         if (myMapboxMap != null) {
             val features: List<Feature> = myMapboxMap!!.queryRenderedFeatures(screenPoint, LAYER_ID)
             if (features.isNotEmpty()) {
-                val cameraName = features[0].getStringProperty(PROPERTY_NAME)
+                val cameraName = features[0].getStringProperty(PROPERTY_NAME_WIN)
 
+                //if(cameraName!=null && cameraName != "") {
                 showPopup(requireActivity(), screenPoint, cameraName)
+                //}
 
                 return true
             } else {

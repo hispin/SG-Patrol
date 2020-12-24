@@ -18,7 +18,6 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.View.OnTouchListener
 import android.widget.ToggleButton
-import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -41,10 +40,11 @@ import kotlinx.android.synthetic.main.activity_my_screens.*
 import java.util.*
 
 
-class MyScreensActivity : AppCompatActivity(), OnFragmentListener, java.util.Observer {
+class MyScreensActivity : ParentActivity(), OnFragmentListener, java.util.Observer {
 
 
     private var clickHundler: ClickHandler? = null
+
     // When requested, this adapter returns a DemoObjectFragment,
     // representing an object in the collection.
     private lateinit var collectionPagerAdapter: CollectionPagerAdapter
