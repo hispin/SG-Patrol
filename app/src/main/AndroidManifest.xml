@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         package="com.sensoguard.detectsensor">
 
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <!--    <uses-permission android:name="android.permission.READ_PRIVILEGED_PHONE_STATE" />-->
+    <uses-permission
+            android:name="android.permission.READ_PRIVILEGED_PHONE_STATE"
+            tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="com.google.android.things.permission.USE_PERIPHERAL_IO" />
     <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -17,6 +22,8 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.VIBRATE" />
 
+    <uses-feature android:name="android.hardware.usb.host" />
+
     <application
             android:name=".LSPatrolApp"
             android:allowBackup="true"
@@ -30,7 +37,7 @@
         <service
                 android:name=".services.ParentService"
                 android:enabled="true"
-                android:exported="true"></service>
+                android:exported="true" />
 
         <activity android:name=".activities.ParentActivity" />
         <activity android:name=".activities.DownloadOfflineTilesActivity" />
@@ -72,7 +79,13 @@
                 android:name=".services.ServiceConnectSensor"
                 android:enabled="true"
                 android:exported="true"
-                android:stopWithTask="false" />
+                android:stopWithTask="false">
+
+            <intent-filter>
+                <action android:name="com.androidexample.screenonoff.AEScreenOnOffService" />
+            </intent-filter>
+
+        </service>
         <service
                 android:name=".services.ServiceFindLocation"
                 android:exported="true" />
@@ -80,6 +93,14 @@
                 android:name=".services.ServiceHandleAlarms"
                 android:exported="true" />
         <service android:name=".services.ServiceFindSingleLocation" />
+
+        <!--        <receiver android:name=".ScreenOnOffReceiver">-->
+        <!--            <intent-filter>-->
+        <!--                <action android:name="android.intent.action.SCREEN_ON" />-->
+        <!--                <action android:name="android.intent.action.SCREEN_OFF" />-->
+        <!--            </intent-filter>-->
+        <!--        </receiver>-->
+
 
         <meta-data
                 android:name="io.fabric.ApiKey"

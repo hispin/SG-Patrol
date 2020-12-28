@@ -38,6 +38,13 @@ class ServiceHandleAlarms : ParentService() {
     }
 
 
+    override fun onTaskRemoved(rootIntent: Intent?) {
+        super.onTaskRemoved(rootIntent)
+        stopPlayingAlarm()
+        //setBooleanInPreference(applicationContext, USB_DEVICE_CONNECT_STATUS, false)
+        this@ServiceHandleAlarms.stopSelf()
+    }
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
         //FusedLocationProviderClient is for interacting with the location using fused location

@@ -9,7 +9,6 @@ import android.os.Bundle
 import android.provider.Settings
 import android.telephony.TelephonyManager
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.sensoguard.detectsensor.R
@@ -17,16 +16,16 @@ import com.sensoguard.detectsensor.classes.CryptoHandler
 import com.sensoguard.detectsensor.global.*
 import kotlinx.android.synthetic.main.activity_activation.*
 
-class InitAppActivity : AppCompatActivity() {
+class InitAppActivity : ParentActivity() {
 
-    private var myImei: String?=null
+    private var myImei: String? = null
 
-   override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
-       //init the usb disconnected
-       sendBroadcast(Intent(STOP_READ_DATA_KEY))
-       setBooleanInPreference(this, USB_DEVICE_CONNECT_STATUS, false)
+        //init the usb disconnected
+        sendBroadcast(Intent(STOP_READ_DATA_KEY))
+        setBooleanInPreference(this, USB_DEVICE_CONNECT_STATUS, false)
 
         setContentView(R.layout.activity_init_app)
         setReadPhoneStatePermission()
@@ -68,7 +67,12 @@ class InitAppActivity : AppCompatActivity() {
         var deviceUniqueIdentifier: String? = null
         val tm = this.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
         if (null != tm) {
-            if(ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.READ_PHONE_STATE
+                ) != PackageManager.PERMISSION_GRANTED
+                
+            ) {
 
                 deviceUniqueIdentifier = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     tm.imei

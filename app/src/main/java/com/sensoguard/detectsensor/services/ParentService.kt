@@ -12,6 +12,10 @@ open class ParentService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+//        val languageToLoad:String? = getStringInPreference(this, CURRENT_LANG_KEY_PREF, "en")
+//        if(languageToLoad!=null) {
+//            setAppLanguage(this, languageToLoad)
+//        }
         configurationLanguage(this)
         return super.onStartCommand(intent, flags, startId)
     }

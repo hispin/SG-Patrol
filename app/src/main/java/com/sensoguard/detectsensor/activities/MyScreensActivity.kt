@@ -29,7 +29,6 @@ import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
 import com.sensoguard.detectsensor.R
 import com.sensoguard.detectsensor.classes.AlarmSensor
-import com.sensoguard.detectsensor.classes.GeneralItemMenu
 import com.sensoguard.detectsensor.controler.ViewModelListener
 import com.sensoguard.detectsensor.fragments.*
 import com.sensoguard.detectsensor.global.*
@@ -102,6 +101,8 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, java.util.Observ
         if (isAnySensorAlarmNotTimeOut()) {
             startTimer()
         }
+        configureActionBar()
+        //editActionBar(false)
     }
 
     override fun onPause() {
@@ -522,7 +523,7 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, java.util.Observ
 
     //set the language of the app (calling  from activity)
     override fun updateLanguage() {
-        setAppLanguage(this, GeneralItemMenu.selectedItem)
+        //setAppLanguage(this, GeneralItemMenu.selectedItem)
         this.finish()
         this.startActivity(intent)
     }

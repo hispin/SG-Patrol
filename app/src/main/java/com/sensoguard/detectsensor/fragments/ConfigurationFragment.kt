@@ -392,7 +392,6 @@ open class ConfigurationFragment : ParentFragment(), CallToParentInterface {
                     showCurrentLanguage(item)
                 }
                 listener?.updateLanguage()
-
             }
         }
     }

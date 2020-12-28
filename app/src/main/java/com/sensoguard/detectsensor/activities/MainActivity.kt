@@ -14,8 +14,6 @@ import androidx.appcompat.widget.AppCompatButton
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import com.sensoguard.detectsensor.R
-import com.sensoguard.detectsensor.classes.GeneralItemMenu
-import com.sensoguard.detectsensor.classes.LanguageManager
 import com.sensoguard.detectsensor.classes.MyExceptionHandler
 import com.sensoguard.detectsensor.global.*
 
@@ -52,7 +50,7 @@ class MainActivity : ParentActivity() {
 
         super.onCreate(savedInstanceState)
 
-        configurationLanguage()
+        //configurationLanguage()
 
         setContentView(R.layout.activity_main)
 
@@ -179,20 +177,20 @@ class MainActivity : ParentActivity() {
 
     }
 
-    private fun configurationLanguage() {
-        LanguageManager.setLanguageList()
-        val currentLanguage = getStringInPreference(this, CURRENT_LANG_KEY_PREF, "-1")
-        if (currentLanguage != "-1") {
-            GeneralItemMenu.selectedItem = currentLanguage
-            setAppLanguage(this, GeneralItemMenu.selectedItem)
-        } else {
-            val deviceLang = getAppLanguage()
-            if (LanguageManager.isExistLang(deviceLang)) {
-                GeneralItemMenu.selectedItem = deviceLang
-                setAppLanguage(this, GeneralItemMenu.selectedItem)
-            }
-        }
-    }
+//    private fun configurationLanguage() {
+//        LanguageManager.setLanguageList()
+//        val currentLanguage = getStringInPreference(this, CURRENT_LANG_KEY_PREF, "-1")
+//        if (currentLanguage != "-1") {
+//            GeneralItemMenu.selectedItem = currentLanguage
+//            setAppLanguage(this, GeneralItemMenu.selectedItem)
+//        } else {
+//            val deviceLang = getAppLanguage()
+//            if (LanguageManager.isExistLang(deviceLang)) {
+//                GeneralItemMenu.selectedItem = deviceLang
+//                setAppLanguage(this, GeneralItemMenu.selectedItem)
+//            }
+//        }
+//    }
 
     //Change View of fragment
     private fun replaceFragment(

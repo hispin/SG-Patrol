@@ -22,13 +22,13 @@ const val mfileName="SG-AlarmLog.csv"
 
 //var mCsvAlarms:ArrayList<String>?=null
 
-private fun alarmTitlesToCsvString(context:Context): String {
+private fun alarmTitlesToCsvString(context: Context): String {
 
-     var res = context.resources
-    val placeHolderBitmap="Bitmap"
+    var res = context.resources
+    val placeHolderBitmap = "Bitmap"
 
     //val mySeparator=";"
-    val sb=StringBuilder()
+    val sb = StringBuilder()
     sb.append(res.getString(R.string.csv_date_title).toString())
     sb.append(mySeparator)
     sb.append(res.getString(R.string.csv_name_title).toString())
@@ -68,34 +68,65 @@ private fun alarmToCsvString(alarm: Alarm?, context: Context): String {
     return sb.toString()
 }
 
-fun writeCsvFile(mCsvAlarms:ArrayList<String>):Boolean {
-     try {
+fun writeCsvFile(mCsvAlarms: ArrayList<String>): Boolean {
+    try {
         //create a folder
-        val folder= File(Environment.getExternalStorageDirectory(), mfolderName)
+        val folder = File(Environment.getExternalStorageDirectory(), mfolderName)
         if (!folder.exists()) {
             folder.mkdirs()
         }
 
         //write to file
-        val baseDir=android.os.Environment.getExternalStorageDirectory().absolutePath
-        val filePath=baseDir +"/"+mfolderName+""+ File.separator + mfileName
+        val baseDir = android.os.Environment.getExternalStorageDirectory().absolutePath
+        val filePath = baseDir + "/" + mfolderName + "" + File.separator + mfileName
         //val filePath=baseDir + File.separator + mfileName
-        val file= File(filePath)
-        val fileWriter= FileWriter(file)
 
-        val writer= CSVWriter(fileWriter)
+        //val os: OutputStream = FileOutputStream(filePath)
+        //val w = PrintWriter(OutputStreamWriter(os, "UTF-8"))
+//         val iteratorList = mCsvAlarms.listIterator()
+//
+//        while (iteratorList != null && iteratorList.hasNext()) {
+//            val item=iteratorList.next()
+//            val strArr=item.split(mySeparator)
+//            w.print(strArr.toTypedArray())
+//        }
+//
+//         w.flush()
+//         w.close()
 
-         val iteratorList = mCsvAlarms.listIterator()
+
+        //////////////////
+
+//         StreamResource(object : StreamSource() {
+//             val stream: InputStream?
+//                 get() {
+//                     val exportData: List<Array<Any>> = getExportData()
+//                     val buffer = StringBuffer()
+//                     buffer.append(someData)
+//                     val bytes = buffer.toString().toByteArray()
+//                     return ByteArrayInputStream(bytes)
+//                 }
+//         }, "MyExport.csv")
+
+        //////////////////
+        val file = File(filePath)
+        val fileWriter = FileWriter(file)
+
+        val writer = CSVWriter(fileWriter)
+
+        val iteratorList = mCsvAlarms.listIterator()
 
         while (iteratorList != null && iteratorList.hasNext()) {
-            val item=iteratorList.next()
+            val item = iteratorList.next()
 
-            val strArr=item.split(mySeparator)
+            val strArr = item.split(mySeparator)
             writer.writeNext(strArr.toTypedArray())
 
         }
         writer.close()
         fileWriter.close()
+        /////////////////////
+
 
         //val photoFiles=true
         //todo-Haggay: The CsvFile has all data needed to write the file - COMPLETE
@@ -107,7 +138,7 @@ fun writeCsvFile(mCsvAlarms:ArrayList<String>):Boolean {
         //return photoFiles //Change this as needed
 
         return true
-    }catch (e:Exception){
+    } catch (e: Exception) {
         e.printStackTrace()
     }
     return false
@@ -115,21 +146,24 @@ fun writeCsvFile(mCsvAlarms:ArrayList<String>):Boolean {
 
 
 //Share the csv file
-fun shareCsv(activity:Activity){
+fun shareCsv(activity: Activity) {
 
-    val baseDir=android.os.Environment.getExternalStorageDirectory().absolutePath
-    val filePath=baseDir +"/"+mfolderName+""+ File.separator + mfileName
-    val file= File(filePath)
+    val baseDir = android.os.Environment.getExternalStorageDirectory().absolutePath
+    val filePath = baseDir + "/" + mfolderName + "" + File.separator + mfileName
+    val file = File(filePath)
     val sendIntent = Intent(Intent.ACTION_SEND)
     // sendIntent.setType("text/html");
     sendIntent.type = "application/csv"
     sendIntent.putExtra(Intent.EXTRA_EMAIL, "")
 
-    val resources=activity.resources
-    val locale=if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) resources.configuration.locales.getFirstMatch(resources.assets.locales)
-    else resources.configuration.locale
-    val dateFormat= SimpleDateFormat("dd/MM/yy", locale)
-    val dateString=dateFormat.format(Calendar.getInstance().time)
+    val resources = activity.resources
+    val locale =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) resources.configuration.locales.getFirstMatch(
+            resources.assets.locales
+        )
+        else resources.configuration.locale
+    val dateFormat = SimpleDateFormat("dd/MM/yy", locale)
+    val dateString = dateFormat.format(Calendar.getInstance().time)
 
     sendIntent.putExtra(Intent.EXTRA_SUBJECT, "SensoGuard Alarm Log $dateString")
     sendIntent.putExtra(Intent.EXTRA_TEXT, "")

@@ -41,6 +41,8 @@ class ServiceConnectSensor : ParentService() {
 
     override fun onTaskRemoved(rootIntent: Intent?) {
         super.onTaskRemoved(rootIntent)
+        setBooleanInPreference(this@ServiceConnectSensor, USB_DEVICE_CONNECT_STATUS, false)
+        serialPort?.close()
         this@ServiceConnectSensor.stopSelf()
     }
 
@@ -65,7 +67,11 @@ class ServiceConnectSensor : ParentService() {
                     findUsbDevices()
                 }
                 arg1.action == DISCONNECT_USB_PROCESS_KEY -> {
-                    //setBooleanInPreference(this@ServiceConnectSensor,USB_DEVICE_CONNECT,false)
+                    setBooleanInPreference(
+                        this@ServiceConnectSensor,
+                        USB_DEVICE_CONNECT_STATUS,
+                        false
+                    )
                     serialPort?.close()
                     this@ServiceConnectSensor.stopSelf()
                 }
@@ -84,6 +90,17 @@ class ServiceConnectSensor : ParentService() {
                 }
                 arg1.action == ACTION_USB_PERMISSION -> {
                     openConnection()
+                }
+                arg1.action == Intent.ACTION_SCREEN_OFF -> {
+                    //Toast.makeText(this@ServiceConnectSensor, "MyScreensActivity start sound", Toast.LENGTH_LONG).show()
+                    setBooleanInPreference(
+                        this@ServiceConnectSensor,
+                        USB_DEVICE_CONNECT_STATUS,
+                        false
+                    )
+                    serialPort?.close()
+                    sendBroadcast(Intent(USB_CONNECTION_OFF_UI))
+                    this@ServiceConnectSensor.stopSelf()
                 }
 //                arg1.action == CREATE_ALARM_KEY -> {
 //                //Toast.makeText(this@MyScreensActivity, "MyScreensActivity start sound", Toast.LENGTH_LONG).show()
@@ -119,6 +136,8 @@ class ServiceConnectSensor : ParentService() {
         filter.addAction(STOP_READ_DATA_KEY)
         filter.addAction(ACTION_USB_PERMISSION)
         filter.addAction(DISCONNECT_USB_PROCESS_KEY)
+        filter.addAction(Intent.ACTION_SCREEN_OFF)
+        filter.addAction(Intent.ACTION_SCREEN_ON)
         //filter.addAction(CREATE_ALARM_KEY)
         registerReceiver(usbReceiver, filter)
     }
@@ -562,4 +581,6 @@ class ServiceConnectSensor : ParentService() {
         alarms?.add(alarm)
         alarms?.let { storeAlarmsToLocally(it) }
     }
+
+
 }

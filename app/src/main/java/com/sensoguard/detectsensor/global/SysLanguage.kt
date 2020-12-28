@@ -27,7 +27,7 @@ fun configurationLanguage(context: Context) {
         }
     }
 }
-
+//
 //set language for the application
 fun setAppLanguage(c: Context, lang: String) {
     val localeNew = Locale(lang)
@@ -35,11 +35,13 @@ fun setAppLanguage(c: Context, lang: String) {
 
     val res = c.resources
     val newConfig = Configuration(res.configuration)
-    newConfig.locale = localeNew
+    //newConfig.locale = localeNew
+    newConfig.setLocale(localeNew)
     newConfig.setLayoutDirection(localeNew)
+
     res.updateConfiguration(newConfig, res.displayMetrics)
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
         newConfig.setLocale(localeNew)
         c.createConfigurationContext(newConfig)
     }
