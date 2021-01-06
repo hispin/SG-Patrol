@@ -17,6 +17,7 @@ import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import com.sensoguard.detectsensor.R
 import com.sensoguard.detectsensor.classes.Alarm
+import com.sensoguard.detectsensor.classes.AlarmSensor
 import com.sensoguard.detectsensor.classes.Sensor
 import com.sensoguard.detectsensor.global.*
 import java.text.SimpleDateFormat
@@ -84,7 +85,7 @@ class ServiceHandleAlarms : ParentService() {
                 val type = intent.getStringExtra(CREATE_ALARM_TYPE_KEY)
                 Toast.makeText(context, "$type alarm from unit $alarmSensorId ", Toast.LENGTH_LONG)
                     .show()
-                //accept test alarm
+                //accept test alarm (for testing)
             } else if (intent.action == READ_DATA_KEY_TEST) {
                 val bit = intent.getIntegerArrayListExtra("data")
 
@@ -162,6 +163,23 @@ class ServiceHandleAlarms : ParentService() {
                     }
                 } else {
                     type?.let { addAlarmToHistory(currentSensorLocally, it) }
+
+
+                    //////////////add alarm to queue
+                    //prevent duplicate alarm at the same sensor at the same time
+                    removeSensorAlarmById(currentSensorLocally.getId())
+
+                    if (type != null) {
+                        val sensorAlarm = AlarmSensor(
+                            currentSensorLocally.getId(),
+                            Calendar.getInstance(),
+                            type,
+                            currentSensorLocally.isArmed()
+                        )
+                        sensorAlarm.typeIdx = typeIndex
+                        UserSession.instance.alarmSensors?.add(sensorAlarm)
+                    }
+                    /// end add to queue
 
                     //send to create alarm :map,sound ect...
                     val inn = Intent(CREATE_ALARM_KEY)
@@ -425,5 +443,16 @@ class ServiceHandleAlarms : ParentService() {
             }
         }
 
+    //remove alarm sensor if exist (for testing)
+    private fun removeSensorAlarmById(alarmId: String) {
+
+        val iteratorList = UserSession.instance.alarmSensors?.listIterator()
+        while (iteratorList != null && iteratorList.hasNext()) {
+            val sensorItem = iteratorList.next()
+            if (sensorItem.alarmSensorId == alarmId) {
+                iteratorList.remove()
+            }
+        }
+    }
 
 }

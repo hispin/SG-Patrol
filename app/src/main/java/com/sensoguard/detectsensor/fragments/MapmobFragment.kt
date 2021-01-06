@@ -141,11 +141,15 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, MapboxMap.OnMoveList
                                 ViewModelProviders.of(act).get(ViewModelListener::class.java)
                                     .shutDownTimer()
                             }
-                            showMarkers()
-                        } else {
-                            //remove all the time out sensors alarm and show them with regular sensor marker
-                            replaceSensorAlarmTimeOutToSensorMarker()
+                            //showMarkers()
                         }
+//                        else {
+//                            //remove all the time out sensors alarm and show them with regular sensor marker
+//                            //replaceSensorAlarmTimeOutToSensorMarker()
+//                            showMarkers()
+//                        }
+                        //if the
+                        showMarkers()
 
                     })
 
@@ -1028,24 +1032,24 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, MapboxMap.OnMoveList
                 val typeIdx = inn.getIntExtra(CREATE_ALARM_TYPE_INDEX_KEY, -1)
                 val isArmed = inn.getBooleanExtra(CREATE_ALARM_IS_ARMED, false)
 
-                //prevent duplicate alarm at the same sensor at the same time
-                alarmSensorId?.let { removeSensorAlarmById(it) }
-
-                //add alarm process to queue
-                val alarmSensor = alarmSensorId.let {
-                    it?.let { it1 ->
-                        type?.let { it2 ->
-                            AlarmSensor(
-                                it1,
-                                Calendar.getInstance(),
-                                it2,
-                                isArmed
-                            )
-                        }
-                    }
-                }
-                alarmSensor?.typeIdx = typeIdx
-                alarmSensor?.let { UserSession.instance.alarmSensors?.add(it) }
+//                //prevent duplicate alarm at the same sensor at the same time
+//                alarmSensorId?.let { removeSensorAlarmById(it) }
+//
+//                //add alarm process to queue
+//                val alarmSensor = alarmSensorId.let {
+//                    it?.let { it1 ->
+//                        type?.let { it2 ->
+//                            AlarmSensor(
+//                                it1,
+//                                Calendar.getInstance(),
+//                                it2,
+//                                isArmed
+//                            )
+//                        }
+//                    }
+//                }
+//                alarmSensor?.typeIdx = typeIdx
+//                alarmSensor?.let { UserSession.instance.alarmSensors?.add(it) }
                 showMarkers()
 
             } else if (inn.action == GET_CURRENT_LOCATION_KEY) {

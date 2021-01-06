@@ -17,11 +17,24 @@ fun storeSensorsToLocally(sensors:ArrayList<Sensor>,context: Context){
 //get the sensors from locally
 fun getSensorsFromLocally(activity:Activity): ArrayList<Sensor>?  {
     val sensors: ArrayList<Sensor>?
-    val detectorListStr=getStringInPreference(activity,DETECTORS_LIST_KEY_PREF, ERROR_RESP)
+    val detectorListStr = getStringInPreference(activity, DETECTORS_LIST_KEY_PREF, ERROR_RESP)
 
-    sensors = if(detectorListStr.equals(ERROR_RESP)){
+    sensors = if (detectorListStr.equals(ERROR_RESP)) {
         ArrayList()
-    }else {
+    } else {
+        detectorListStr?.let { convertJsonToSensorList(it) }
+    }
+    return sensors
+}
+
+//get the sensors from locally
+fun getSensorsFromLocally(context: Context): ArrayList<Sensor>? {
+    val sensors: ArrayList<Sensor>?
+    val detectorListStr = getStringInPreference(context, DETECTORS_LIST_KEY_PREF, ERROR_RESP)
+
+    sensors = if (detectorListStr.equals(ERROR_RESP)) {
+        ArrayList()
+    } else {
         detectorListStr?.let { convertJsonToSensorList(it) }
     }
     return sensors

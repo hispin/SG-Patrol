@@ -16,8 +16,8 @@ android {
         applicationId "com.sensoguard.detectsensor"
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 64
-        versionName "1.64"
+        versionCode 73
+        versionName "1.73"
         vectorDrawables.useSupportLibrary = true
         //testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -28,6 +28,13 @@ android {
             storePassword "sensor1234"
             keyAlias "sensoralias"
             keyPassword "sensor1234"
+        }
+    }
+
+    bundle {
+        //prevent google play filter the resource that the device does not support
+        language {
+            enableSplit = false
         }
     }
 

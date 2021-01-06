@@ -130,7 +130,7 @@ class MapSensorsFragment : ParentFragment(), OnMapReadyCallback, OnAdapterListen
                             showMarkers()
                         } else {
                             //remove all the time out sensors alarm and show them with regular sensor marker
-                            replaceSensorAlarmTimeOutToSensorMarker()
+                            //replaceSensorAlarmTimeOutToSensorMarker()
                         }
 
                     })
@@ -966,13 +966,6 @@ class MapSensorsFragment : ParentFragment(), OnMapReadyCallback, OnAdapterListen
                 }
                 sensorAlarm?.typeIdx = typeIdx
                 sensorAlarm?.let { UserSession.instance.alarmSensors?.add(it) }
-
-//                        Toast.makeText(activity, "start sound", Toast.LENGTH_LONG).show()
-//                        playAlarmSound()
-//
-//                        playVibrate()
-//
-//                        startTimer()
 
                 showMarkers()
 

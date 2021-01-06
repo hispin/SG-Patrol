@@ -20,6 +20,7 @@ import com.felhr.usbserial.UsbSerialDevice
 import com.felhr.usbserial.UsbSerialInterface
 import com.sensoguard.detectsensor.R
 import com.sensoguard.detectsensor.classes.Alarm
+import com.sensoguard.detectsensor.classes.AlarmSensor
 import com.sensoguard.detectsensor.classes.Sensor
 import com.sensoguard.detectsensor.global.*
 import java.text.SimpleDateFormat
@@ -60,6 +61,7 @@ class ServiceConnectSensor : ParentService() {
         return START_NOT_STICKY
     }
 
+
     private val usbReceiver = object : BroadcastReceiver() {
         override fun onReceive(arg0: Context, arg1: Intent) {
             when {
@@ -93,14 +95,14 @@ class ServiceConnectSensor : ParentService() {
                 }
                 arg1.action == Intent.ACTION_SCREEN_OFF -> {
                     //Toast.makeText(this@ServiceConnectSensor, "MyScreensActivity start sound", Toast.LENGTH_LONG).show()
-                    setBooleanInPreference(
-                        this@ServiceConnectSensor,
-                        USB_DEVICE_CONNECT_STATUS,
-                        false
-                    )
-                    serialPort?.close()
-                    sendBroadcast(Intent(USB_CONNECTION_OFF_UI))
-                    this@ServiceConnectSensor.stopSelf()
+//                    setBooleanInPreference(
+//                        this@ServiceConnectSensor,
+//                        USB_DEVICE_CONNECT_STATUS,
+//                        false
+//                    )
+//                    serialPort?.close()
+//                    sendBroadcast(Intent(USB_CONNECTION_OFF_UI))
+//                    this@ServiceConnectSensor.stopSelf()
                 }
 //                arg1.action == CREATE_ALARM_KEY -> {
 //                //Toast.makeText(this@MyScreensActivity, "MyScreensActivity start sound", Toast.LENGTH_LONG).show()
@@ -152,7 +154,7 @@ class ServiceConnectSensor : ParentService() {
         val usbDevices = manager?.deviceList
 
         if (usbDevices!=null && usbDevices.isEmpty()) {
-            Toast.makeText(this,"not finding devices",Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "not finding devices", Toast.LENGTH_LONG).show()
             sendBroadcast(Intent(USB_CONNECTION_OFF_UI))
             return
         }
@@ -162,7 +164,7 @@ class ServiceConnectSensor : ParentService() {
         if(usbDevice!=null){
             tryOpenConnection()
         }else{
-            Toast.makeText(this,"not finding usbDevice",Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "not finding usbDevice", Toast.LENGTH_LONG).show()
             sendBroadcast(Intent(USB_CONNECTION_OFF_UI))
         }
     }
@@ -199,10 +201,15 @@ class ServiceConnectSensor : ParentService() {
 
    //request usb permission
     private fun registerUsbPermission(usbDevice: UsbDevice) {
-        val usbManager = getSystemService(Context.USB_SERVICE) as UsbManager
-        val mPermissionIntent = PendingIntent.getBroadcast(this, 0, Intent(ACTION_USB_PERMISSION), 0)
-        usbManager.requestPermission(usbDevice, mPermissionIntent)
-    }
+       val usbManager = getSystemService(Context.USB_SERVICE) as UsbManager
+       val mPermissionIntent = PendingIntent.getBroadcast(
+           this,
+           0,
+           Intent(ACTION_USB_PERMISSION),
+           0
+       )
+       usbManager.requestPermission(usbDevice, mPermissionIntent)
+   }
 
 
     private fun readData() {
@@ -238,6 +245,7 @@ class ServiceConnectSensor : ParentService() {
 
         }.start()
     }
+
     override fun onBind(intent: Intent): IBinder {
         TODO("Return the communication channel to the service.")
     }
@@ -423,6 +431,23 @@ class ServiceConnectSensor : ParentService() {
         } else {
             type?.let { addAlarmToHistory(currentSensorLocally, it) }
 
+
+            //////////////add alarm to queue
+            //prevent duplicate alarm at the same sensor at the same time
+            removeSensorAlarmById(currentSensorLocally.getId())
+
+            if (type != null) {
+                val sensorAlarm = AlarmSensor(
+                    currentSensorLocally.getId(),
+                    Calendar.getInstance(),
+                    type,
+                    currentSensorLocally.isArmed()
+                )
+                sensorAlarm.typeIdx = typeIndex
+                UserSession.instance.alarmSensors?.add(sensorAlarm)
+            }
+            /// end add to queue
+
             //send to create alarm :map,sound ect...
             val inn = Intent(CREATE_ALARM_KEY)
             inn.putExtra(CREATE_ALARM_ID_KEY, currentSensorLocally.getId())
@@ -582,5 +607,17 @@ class ServiceConnectSensor : ParentService() {
         alarms?.let { storeAlarmsToLocally(it) }
     }
 
+
+    //remove alarm sensor if exist
+    private fun removeSensorAlarmById(alarmId: String) {
+
+        val iteratorList = UserSession.instance.alarmSensors?.listIterator()
+        while (iteratorList != null && iteratorList.hasNext()) {
+            val sensorItem = iteratorList.next()
+            if (sensorItem.alarmSensorId == alarmId) {
+                iteratorList.remove()
+            }
+        }
+    }
 
 }

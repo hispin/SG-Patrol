@@ -29,6 +29,7 @@ import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
 import com.sensoguard.detectsensor.R
 import com.sensoguard.detectsensor.classes.AlarmSensor
+import com.sensoguard.detectsensor.classes.GeneralItemMenu
 import com.sensoguard.detectsensor.controler.ViewModelListener
 import com.sensoguard.detectsensor.fragments.*
 import com.sensoguard.detectsensor.global.*
@@ -55,6 +56,14 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, java.util.Observ
 
     val TAG = "MyScreensActivity"
 
+
+    //bug fixed: when press home button and return to app, the usb process does not restart properly,
+    //therefore we disconnect the service and restart it when the app loaded
+//    override fun onUserLeaveHint() {
+//        super.onUserLeaveHint()
+//        Log.d(TAG, "home")
+//        //stopUsbReadConnection()
+//    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -103,11 +112,6 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, java.util.Observ
         }
         configureActionBar()
         //editActionBar(false)
-    }
-
-    override fun onPause() {
-        super.onPause()
-        ViewModelProviders.of(this).get(ViewModelListener::class.java).shutDownTimer()
     }
 
 
@@ -159,7 +163,11 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, java.util.Observ
 
         if (getLongInPreference(this, ALARM_FLICKERING_DURATION_KEY, -1L) == -1L) {
             //set the duration of flickering icon when accepted alarm
-            setLongInPreference(this, ALARM_FLICKERING_DURATION_KEY, ALARM_FLICKERING_DURATION_DEFAULT_VALUE_SECONDS)
+            setLongInPreference(
+                this,
+                ALARM_FLICKERING_DURATION_KEY,
+                ALARM_FLICKERING_DURATION_DEFAULT_VALUE_SECONDS
+            )
         }
 
         if (getIntInPreference(this, MAP_SHOW_VIEW_TYPE_KEY, -1) == -1) {
@@ -256,12 +264,8 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, java.util.Observ
     //stop usb read connection
     private fun stopUsbReadConnection() {
         setBooleanInPreference(this@MyScreensActivity, USB_DEVICE_CONNECT_STATUS, false)
-//        Toast.makeText(
-//            this,
-//            resources.getString(R.string.receiver_disconnected),
-//            Toast.LENGTH_SHORT
-//        ).show()
-        sendBroadcast(Intent(STOP_READ_DATA_KEY))
+        //bug fixed : kill also the service
+        sendBroadcast(Intent(DISCONNECT_USB_PROCESS_KEY))
         editActionBar(false)
     }
 
@@ -360,8 +364,14 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, java.util.Observ
 
         //relate the tab layout to viewpager because we need to add the icons
         tabs.setupWithViewPager(vPager)
-        tabs.getTabAt(0)?.icon = ContextCompat.getDrawable(this@MyScreensActivity, R.drawable.selected_sensor_tab)
-        tabs.getTabAt(1)?.icon = ContextCompat.getDrawable(this@MyScreensActivity, R.drawable.selected_map_tab)
+        tabs.getTabAt(0)?.icon = ContextCompat.getDrawable(
+            this@MyScreensActivity,
+            R.drawable.selected_sensor_tab
+        )
+        tabs.getTabAt(1)?.icon = ContextCompat.getDrawable(
+            this@MyScreensActivity,
+            R.drawable.selected_map_tab
+        )
         tabs.getTabAt(2)?.icon =
             ContextCompat.getDrawable(this@MyScreensActivity, R.drawable.selected_alarm_log_tab)
         tabs.getTabAt(3)?.icon =
@@ -404,7 +414,8 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, java.util.Observ
         } else {
             ActivityCompat.requestPermissions(
                 this,
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION
             )
         }
     }
@@ -444,7 +455,8 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, java.util.Observ
         } else {
             ActivityCompat.requestPermissions(
                 this,
-                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE
+                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE
             )
         }
     }
@@ -517,13 +529,13 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, java.util.Observ
         super.onBackPressed()
         sendBroadcast(Intent(STOP_ALARM_SOUND))
         //start activity for loading new language if it has been changed
-        startActivity(Intent(this,MainActivity::class.java))
+        startActivity(Intent(this, MainActivity::class.java))
 
     }
 
     //set the language of the app (calling  from activity)
     override fun updateLanguage() {
-        //setAppLanguage(this, GeneralItemMenu.selectedItem)
+        setAppLanguage(this, GeneralItemMenu.selectedItem)
         this.finish()
         this.startActivity(intent)
     }
@@ -564,6 +576,26 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, java.util.Observ
     }
 
 
+//    override fun onAttachedToWindow() {
+//        super.onAttachedToWindow()
+//        this.window.setType(WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG)
+//    }
+//    override fun onDestroy() {
+//        super.onDestroy()
+//        Log.d(TAG,"distroy")
+//        //stopUsbReadConnection()
+//    }
+
+//    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+//        super.onKeyDown(keyCode, event)
+//        if(keyCode == KeyEvent.KEYCODE_HOME)
+//        {
+//            Log.d("detectKey","home")
+//            //The Code Want to Perform.
+//
+//        }
+//        return true
+//    }
 }
 
 

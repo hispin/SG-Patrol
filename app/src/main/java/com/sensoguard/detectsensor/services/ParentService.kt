@@ -16,7 +16,7 @@ open class ParentService : Service() {
 //        if(languageToLoad!=null) {
 //            setAppLanguage(this, languageToLoad)
 //        }
-        configurationLanguage(this)
+        configurationLanguage(applicationContext)
         return super.onStartCommand(intent, flags, startId)
     }
 }
