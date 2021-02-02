@@ -76,5 +76,13 @@ const val TEN_FOTMAT_BITS = 202
 
 const val TABLAYOUT_HEIGHT_DEFAULT = 72
 
+const val USER_NAME_MAIL = "userNameMail1"
+const val PASSWORD_MAIL = "passwordMail"
+const val SERVER_MAIL = "serverMail"
+const val PORT_MAIL = "portMail"
+const val RECIPIENT_MAIL = "recipientail"
+const val IS_SSL_MAIL = "isSSLMail"
+const val IS_FORWARD_ALARM_EMAIL = "isForwardAlarmEmail"
+
 
 

@@ -82,6 +82,23 @@
     <string name="always_show_sensor_name">Always show the sensor name</string>
     <string name="next">Next</string>
     <string name="previous">Previous</string>
-
+    <string name="forward_email">Forward email</string>
+    <string name="password_title">Password:</string>
+    <string name="incoming_email_server_title">Incoming Email server:</string>
+    <string name="incoming_email_server_port_title">Incoming Email Port:</string>
+    <string name="use_ssl_title">Using SSL:</string>
+    <string name="cancel">Cancel</string>
+    <string name="email_setting">Email Settings</string>
+    <string name="an_alert_was_received">An alert was received</string>
+    <string name="email_content">accept %1$s alarm from unit %2$s  in %3$s</string>
+    <string name="mail_address_title">Email Address:</string>
+    <string name="outgoing_mail_server_title">Outgoing  Server</string>
+    <string name="user_name">User name</string>
+    <string name="outgoing_mail_port_title">Outgoing  Port</string>
+    <string name="recipient">Recipient</string>
+    <string name="fill_account">You have not filled in email account information</string>
+    <string name="sender_email">Sender Email</string>
+    <string name="password_title1">Password</string>
+    <string name="use_ssl_title1">Using SSL</string>
 
 </resources>

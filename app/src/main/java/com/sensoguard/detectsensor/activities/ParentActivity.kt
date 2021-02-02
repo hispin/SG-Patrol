@@ -11,8 +11,8 @@ open class ParentActivity : AppCompatActivity() {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        configurationLanguage(this)
         super.onCreate(savedInstanceState)
-        configurationLanguage(applicationContext)
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {

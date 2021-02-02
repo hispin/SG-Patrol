@@ -82,4 +82,23 @@
     <string name="always_show_sensor_name">הראה תמיד את שם חיישן</string>
     <string name="next">Next</string>
     <string name="previous">Previous</string>
+    <string name="forward_email">העברת דוא\"ל</string>
+    <string name="mail_address_title">כתובת אימייל:</string>
+    <string name="password_title">סיסמה:</string>
+    <string name="incoming_email_server_title">שרת אימייל נכנס:</string>
+    <string name="incoming_email_server_port_title">פורט אימייל נכנס:</string>
+    <string name="use_ssl_title">שימוש ב SSL:</string>
+    <string name="cancel">ביטול</string>
+    <string name="email_setting">הגדרות אימייל</string>
+    <string name="an_alert_was_received">התקבלה התראה</string>
+    <string name="email_content">"התקבלה התראה מסוג %1$s מיחידה %2$s ב %3$s"</string>
+    <string name="outgoing_mail_server_title">שרת דואר יוצא</string>
+    <string name="user_name">שם משתמש</string>
+    <string name="outgoing_mail_port_title">פורט דואר יוצא</string>
+    <string name="recipient">מען</string>
+    <string name="fill_account">לא מילאת פרטי חשבון מייל</string>
+    <string name="sender_email">כתובת שולח</string>
+    <string name="password_title1">סיסמה</string>
+    <string name="use_ssl_title1">שימוש ב SSL</string>
+
 </resources>

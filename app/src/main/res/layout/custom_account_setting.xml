@@ -1,0 +1,258 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/constEmailAccountSettings"
+        android:layout_width="wrap_content"
+        android:layout_height="430dp"
+
+        app:layout_constraintTop_toBottomOf="@+id/constEditUser">
+
+    <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvSenderEmail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="24dp"
+            android:lineSpacingExtra="-9.9sp"
+            android:text="@string/sender_email"
+            android:textAllCaps="false"
+            android:textColor="@color/black"
+            android:textSize="14.7sp"
+            app:layout_constraintBottom_toTopOf="@+id/tvPassword"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+    <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/etSenderEmail"
+            style="@style/etEmailSetting"
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="25dp"
+            android:background="@drawable/edit_text_border"
+            android:inputType="textEmailAddress"
+            android:textSize="14.7sp"
+
+            app:layout_constraintBottom_toBottomOf="@+id/tvSenderEmail"
+            app:layout_constraintStart_toEndOf="@+id/tvSenderEmail"
+            app:layout_constraintTop_toTopOf="@+id/tvSenderEmail"
+            app:layout_constraintWidth_default="percent" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvPassword"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:lineSpacingExtra="-9.9sp"
+            android:text="@string/password_title1"
+            android:textColor="@color/black"
+            android:textSize="14.7sp"
+            app:layout_constraintBottom_toTopOf="@+id/tvMailServer"
+            app:layout_constraintStart_toStartOf="@+id/tvSenderEmail"
+            app:layout_constraintTop_toBottomOf="@+id/tvSenderEmail" />
+
+    <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/etPassword"
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="2dp"
+            android:layout_marginEnd="2dp"
+            android:background="@drawable/edit_text_border"
+            android:inputType="textPassword"
+            android:textSize="14.7sp"
+            app:layout_constraintBottom_toBottomOf="@+id/tvPassword"
+            app:layout_constraintStart_toStartOf="@+id/etSenderEmail"
+            app:layout_constraintTop_toTopOf="@+id/tvPassword"
+            app:layout_constraintWidth_percent="0.4" />
+
+    <ImageButton
+            android:id="@+id/ibTogglePass"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@color/transparent"
+            android:contentDescription=""
+            app:layout_constraintBottom_toBottomOf="@+id/etPassword"
+            app:layout_constraintStart_toEndOf="@+id/etPassword"
+            app:layout_constraintTop_toTopOf="@+id/etPassword"
+            app:layout_constraintWidth_percent="0.1"
+            app:srcCompat="@drawable/ic_show_pass" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvMailServer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:lineSpacingExtra="-9.9sp"
+            android:maxLines="2"
+            android:text="@string/outgoing_mail_server_title"
+            android:textColor="@color/black"
+            android:textSize="14.7sp"
+            app:layout_constraintBottom_toTopOf="@+id/tvMailServerPort"
+            app:layout_constraintStart_toStartOf="@+id/tvPassword"
+            app:layout_constraintTop_toBottomOf="@+id/tvPassword" />
+
+    <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/etMailServer"
+            style="@style/etEmailSetting"
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:background="@drawable/edit_text_border"
+            android:inputType="text"
+            android:textSize="14.7sp"
+            app:layout_constraintBottom_toBottomOf="@+id/tvMailServer"
+            app:layout_constraintHorizontal_bias="0.928"
+            app:layout_constraintStart_toStartOf="@+id/etSenderEmail"
+            app:layout_constraintTop_toTopOf="@+id/tvMailServer"
+            app:layout_constraintWidth_default="percent" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvMailServerPort"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:lineSpacingExtra="-9.9sp"
+            android:text="@string/outgoing_mail_port_title"
+            android:textColor="@color/black"
+            android:textSize="14.7sp"
+            app:layout_constraintBottom_toTopOf="@+id/tvMailRecipient"
+            app:layout_constraintStart_toStartOf="@+id/tvMailServer"
+            app:layout_constraintTop_toBottomOf="@+id/tvMailServer" />
+
+    <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/etMailServerPort"
+            style="@style/etEmailSetting"
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:background="@drawable/edit_text_border"
+            android:inputType="text"
+            android:textSize="14.7sp"
+            app:layout_constraintBottom_toBottomOf="@+id/tvMailServerPort"
+            app:layout_constraintHorizontal_bias="0.928"
+            app:layout_constraintStart_toStartOf="@+id/etSenderEmail"
+            app:layout_constraintTop_toTopOf="@+id/tvMailServerPort"
+            app:layout_constraintWidth_default="percent" />
+
+
+    <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvMailRecipient"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:lineSpacingExtra="-9.9sp"
+            android:text="@string/recipient"
+            android:textColor="@color/black"
+            android:textSize="14.7sp"
+            app:layout_constraintBottom_toTopOf="@+id/tvIsSSL"
+            app:layout_constraintStart_toStartOf="@+id/tvMailServer"
+            app:layout_constraintTop_toBottomOf="@+id/tvMailServerPort" />
+
+    <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/etMailRecipient"
+            style="@style/etEmailSetting"
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:background="@drawable/edit_text_border"
+            android:inputType="text"
+            android:textSize="14.7sp"
+            app:layout_constraintBottom_toBottomOf="@+id/tvMailRecipient"
+            app:layout_constraintHorizontal_bias="0.928"
+            app:layout_constraintStart_toStartOf="@+id/etSenderEmail"
+            app:layout_constraintTop_toTopOf="@+id/tvMailRecipient"
+            app:layout_constraintWidth_default="percent" />
+
+
+    <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvIsSSL"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:lineSpacingExtra="-9.9sp"
+            android:text="@string/use_ssl_title1"
+            android:textColor="@color/black"
+            android:textSize="14.7sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/btnSave"
+            app:layout_constraintStart_toStartOf="@+id/tvMailServerPort"
+            app:layout_constraintTop_toBottomOf="@+id/tvMailRecipient" />
+
+    <RadioGroup
+            android:id="@+id/rgIsSSL"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="@+id/tvIsSSL"
+            app:layout_constraintStart_toStartOf="@+id/etSenderEmail"
+            app:layout_constraintTop_toTopOf="@+id/tvIsSSL">
+
+        <RadioButton
+                android:id="@+id/rbYes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:button="@android:color/transparent"
+                android:checked="false"
+                android:drawableStart="@drawable/selector_ssl"
+                android:drawablePadding="10dp"
+                android:gravity="center"
+                android:text="@string/yes"
+                android:textColor="@color/black"
+                android:textSize="14.7sp" />
+
+        <RadioButton
+                android:id="@+id/rbNo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="30dp"
+                android:button="@android:color/transparent"
+                android:checked="true"
+                android:drawableStart="@drawable/selector_ssl"
+                android:drawablePadding="10dp"
+                android:gravity="center"
+                android:text="@string/no"
+                android:textColor="@color/black"
+                android:textSize="14.7sp" />
+
+    </RadioGroup>
+
+    <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnSave"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:layout_marginBottom="25dp"
+
+            android:background="@color/turquoise_blue"
+            android:lineSpacingExtra="-9.9sp"
+            android:text="@string/save"
+            android:textColor="@color/white"
+
+            android:textSize="14.7sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/etSenderEmail"
+            app:layout_constraintTop_toBottomOf="@+id/tvIsSSL" />
+
+    <Button
+            android:id="@+id/btnCancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/turquoise_blue"
+            android:lineSpacingExtra="-9.9sp"
+            android:text="@string/cancel"
+            android:textColor="@color/white"
+            android:textSize="14.7sp"
+            app:layout_constraintBottom_toBottomOf="@+id/btnSave"
+            app:layout_constraintStart_toStartOf="@+id/tvSenderEmail"
+            app:layout_constraintTop_toTopOf="@+id/btnSave" />
+
+    <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="@string/email_setting"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

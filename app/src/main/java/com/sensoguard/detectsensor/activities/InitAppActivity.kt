@@ -23,6 +23,7 @@ class InitAppActivity : ParentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
+        //setBooleanInPreference(this, IS_SSL_MAIL,false)
         //init the usb disconnected
         sendBroadcast(Intent(STOP_READ_DATA_KEY))
         setBooleanInPreference(this, USB_DEVICE_CONNECT_STATUS, false)

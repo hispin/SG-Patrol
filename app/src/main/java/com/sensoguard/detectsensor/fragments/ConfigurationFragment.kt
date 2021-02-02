@@ -7,22 +7,21 @@ import android.content.Intent
 import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Bundle
+import android.text.InputType
+import android.text.method.HideReturnsTransformationMethod
+import android.text.method.PasswordTransformationMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ListPopupWindow
-import android.widget.TextView
-import android.widget.Toast
-import android.widget.ToggleButton
+import android.widget.*
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatEditText
+import androidx.appcompat.widget.AppCompatImageButton
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.sensoguard.detectsensor.R
 import com.sensoguard.detectsensor.activities.DownloadOfflineTilesActivity
 import com.sensoguard.detectsensor.adapters.GeneralItemMenuAdapter
-import com.sensoguard.detectsensor.classes.GeneralItemMenu
-import com.sensoguard.detectsensor.classes.LanguageManager
-import com.sensoguard.detectsensor.classes.Sensor
+import com.sensoguard.detectsensor.classes.*
 import com.sensoguard.detectsensor.global.*
 import com.sensoguard.detectsensor.interfaces.CallToParentInterface
 import com.sensoguard.detectsensor.interfaces.OnFragmentListener
@@ -31,6 +30,7 @@ import com.sensoguard.detectsensor.interfaces.OnFragmentListener
 open class ConfigurationFragment : ParentFragment(), CallToParentInterface {
 
 
+    private var isPasswordVisible: Boolean = false
     private var listPopupWindow: ListPopupWindow? = null
     private var generalItemMenuAdapter: GeneralItemMenuAdapter? = null
     private var etSensorValue: AppCompatEditText? = null
@@ -51,6 +51,8 @@ open class ConfigurationFragment : ParentFragment(), CallToParentInterface {
     private var listener: OnFragmentListener? = null
     private var btnSaveOffline: AppCompatButton? = null
     private var togIsSensorAlwaysShow: ToggleButton? = null
+    private var ibSetEmailDetails: AppCompatImageButton? = null
+    private var togForwardSensorEmail: ToggleButton? = null
 
 
     override fun onAttach(context: Context) {
@@ -147,6 +149,14 @@ open class ConfigurationFragment : ParentFragment(), CallToParentInterface {
             setBooleanInPreference(activity, IS_NOTIFICATION_SOUND_KEY, isChecked)
         }
 
+        togForwardSensorEmail = view.findViewById(R.id.togForwardSensorEmail)
+        togForwardSensorEmail?.isChecked =
+            getBooleanInPreference(activity, IS_FORWARD_ALARM_EMAIL, false)
+        togForwardSensorEmail?.setOnCheckedChangeListener { buttonView, isChecked ->
+            //update the status of the alarm vibrate : on/off
+            setBooleanInPreference(activity, IS_FORWARD_ALARM_EMAIL, isChecked)
+        }
+
         togIsSensorAlwaysShow = view.findViewById(R.id.togIsSensorAlwaysShow)
         togIsSensorAlwaysShow?.isChecked =
             getBooleanInPreference(activity, IS_SENSOR_NAME_ALWAYS_KEY, false)
@@ -186,6 +196,10 @@ open class ConfigurationFragment : ParentFragment(), CallToParentInterface {
                 )
             )
         }
+        ibSetEmailDetails = view.findViewById(R.id.ibSetEmailDetails)
+        ibSetEmailDetails?.setOnClickListener {
+            openSetEmailDetails()
+        }
 
 
         return view
@@ -202,7 +216,7 @@ open class ConfigurationFragment : ParentFragment(), CallToParentInterface {
 
     //get selected notification sound from locally
     private fun getSelectedNotificationSound(): String? {
-        val selectedSound =getStringInPreference(activity,SELECTED_NOTIFICATION_SOUND_KEY,"-1")
+        val selectedSound = getStringInPreference(activity, SELECTED_NOTIFICATION_SOUND_KEY, "-1")
         if(!selectedSound.equals("-1")) {
             val uri=Uri.parse(selectedSound)
             uri?.let {
@@ -240,14 +254,14 @@ open class ConfigurationFragment : ParentFragment(), CallToParentInterface {
     private fun setMapSatellite() {
         ibNormalMode?.isEnabled = true
         ibSatelliteMode?.isEnabled = false
-        setIntInPreference(activity,MAP_SHOW_VIEW_TYPE_KEY, MAP_SHOW_SATELLITE_VALUE)
+        setIntInPreference(activity, MAP_SHOW_VIEW_TYPE_KEY, MAP_SHOW_SATELLITE_VALUE)
     }
 
 
     private fun setMapNormal() {
         ibNormalMode?.isEnabled = false
         ibSatelliteMode?.isEnabled = true
-        setIntInPreference(activity,MAP_SHOW_VIEW_TYPE_KEY, MAP_SHOW_NORMAL_VALUE)
+        setIntInPreference(activity, MAP_SHOW_VIEW_TYPE_KEY, MAP_SHOW_NORMAL_VALUE)
     }
 
     //get the current size of sensors
@@ -265,9 +279,9 @@ open class ConfigurationFragment : ParentFragment(), CallToParentInterface {
         val sensors= activity?.let { getSensorsFromLocally(it) }
 
         //check if id is already exist
-        fun isIdExist(sensorsArr:ArrayList<Sensor>, id:String):Boolean{
-            for(item in sensorsArr){
-                if(item.getId() == id){
+        fun isIdExist(sensorsArr: ArrayList<Sensor>, id: String): Boolean {
+            for (item in sensorsArr) {
+                if (item.getId() == id) {
                     return true
                 }
             }
@@ -278,8 +292,13 @@ open class ConfigurationFragment : ParentFragment(), CallToParentInterface {
         fun askBeforeDeleteExtraSensor() {
             val dialog= AlertDialog.Builder(activity)
                 //set message, title, and icon
-                .setTitle(activity?.resources?.getString(com.sensoguard.detectsensor.R.string.remove_extra_sensors)).setMessage(activity?.resources?.getString(
-                    com.sensoguard.detectsensor.R.string.content_delete_extra_sensor)).setIcon(android.R.drawable.ic_menu_delete
+                .setTitle(activity?.resources?.getString(com.sensoguard.detectsensor.R.string.remove_extra_sensors))
+                .setMessage(
+                    activity?.resources?.getString(
+                        com.sensoguard.detectsensor.R.string.content_delete_extra_sensor
+                    )
+                ).setIcon(
+                    android.R.drawable.ic_menu_delete
 
                 )
 
@@ -291,16 +310,20 @@ open class ConfigurationFragment : ParentFragment(), CallToParentInterface {
                         while (items != null && items.hasNext()) {
                             val item = items.next()
 
-                            val id=item.getId()
+                            val id = item.getId()
                             try {
                                 if (id.toInt() > numSensorsRequest!!) {
                                     items.remove()
                                 }
-                            }catch(ex:NumberFormatException){
+                            } catch (ex: NumberFormatException) {
                                 //do nothing
                             }
                         }
-                        Toast.makeText(activity,resources.getString(R.string.sensors_save_successfully),Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            activity,
+                            resources.getString(R.string.sensors_save_successfully),
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
 
                     sensors?.let { sen -> storeSensorsToLocally(sen, requireActivity()) }
@@ -308,8 +331,8 @@ open class ConfigurationFragment : ParentFragment(), CallToParentInterface {
                 }
 
 
-                .setNegativeButton(activity?.resources?.getString(com.sensoguard.detectsensor.R.string.no)) {
-                        dialog, _ -> dialog.dismiss() }.create()
+                .setNegativeButton(activity?.resources?.getString(com.sensoguard.detectsensor.R.string.no)) { dialog, _ -> dialog.dismiss() }
+                .create()
             dialog.show()
 
         }
@@ -323,8 +346,12 @@ open class ConfigurationFragment : ParentFragment(), CallToParentInterface {
         }
 
         if(numSensorsRequest!=null
-            && numSensorsRequest >254){
-            Toast.makeText(this.context, resources.getString(com.sensoguard.detectsensor.R.string.invalid_mum_sensors), Toast.LENGTH_LONG).show()
+            && numSensorsRequest >254) {
+            Toast.makeText(
+                this.context,
+                resources.getString(com.sensoguard.detectsensor.R.string.invalid_mum_sensors),
+                Toast.LENGTH_LONG
+            ).show()
             return
         }
 
@@ -346,7 +373,11 @@ open class ConfigurationFragment : ParentFragment(), CallToParentInterface {
             askBeforeDeleteExtraSensor()
         }else if(activity!=null) {
             sensors?.let { sen -> storeSensorsToLocally(sen, requireActivity()) }
-            Toast.makeText(activity,resources.getString(R.string.sensors_save_successfully),Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                activity,
+                resources.getString(R.string.sensors_save_successfully),
+                Toast.LENGTH_SHORT
+            ).show()
         }
 
     }
@@ -367,7 +398,7 @@ open class ConfigurationFragment : ParentFragment(), CallToParentInterface {
             listPopupWindow?.width = getScreenWidth(activity) * 2 / 3
             listPopupWindow?.show()
         } else {
-            Toast.makeText(activity,resources.getString(R.string.error),Toast.LENGTH_SHORT).show()
+            Toast.makeText(activity, resources.getString(R.string.error), Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -407,4 +438,158 @@ open class ConfigurationFragment : ParentFragment(), CallToParentInterface {
 //            )
         }
     }
+
+    private var dialog: AlertDialog? = null
+
+    //open dialog for log in
+    fun openSetEmailDetails() {
+
+        val li: LayoutInflater = LayoutInflater.from(this@ConfigurationFragment.context)
+        val promptsView: View = li.inflate(R.layout.custom_account_setting, null)
+
+
+        val etUserName: EditText = promptsView
+            .findViewById(R.id.etSenderEmail) as EditText
+
+
+        val etPassword: EditText = promptsView
+            .findViewById(R.id.etPassword) as EditText
+
+        val ibTogglePass: ImageButton = promptsView
+            .findViewById(R.id.ibTogglePass) as ImageButton
+        ibTogglePass.setOnClickListener {
+            togglePassVisibility(etPassword)
+        }
+
+        val etMailServer: EditText = promptsView
+            .findViewById(R.id.etMailServer) as EditText
+
+        val etMailServerPort: EditText = promptsView
+            .findViewById(R.id.etMailServerPort) as EditText
+
+        val etMailRecipient: EditText = promptsView
+            .findViewById(R.id.etMailRecipient) as EditText
+
+        val rgIsSSL: RadioGroup = promptsView
+            .findViewById(R.id.rgIsSSL) as RadioGroup
+
+
+        val userName = getStringInPreference(requireContext(), USER_NAME_MAIL, "-1")
+        val password = getStringInPreference(requireContext(), PASSWORD_MAIL, "-1")
+        val recipient = getStringInPreference(requireContext(), RECIPIENT_MAIL, "-1")
+        val server = getStringInPreference(requireContext(), SERVER_MAIL, "-1")
+        val port = getIntInPreference(requireContext(), PORT_MAIL, -1)
+        val isSsl = getBooleanInPreference(requireContext(), IS_SSL_MAIL, false)
+
+        if (!userName.equals("-1") && !password.equals("-1")
+            && !recipient.equals("-1") && !server.equals("-1")
+            && port != -1
+        ) {
+            //showToast(requireContext(),resources.getString(R.string.fill_account))
+            etUserName.setText(userName)
+            etPassword.setText(password)
+            etMailRecipient.setText(recipient)
+            etMailServer.setText(server)
+            etMailServerPort.setText(port.toString())
+            if (isSsl) {
+                rgIsSSL.check(R.id.rbYes)
+            } else {
+                rgIsSSL.check(R.id.rbNo)
+            }
+        }
+
+        //rgIsSSL.checkedRadioButtonId
+
+//        tvError = promptsView.findViewById<TextView>(R.id.tvError)
+//        tvError?.visibility = View.INVISIBLE
+
+        //pbValidation = promptsView.findViewById<ProgressBar>(R.id.pbValidation)
+
+        dialog = AlertDialog.Builder(requireContext())
+            .setView(promptsView)
+            .setCancelable(false)
+            .show()
+
+        val positiveButton = promptsView.findViewById(R.id.btnSave) as Button
+        //dialog?.getButton(AlertDialog.BUTTON_POSITIVE)!!
+        positiveButton.setOnClickListener(View.OnClickListener {
+
+            if (validIsEmpty(etUserName, requireContext())
+                && validIsEmpty(etPassword, requireContext())
+                && validIsEmpty(etMailServer, requireContext())
+                && validIsEmpty(etMailServerPort, requireContext())
+                && validIsEmpty(etMailRecipient, requireContext())
+
+            ) {
+
+                positiveButton.isEnabled = false
+                var port: Int? = null
+                try {
+                    port = etMailServerPort.text.toString().toInt()
+                } catch (ex: java.lang.NumberFormatException) {//if enter not number
+                    etMailServerPort.error = "enter number"
+                    return@OnClickListener
+                }
+                val myEmailAccount = MyEmailAccount(
+                    etUserName.text.toString(), etPassword.text.toString(),
+                    etMailServer.text.toString(), port, etMailRecipient.text.toString(),
+                    rgIsSSL.checkedRadioButtonId == R.id.rbYes
+                )
+                saveMyAccount(myEmailAccount)
+
+                //sendEmailBakground()
+                dialog?.dismiss()
+
+            }
+
+            //     Toast.makeText(SysManagerActivity.this, "dialog is open", Toast.LENGTH_SHORT).show();
+        })
+        val negativeButton: Button = promptsView.findViewById(R.id.btnCancel) as Button
+        //dialog?.getButton(AlertDialog.BUTTON_POSITIVE)!!
+        negativeButton.setOnClickListener(View.OnClickListener {
+            dialog?.dismiss()
+        })
+    }
+
+    //toggle password visibility
+    private fun togglePassVisibility(etPassword: EditText) {
+        if (isPasswordVisible) {
+            val pass: String = etPassword.text.toString()
+            etPassword.transformationMethod = PasswordTransformationMethod.getInstance()
+            etPassword.inputType =
+                InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+            etPassword.setText(pass)
+            etPassword.setSelection(pass.length)
+        } else {
+            val pass: String = etPassword.text.toString()
+            etPassword.transformationMethod = HideReturnsTransformationMethod.getInstance()
+            etPassword.inputType = InputType.TYPE_CLASS_TEXT
+            etPassword.setText(pass)
+            etPassword.setSelection(pass.length)
+        }
+        isPasswordVisible = !isPasswordVisible
+    }
+
+    //save locally the Email account details
+    private fun saveMyAccount(myEmailAccount: MyEmailAccount) {
+        setStringInPreference(requireContext(), USER_NAME_MAIL, myEmailAccount.userName)
+        setStringInPreference(requireContext(), PASSWORD_MAIL, myEmailAccount.password)
+        setStringInPreference(requireContext(), SERVER_MAIL, myEmailAccount.outgoingServer)
+        myEmailAccount.outgoingPort?.let { setIntInPreference(requireContext(), PORT_MAIL, it) }
+        setStringInPreference(requireContext(), RECIPIENT_MAIL, myEmailAccount.recipient)
+        setBooleanInPreference(requireContext(), IS_SSL_MAIL, myEmailAccount.isUseSSL)
+    }
+
+//    private fun sendEmailBakground() {
+//        val auth = EmailService.UserPassAuthenticator("sg-patrol@sgsmtp.com", "SensoGuard1234")//sg-patrol@sgsmtp.com
+//        val to = listOf(InternetAddress("hag.swead@gmail.com"))
+//        val from = InternetAddress("sg-patrol@sgsmtp.com")
+//        val email = EmailService.Email(auth, to, from, "Test Subject to haggay", "Hello Haggay")
+//        val emailService = EmailService("mail.sgsmtp.com", 587)
+//        //TODO ssl=0
+//        //use CoroutineScope to prevent blocking main thread
+//        GlobalScope.launch { // or however you do background threads
+//            emailService.send(email)
+//        }
+//    }
 }

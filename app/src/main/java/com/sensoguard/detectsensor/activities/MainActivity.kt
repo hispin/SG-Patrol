@@ -65,7 +65,23 @@ class MainActivity : ParentActivity() {
         setOnClickAlarmLogTable()
 
         //hide status bar
-        window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN)
+        window.setFlags(
+            WindowManager.LayoutParams.FLAG_FULLSCREEN,
+            WindowManager.LayoutParams.FLAG_FULLSCREEN
+        )
+
+        //for testing
+        //saveMyAccount()
+    }
+
+    //for testing :save locally the Email account details
+    private fun saveMyAccount() {
+        setStringInPreference(this, USER_NAME_MAIL, "sg-patrol@sgsmtp.com")
+        setStringInPreference(this, PASSWORD_MAIL, "SensoGuard1234")
+        setStringInPreference(this, SERVER_MAIL, "mail.sgsmtp.com")
+        setIntInPreference(this, PORT_MAIL, 587)
+        setStringInPreference(this, RECIPIENT_MAIL, "hag.swead@gmail.com")
+        setBooleanInPreference(this, IS_SSL_MAIL, false)
     }
 
 

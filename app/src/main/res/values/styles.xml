@@ -49,13 +49,17 @@
 
 
     <!--for content of menu of configuration screen-->
-    <style name="configContentItem" >
+    <style name="configContentItem">
         <item name="android:textSize">13.3sp</item>
         <item name="android:textColor">@color/dark2</item>
         <item name="android:layout_marginStart">64.7dp</item>
     </style>
 
-
+    <style name="etEmailSetting">
+        <item name="layout_constraintWidth_percent">0.520</item>
+        <item name="android:paddingStart">2dp</item>
+        <item name="android:paddingEnd">2dp</item>
+    </style>
 
 
 </resources>

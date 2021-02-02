@@ -13,8 +13,8 @@
     <string name="status_title">ACTIVE</string>
     <string name="type_title">TYPE</string>
     <string name="time_title">TIME</string>
-    <string name="yes">yes</string>
-    <string name="no">no</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
     <string name="content_delete_extra_sensor">The System has more sensors than configured, do you want to delete extra
         sensors ?
     </string>
@@ -72,7 +72,9 @@
     <string name="do_you_really_want_delete_all_alarm">Do you really want to delete all alarms</string>
     <string name="receiver_disconnected">Receiver Disconnected</string>
     <string name="OK">OK</string>
-    <string name="mapbox_access_token" translatable="false">pk.eyJ1IjoiaGFnc3dlYWQiLCJhIjoiY2tob3JhdTllMDh4dDJ5bWp2cHA5cWJyeCJ9.T_XNJsVjZrcNE27n9Ieb8g</string>
+    <!--  haggay account  <string name="mapbox_access_token" translatable="false">pk.eyJ1IjoiaGFnc3dlYWQiLCJhIjoiY2tob3JhdTllMDh4dDJ5bWp2cHA5cWJyeCJ9.T_XNJsVjZrcNE27n9Ieb8g</string>-->
+    <string name="mapbox_access_token" translatable="false">pk.eyJ1IjoidG9tZXJjaG9lbiIsImEiOiJja2psYWJ0M201N3ZuMnJucW4zNWZqYzNvIn0.fZ3nmtGLC2X-PKfuNY5wfQ</string>
+
     <string name="simple_offline_end_progress_success">simple offline end progress success</string>
     <string name="basic_offline_deleted_toast">basic offline deleted toast</string>
     <string name="no_selected_location">No places selected</string>
@@ -95,7 +97,23 @@
     <string name="hello_second_fragment" translatable="false">Hello second fragment. Arg: %1$s</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>
-    <!-- TODO: Remove or change this placeholder text -->
-
+    <string name="forward_email">Forward email</string>
+    <string name="mail_address_title">Email Address:</string>
+    <string name="password_title">Password:</string>
+    <string name="incoming_email_server_title">Incoming Email server:</string>
+    <string name="incoming_email_server_port_title">Incoming Email Port:</string>
+    <string name="use_ssl_title">Using SSL:</string>
+    <string name="cancel">Cancel</string>
+    <string name="email_setting">Email Settings</string>
+    <string name="an_alert_was_received">An alert was received</string>
+    <string name="email_content">accept %1$s alarm from unit %2$s in %3$s</string>
+    <string name="outgoing_mail_server_title">Outgoing  Server</string>
+    <string name="user_name">User name</string>
+    <string name="outgoing_mail_port_title">Outgoing  Port</string>
+    <string name="recipient">Recipient</string>
+    <string name="fill_account">You have not filled in email account information</string>
+    <string name="sender_email">Sender Email</string>
+    <string name="password_title1">Password</string>
+    <string name="use_ssl_title1">Using SSL</string>
 
 </resources>

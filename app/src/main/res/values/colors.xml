@@ -24,4 +24,7 @@
     <color name="gray">#808080</color>
     <color name="my_app_color">#0A2240</color>
     <color name="my_app_color_transparent">#DC0A2240</color>
+    <color name="gray7">#acacac</color>
+    <color name="green1">#39a647</color>
+    <color name="orange">#FF9912</color>
 </resources>

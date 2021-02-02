@@ -61,7 +61,6 @@ class ServiceConnectSensor : ParentService() {
         return START_NOT_STICKY
     }
 
-
     private val usbReceiver = object : BroadcastReceiver() {
         override fun onReceive(arg0: Context, arg1: Intent) {
             when {
@@ -104,12 +103,6 @@ class ServiceConnectSensor : ParentService() {
 //                    sendBroadcast(Intent(USB_CONNECTION_OFF_UI))
 //                    this@ServiceConnectSensor.stopSelf()
                 }
-//                arg1.action == CREATE_ALARM_KEY -> {
-//                //Toast.makeText(this@MyScreensActivity, "MyScreensActivity start sound", Toast.LENGTH_LONG).show()
-//                    playAlarmSound()
-//
-//                    playVibrate()
-//                 }
 
             }
 
@@ -211,7 +204,6 @@ class ServiceConnectSensor : ParentService() {
        usbManager.requestPermission(usbDevice, mPermissionIntent)
    }
 
-
     private fun readData() {
         if (usbDevice == null) {
             return
@@ -219,9 +211,6 @@ class ServiceConnectSensor : ParentService() {
         Thread {
             // Read some data! Most have just one port (port 0).
             serialPort = UsbSerialDevice.createUsbSerialDevice(usbDevice, connection)
-
-
-
 
             if (serialPort != null) {
                 if (serialPort!!.open()) {
@@ -336,17 +325,6 @@ class ServiceConnectSensor : ParentService() {
                     }
                     arr = ArrayList()
                 }
-
-            // Log.d("testMulti","end")
-//                if ((appCode == TEN_FOTMAT_BITS && arr.size >= 10)
-//                    || (appCode == SIX_FOTMAT_BITS && arr.size >= 6)
-//                ) {
-//                    val inn = Intent(READ_DATA_KEY)
-//                    //inn.putExtra("size", bytesArray.size)
-//                    inn.putExtra("data", arr)
-//                    sendBroadcast(inn)
-//                    arr = ArrayList(16)
-//                }
 
         }
 
@@ -606,7 +584,6 @@ class ServiceConnectSensor : ParentService() {
         alarms?.add(alarm)
         alarms?.let { storeAlarmsToLocally(it) }
     }
-
 
     //remove alarm sensor if exist
     private fun removeSensorAlarmById(alarmId: String) {

@@ -3,8 +3,7 @@
         xmlns:tools="http://schemas.android.com/tools"
         package="com.sensoguard.detectsensor">
 
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <!--    <uses-permission android:name="android.permission.READ_PRIVILEGED_PHONE_STATE" />-->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" /> <!-- <uses-permission android:name="android.permission.READ_PRIVILEGED_PHONE_STATE" /> -->
     <uses-permission
             android:name="android.permission.READ_PRIVILEGED_PHONE_STATE"
             tools:ignore="ProtectedPermissions" />
@@ -34,6 +33,8 @@
             android:roundIcon="@drawable/ic_launcher"
             android:supportsRtl="true"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+
+
         <service
                 android:name=".services.ParentService"
                 android:enabled="true"
@@ -80,11 +81,9 @@
                 android:enabled="true"
                 android:exported="true"
                 android:stopWithTask="false">
-
             <intent-filter>
                 <action android:name="com.androidexample.screenonoff.AEScreenOnOffService" />
             </intent-filter>
-
         </service>
         <service
                 android:name=".services.ServiceFindLocation"
@@ -92,16 +91,12 @@
         <service
                 android:name=".services.ServiceHandleAlarms"
                 android:exported="true" />
-        <service android:name=".services.ServiceFindSingleLocation" />
-
-        <!--        <receiver android:name=".ScreenOnOffReceiver">-->
-        <!--            <intent-filter>-->
-        <!--                <action android:name="android.intent.action.SCREEN_ON" />-->
-        <!--                <action android:name="android.intent.action.SCREEN_OFF" />-->
-        <!--            </intent-filter>-->
-        <!--        </receiver>-->
-
-
+        <service android:name=".services.ServiceFindSingleLocation" /> <!-- <receiver android:name=".ScreenOnOffReceiver"> -->
+        <!-- <intent-filter> -->
+        <!-- <action android:name="android.intent.action.SCREEN_ON" /> -->
+        <!-- <action android:name="android.intent.action.SCREEN_OFF" /> -->
+        <!-- </intent-filter> -->
+        <!-- </receiver> -->
         <meta-data
                 android:name="io.fabric.ApiKey"
                 android:value="a2ca8d68e6eb68bf1b812b6e6f088bb62a139961" /> <!-- android:authorities="${applicationId}.contentprovider" -->

@@ -18,10 +18,14 @@ import androidx.core.app.NotificationCompat
 import com.sensoguard.detectsensor.R
 import com.sensoguard.detectsensor.classes.Alarm
 import com.sensoguard.detectsensor.classes.AlarmSensor
+import com.sensoguard.detectsensor.classes.EmailService
 import com.sensoguard.detectsensor.classes.Sensor
 import com.sensoguard.detectsensor.global.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
+import javax.mail.internet.InternetAddress
 
 
 class ServiceHandleAlarms : ParentService() {
@@ -70,135 +74,178 @@ class ServiceHandleAlarms : ParentService() {
 
     private val usbReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            Log.d(TAG,"accept alarm")
-            if (intent.action == CREATE_ALARM_KEY) {
-                val alarmSensorId = intent.getStringExtra(CREATE_ALARM_ID_KEY)
-                val type = intent.getStringExtra(CREATE_ALARM_TYPE_KEY)
-                Toast.makeText(context, "$type alarm from unit $alarmSensorId ", Toast.LENGTH_LONG)
-                    .show()
-                //play sound and vibrate
-                playAlarmSound()
-                playVibrate()
-
-            } else if (intent.action == CREATE_ALARM_NOT_DEFINED_KEY) {
-                val alarmSensorId = intent.getStringExtra(CREATE_ALARM_ID_KEY)
-                val type = intent.getStringExtra(CREATE_ALARM_TYPE_KEY)
-                Toast.makeText(context, "$type alarm from unit $alarmSensorId ", Toast.LENGTH_LONG)
-                    .show()
-                //accept test alarm (for testing)
-            } else if (intent.action == READ_DATA_KEY_TEST) {
-                val bit = intent.getIntegerArrayListExtra("data")
-
-                Log.d("testMulti", "ServiceHandleAlarms size:" + bit?.size)
-
-                val stateTypes = resources?.getStringArray(R.array.state_types)
-
-//                val idx = bit[5].toUByte().toInt()-1
-//
-//                if (stateTypes != null && idx >= stateTypes.size) {
-//                    return
-//                }
-
-                //general validate of the bits and get the format
-                val appCode = bit?.let { validateBitsAndGetFormat(it) }
-                Log.d("testBits", "" + appCode)
-                if (appCode == NONE_VALIDATE_BITS) {
-                    Log.d("testMulti", "the bits are failed")
-                    Toast.makeText(context, "the bits are failed", Toast.LENGTH_LONG)
+            Log.d(TAG, "accept alarm")
+            when (intent.action) {
+                CREATE_ALARM_KEY -> {
+                    val alarmSensorId = intent.getStringExtra(CREATE_ALARM_ID_KEY)
+                    val type = intent.getStringExtra(CREATE_ALARM_TYPE_KEY)
+                    val date = getStrDateTimeByMilliSeconds(
+                        Calendar.getInstance().timeInMillis,
+                        "dd/MM/yy kk:mm:ss",
+                        context
+                    )
+                    val msg = resources.getString(
+                        R.string.email_content,
+                        type,
+                        alarmSensorId,
+                        date
+                    )// "$type alarm from unit $alarmSensorId "
+                    Toast.makeText(
+                        context,
+                        "$type alarm from unit $alarmSensorId ",
+                        Toast.LENGTH_LONG
+                    )
                         .show()
-                    return
-                }
-
-                var typeIdx = -1
-                if (appCode == SIX_FOTMAT_BITS) {
-                    typeIdx = 4
-                } else if (appCode == TEN_FOTMAT_BITS) {
-                    typeIdx = 5
-                }
-
-                //no validate format
-                if (typeIdx == -1) {
-                    return
-                }
-
-                val typeIndex = bit?.get(typeIdx)?.toUByte()?.toInt()?.minus(1)
-                if (typeIndex != null) {
-                    if (stateTypes != null && typeIndex >= stateTypes.size) {
-                        return
-                    }
-                }
-
-                val type = typeIndex?.let { stateTypes?.get(it) }
-                //Log.d("testIconAlarm", type)
-                val alarmSensorId = bit?.get(1)?.toUByte().toString()
-
-                //get locally sensor that match to sensor of alarm
-                val currentSensorLocally = getLocallySensorAlarm(alarmSensorId)
-
-                Toast.makeText(context, "$type alarm from unit $alarmSensorId ", Toast.LENGTH_LONG)
-                    .show()
-
-                //add alarm to history and send alarm if active
-                if(currentSensorLocally==null){
-                    sendBroadcast(Intent(RESET_MARKERS_KEY))
-                    addAlarmToHistory(false,"undefined", isArmed = false, alarmSensorId = alarmSensorId, type = type)
-                }else if (!currentSensorLocally.isArmed()) {
-                    sendBroadcast(Intent(RESET_MARKERS_KEY))
-                    currentSensorLocally.getName()?.let {
-                        addAlarmToHistory(
-                            true,
-                            it, isArmed = false, alarmSensorId = alarmSensorId, type = type
-                        )
-                    }
-                    // the sensor id exist but is not located
-                } else if (currentSensorLocally.getLatitude() == null
-                    || currentSensorLocally.getLongtitude() == null
-                ) {
-                    sendBroadcast(Intent(RESET_MARKERS_KEY))
-                    currentSensorLocally.getName()?.let {
-                        addAlarmToHistory(
-                            true,
-                            it, isArmed = false, alarmSensorId = alarmSensorId, type = type
-                        )
-                    }
-                } else {
-                    type?.let { addAlarmToHistory(currentSensorLocally, it) }
-
-
-                    //////////////add alarm to queue
-                    //prevent duplicate alarm at the same sensor at the same time
-                    removeSensorAlarmById(currentSensorLocally.getId())
-
-                    if (type != null) {
-                        val sensorAlarm = AlarmSensor(
-                            currentSensorLocally.getId(),
-                            Calendar.getInstance(),
-                            type,
-                            currentSensorLocally.isArmed()
-                        )
-                        sensorAlarm.typeIdx = typeIndex
-                        UserSession.instance.alarmSensors?.add(sensorAlarm)
-                    }
-                    /// end add to queue
-
-                    //send to create alarm :map,sound ect...
-                    val inn = Intent(CREATE_ALARM_KEY)
-                    inn.putExtra(CREATE_ALARM_ID_KEY, currentSensorLocally.getId())
-                    inn.putExtra(CREATE_ALARM_NAME_KEY, currentSensorLocally.getName())
-                    inn.putExtra(CREATE_ALARM_IS_ARMED, currentSensorLocally.isArmed())
-                    //inn.putExtra(CREATE_ALARM_LATITUDE_KEY,currentSensorLocally.getLatitude())
-                    //inn.putExtra(CREATE_ALARM_LONGTITUDE_KEY,currentSensorLocally.getLongtitude())
-                    inn.putExtra(CREATE_ALARM_TYPE_KEY, type)
-                    inn.putExtra(CREATE_ALARM_TYPE_INDEX_KEY, typeIndex)
-                    sendBroadcast(inn)
-
+                    sendEmailBakground(msg)
                     //play sound and vibrate
                     playAlarmSound()
                     playVibrate()
+
                 }
-                sendBroadcast(Intent(HANDLE_ALARM_KEY))
-            } else if (intent.action == STOP_ALARM_SOUND) {
-                stopPlayingAlarm()
+                CREATE_ALARM_NOT_DEFINED_KEY -> {
+                    val alarmSensorId = intent.getStringExtra(CREATE_ALARM_ID_KEY)
+                    val type = intent.getStringExtra(CREATE_ALARM_TYPE_KEY)
+                    Toast.makeText(
+                        context,
+                        "$type alarm from unit $alarmSensorId ",
+                        Toast.LENGTH_LONG
+                    )
+                        .show()
+                    //accept test alarm (for testing)
+                }
+                READ_DATA_KEY_TEST -> {
+                    val bit = intent.getIntegerArrayListExtra("data")
+
+                    Log.d("testMulti", "ServiceHandleAlarms size:" + bit?.size)
+
+                    val stateTypes = resources?.getStringArray(R.array.state_types)
+
+                    //                val idx = bit[5].toUByte().toInt()-1
+                    //
+                    //                if (stateTypes != null && idx >= stateTypes.size) {
+                    //                    return
+                    //                }
+
+                    //general validate of the bits and get the format
+                    val appCode = bit?.let { validateBitsAndGetFormat(it) }
+                    Log.d("testBits", "" + appCode)
+                    if (appCode == NONE_VALIDATE_BITS) {
+                        Log.d("testMulti", "the bits are failed")
+                        Toast.makeText(context, "the bits are failed", Toast.LENGTH_LONG)
+                            .show()
+                        return
+                    }
+
+                    var typeIdx = -1
+                    if (appCode == SIX_FOTMAT_BITS) {
+                        typeIdx = 4
+                    } else if (appCode == TEN_FOTMAT_BITS) {
+                        typeIdx = 5
+                    }
+
+                    //no validate format
+                    if (typeIdx == -1) {
+                        return
+                    }
+
+                    val typeIndex = bit?.get(typeIdx)?.toUByte()?.toInt()?.minus(1)
+                    if (typeIndex != null) {
+                        if (stateTypes != null && typeIndex >= stateTypes.size) {
+                            return
+                        }
+                    }
+
+                    val type = typeIndex?.let { stateTypes?.get(it) }
+                    //Log.d("testIconAlarm", type)
+                    val alarmSensorId = bit?.get(1)?.toUByte().toString()
+
+                    //get locally sensor that match to sensor of alarm
+                    val currentSensorLocally = getLocallySensorAlarm(alarmSensorId)
+
+                    val date = getStrDateTimeByMilliSeconds(
+                        Calendar.getInstance().timeInMillis,
+                        "dd/MM/yy kk:mm:ss",
+                        context
+                    )
+                    val msg = resources.getString(R.string.email_content, type, alarmSensorId, date)
+                    //val msg = "$type alarm from unit $alarmSensorId "
+                    Toast.makeText(
+                        context,
+                        "$type alarm from unit $alarmSensorId ",
+                        Toast.LENGTH_LONG
+                    )
+                        .show()
+                    sendEmailBakground(msg)
+
+                    //add alarm to history and send alarm if active
+                    if (currentSensorLocally == null) {
+                        sendBroadcast(Intent(RESET_MARKERS_KEY))
+                        addAlarmToHistory(
+                            false,
+                            "undefined",
+                            isArmed = false,
+                            alarmSensorId = alarmSensorId,
+                            type = type
+                        )
+                    } else if (!currentSensorLocally.isArmed()) {
+                        sendBroadcast(Intent(RESET_MARKERS_KEY))
+                        currentSensorLocally.getName()?.let {
+                            addAlarmToHistory(
+                                true,
+                                it, isArmed = false, alarmSensorId = alarmSensorId, type = type
+                            )
+                        }
+                        // the sensor id exist but is not located
+                    } else if (currentSensorLocally.getLatitude() == null
+                        || currentSensorLocally.getLongtitude() == null
+                    ) {
+                        sendBroadcast(Intent(RESET_MARKERS_KEY))
+                        currentSensorLocally.getName()?.let {
+                            addAlarmToHistory(
+                                true,
+                                it, isArmed = false, alarmSensorId = alarmSensorId, type = type
+                            )
+                        }
+                    } else {
+                        type?.let { addAlarmToHistory(currentSensorLocally, it) }
+
+
+                        //////////////add alarm to queue
+                        //prevent duplicate alarm at the same sensor at the same time
+                        removeSensorAlarmById(currentSensorLocally.getId())
+
+                        if (type != null) {
+                            val sensorAlarm = AlarmSensor(
+                                currentSensorLocally.getId(),
+                                Calendar.getInstance(),
+                                type,
+                                currentSensorLocally.isArmed()
+                            )
+                            sensorAlarm.typeIdx = typeIndex
+                            UserSession.instance.alarmSensors?.add(sensorAlarm)
+                        }
+                        /// end add to queue
+
+                        //send to create alarm :map,sound ect...
+                        val inn = Intent(CREATE_ALARM_KEY)
+                        inn.putExtra(CREATE_ALARM_ID_KEY, currentSensorLocally.getId())
+                        inn.putExtra(CREATE_ALARM_NAME_KEY, currentSensorLocally.getName())
+                        inn.putExtra(CREATE_ALARM_IS_ARMED, currentSensorLocally.isArmed())
+                        //inn.putExtra(CREATE_ALARM_LATITUDE_KEY,currentSensorLocally.getLatitude())
+                        //inn.putExtra(CREATE_ALARM_LONGTITUDE_KEY,currentSensorLocally.getLongtitude())
+                        inn.putExtra(CREATE_ALARM_TYPE_KEY, type)
+                        inn.putExtra(CREATE_ALARM_TYPE_INDEX_KEY, typeIndex)
+                        sendBroadcast(inn)
+
+                        //play sound and vibrate
+                        playAlarmSound()
+                        playVibrate()
+                    }
+                    sendBroadcast(Intent(HANDLE_ALARM_KEY))
+                }
+                STOP_ALARM_SOUND -> {
+                    stopPlayingAlarm()
+                }
             }
         }
     }
@@ -333,14 +380,70 @@ class ServiceHandleAlarms : ParentService() {
     }
 
     //store the detectors to locally
-    private fun storeAlarmsToLocally(alarms: ArrayList<Alarm>){
+    private fun storeAlarmsToLocally(alarms: ArrayList<Alarm>) {
         // sort the list of events by date in descending
-        val alarms=ArrayList(alarms.sortedWith(compareByDescending { it.timeInMillis }))
-        if(alarms!=null && alarms.size>0){
-            val alarmsJsonStr= convertToAlarmsGson(alarms)
-            setStringInPreference(this, ALARM_LIST_KEY_PREF,alarmsJsonStr)
+        val alarms = ArrayList(alarms.sortedWith(compareByDescending { it.timeInMillis }))
+        if (alarms != null && alarms.size > 0) {
+            val alarmsJsonStr = convertToAlarmsGson(alarms)
+            setStringInPreference(this, ALARM_LIST_KEY_PREF, alarmsJsonStr)
         }
     }
+
+    //send alarm email
+    private fun sendEmailBakground(msg: String) {
+        val userName = getStringInPreference(this, USER_NAME_MAIL, "-1")
+        val password = getStringInPreference(this, PASSWORD_MAIL, "-1")
+        val recipient = getStringInPreference(this, RECIPIENT_MAIL, "-1")
+        val server = getStringInPreference(this, SERVER_MAIL, "-1")
+        val port = getIntInPreference(this, PORT_MAIL, -1)
+        val isSSL = getBooleanInPreference(this, IS_SSL_MAIL, false)
+
+        //check if the account mail has been filled
+        if (userName.equals("-1") || password.equals("-1")
+            || recipient.equals("-1") || server.equals("-1")
+            || port == -1
+        ) {
+            showToast(this, resources.getString(R.string.fill_account))
+            return
+        }
+
+        //check if forward alarm email is active
+        val isForwardAlarmEmail = getBooleanInPreference(this, IS_FORWARD_ALARM_EMAIL, false)
+        if (!isForwardAlarmEmail) {
+            return
+        }
+
+        val auth = EmailService.UserPassAuthenticator(userName!!, password!!)//sg-patrol@sgsmtp.com
+        val to = listOf(InternetAddress(recipient))
+        val from = InternetAddress(userName)
+        val email = EmailService.Email(
+            auth,
+            to,
+            from,
+            resources.getString(R.string.an_alert_was_received),
+            msg
+        )
+        val emailService = EmailService(server!!, port!!)//("mail.sgsmtp.com", port!!)
+        //TODO ssl=0
+        //use CoroutineScope to prevent blocking main thread
+        GlobalScope.launch { // or however you do background threads
+            emailService.send(email, isSSL)
+        }
+    }
+
+//    //send alarm email
+//    private fun sendEmailBakground(msg:String) {
+//        val auth = EmailService.UserPassAuthenticator("sg-patrol@sgsmtp.com", "SensoGuard1234")//sg-patrol@sgsmtp.com
+//        val to = listOf(InternetAddress("tomer@sensoguard.com"),InternetAddress("hag.swead@gmail.com"))
+//        val from = InternetAddress("sg-patrol@sgsmtp.com")
+//        val email = EmailService.Email(auth, to, from, resources.getString(R.string.an_alert_was_received), msg)
+//        val emailService = EmailService("mail.sgsmtp.com", 587)
+//        //TODO ssl=0
+//        //use CoroutineScope to prevent blocking main thread
+//        GlobalScope.launch { // or however you do background threads
+//            emailService.send(email)
+//        }
+//    }
 
     private var rington: Ringtone? = null
 
