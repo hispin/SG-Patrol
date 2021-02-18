@@ -33,8 +33,6 @@
             android:roundIcon="@drawable/ic_launcher"
             android:supportsRtl="true"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-
-
         <service
                 android:name=".services.ParentService"
                 android:enabled="true"

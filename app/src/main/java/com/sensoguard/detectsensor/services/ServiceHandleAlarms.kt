@@ -424,6 +424,8 @@ class ServiceHandleAlarms : ParentService() {
             msg
         )
         val emailService = EmailService(server!!, port!!)//("mail.sgsmtp.com", port!!)
+
+
         //TODO ssl=0
         //use CoroutineScope to prevent blocking main thread
         GlobalScope.launch { // or however you do background threads

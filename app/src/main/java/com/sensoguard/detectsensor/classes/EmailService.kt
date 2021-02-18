@@ -21,6 +21,7 @@ class EmailService(private val server: String, private val port: Int) {
     class UserPassAuthenticator(private val username: String, private val password: String) :
         Authenticator() {
         override fun getPasswordAuthentication(): PasswordAuthentication {
+            //return GMailAuthenticator(username, password)
             return PasswordAuthentication(username, password)
         }
     }
@@ -33,13 +34,18 @@ class EmailService(private val server: String, private val port: Int) {
         props["mail.smtp.host"] = server
         props["mail.smtp.port"] = port
         props["mail.smtp.starttls.enable"] = "true"
+
+        props["mail.smtp.ssl.enable"] = isSSL.toString()
         if (isSSL) {
             props["mail.smtp.ssl.trust"] = server
         } else {
             props["mail.smtp.ssl.trust"] = "*"
         }
         props["mail.mime.charset"] = "UTF-8"
-        val msg: Message = MimeMessage(Session.getDefaultInstance(props, email.auth))
+        // Bugs fixed: Replace  Session.getDefaultInstance because it save previous data of properties
+        val msg: Message = MimeMessage(Session.getInstance(props, email.auth))
+        //val msg: Message = MimeMessage(Session.getDefaultInstance(props, email.auth))
+        //val msg: Message = MimeMessage(Session.getInstance(props, email.auth))
         msg.setFrom(email.from)
         msg.sentDate = Calendar.getInstance().time
         msg.setRecipients(Message.RecipientType.TO, email.toList.toTypedArray())
@@ -62,12 +68,17 @@ class EmailService(private val server: String, private val port: Int) {
         })
         try {
             Transport.send(msg)
+            msg.setFlag(Flags.Flag.DELETED, true)
+
+            Log.d("", "test")
         } catch (ex: SendFailedException) {
-            Log.d("", ex.message.toString())
-            Log.d("", ex.cause.toString())
+            Log.d("testEmail", ex.message.toString())
+            Log.d("testEmail", ex.cause.toString())
+            msg.setFlag(Flags.Flag.DELETED, true)
         } catch (ex: MessagingException) {
-            Log.d("", ex.message.toString())
-            Log.d("", ex.cause.toString())
+            Log.d("testEmail", ex.message.toString())
+            Log.d("testEmail", ex.cause.toString())
+            msg.setFlag(Flags.Flag.DELETED, true)
         }
     }
 
