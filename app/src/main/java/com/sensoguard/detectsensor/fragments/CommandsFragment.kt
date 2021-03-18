@@ -110,11 +110,11 @@ class CommandsFragment : DialogFragment() {
 
                 val isConnected = getBooleanInPreference(activity, USB_DEVICE_CONNECT_STATUS, false)
                 //if the usb is connected then open dialog of commands
-                if (isConnected) {
-                    sendSetRefTimer(3, 30, WAIT_AWAKE)
-                } else {
-                    showToast(activity, resources.getString(R.string.usb_is_disconnect))
-                }
+                //if (isConnected) {
+                sendSetRefTimer(3, 30, WAIT_AWAKE)
+                //} else {
+                //showToast(activity, resources.getString(R.string.usb_is_disconnect))
+                //}
 
 
             }
@@ -331,7 +331,7 @@ class CommandsFragment : DialogFragment() {
                     btnConnect?.text = resources.getString(R.string.disconnect)
                     startTimerService(true, 20, -1)
 
-
+                }
                     //time out (no max)
                 } else if (inn.action == ACTION_TIME_OUT) {
                     val commandType = inn.getStringExtra(COMMAND_TYPE)
@@ -395,4 +395,3 @@ class CommandsFragment : DialogFragment() {
         }
 
     }
-}
