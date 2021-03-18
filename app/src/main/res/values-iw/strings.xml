@@ -95,10 +95,40 @@
     <string name="outgoing_mail_server_title">שרת דואר יוצא</string>
     <string name="user_name">שם משתמש</string>
     <string name="outgoing_mail_port_title">פורט דואר יוצא</string>
-    <string name="recipient">מען</string>
-    <string name="fill_account">לא מילאת פרטי חשבון מייל</string>
+    <string name="recipient">נמען</string>
+    <string name="no_fill_account">לא מילאת פרטי חשבון מייל</string>
     <string name="sender_email">כתובת שולח</string>
     <string name="password_title1">סיסמה</string>
     <string name="use_ssl_title1">שימוש ב SSL</string>
+    <string name="des">description</string>
+    <string name="usb_is_disconnect">ה usb מנותק</string>
+    <string name="commands_title">פקודות</string>
+    <string name="select_sensor">בחר חיישן</string>
+    <string name="get_sens_level">קבלת רמת רגישות</string>
+    <string name="no_selected_sensor">לא בחרת חיישן</string>
+    <string name="get_sens_level_rsp">תגובה לקבלת רמת רגישות</string>
+    <string name="close">סגור</string>
+    <string name="set_sens_level">עידכון רמת רגישות</string>
+    <string name="select_car_sens">בחר רגישות להתראת מכונית</string>
+    <string name="select_intruder_sens">בחר רגישות להולך רגל</string>
+    <string name="error_zero_sens">לא ניתן לשלוח אפס גם להתראה וגם של מכונית והולך רגל</string>
+    <string name="connect">התחבר</string>
+    <string name="disconnect">התנתק</string>
+    <string name="timer_off">טיימר כבוי</string>
+    <string name="timer_on">טיימר דלוק</string>
+    <string name="set_ref_timer">"Set RF On Timer"</string>
+    <string name="try_connect">מנסה להתחבר</string>
+    <string name="no_response_sensor">"אין תגובה מהחיישן"</string>
+
+    <string-array name="car_ids">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+    </string-array>
 
 </resources>

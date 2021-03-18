@@ -30,6 +30,7 @@ import kotlin.collections.ArrayList
 
 class ServiceConnectSensor : ParentService() {
 
+    //private var serialPortIn: UsbSerialDevice? = null
     var manager: UsbManager? = null
 
     //private val ACTION_USB_PERMISSION1 = "com.android.USB_PERMISSION"
@@ -44,6 +45,7 @@ class ServiceConnectSensor : ParentService() {
         super.onTaskRemoved(rootIntent)
         setBooleanInPreference(this@ServiceConnectSensor, USB_DEVICE_CONNECT_STATUS, false)
         serialPort?.close()
+        //serialPortIn?.syncClose()
         this@ServiceConnectSensor.stopSelf()
     }
 
@@ -62,7 +64,7 @@ class ServiceConnectSensor : ParentService() {
     }
 
     private val usbReceiver = object : BroadcastReceiver() {
-        override fun onReceive(arg0: Context, arg1: Intent) {
+        override fun onReceive(context: Context, arg1: Intent) {
             when {
                 arg1.action == CHECK_AVAILABLE_KEY -> {
                     findUsbDevices()
@@ -74,11 +76,13 @@ class ServiceConnectSensor : ParentService() {
                         false
                     )
                     serialPort?.close()
+                    //serialPortIn?.syncClose()
                     this@ServiceConnectSensor.stopSelf()
                 }
                 arg1.action == STOP_READ_DATA_KEY -> {
                     //setBooleanInPreference(this@ServiceConnectSensor,USB_DEVICE_CONNECT,false)
                     serialPort?.close()
+                    //serialPortIn?.syncClose()
                     //this@ServiceConnectSensor.stopSelf()
                 }
                 arg1.action == HANDLE_READ_DATA_EXCEPTION -> {
@@ -103,6 +107,11 @@ class ServiceConnectSensor : ParentService() {
 //                    sendBroadcast(Intent(USB_CONNECTION_OFF_UI))
 //                    this@ServiceConnectSensor.stopSelf()
                 }
+                arg1.action == ACTION_SEND_CMD -> {
+
+                    sendData(arg1)
+                }
+
 
             }
 
@@ -117,6 +126,7 @@ class ServiceConnectSensor : ParentService() {
         try {
             if (serialPort != null) {
                 serialPort!!.close()
+                //serialPortIn?.syncClose()
             }
 
             unregisterReceiver(usbReceiver)
@@ -133,6 +143,7 @@ class ServiceConnectSensor : ParentService() {
         filter.addAction(DISCONNECT_USB_PROCESS_KEY)
         filter.addAction(Intent.ACTION_SCREEN_OFF)
         filter.addAction(Intent.ACTION_SCREEN_ON)
+        filter.addAction(ACTION_SEND_CMD)
         //filter.addAction(CREATE_ALARM_KEY)
         registerReceiver(usbReceiver, filter)
     }
@@ -203,6 +214,63 @@ class ServiceConnectSensor : ParentService() {
        )
        usbManager.requestPermission(usbDevice, mPermissionIntent)
    }
+
+    private fun sendData(arg1: Intent) {
+        //Toast.makeText(this, "start send data", Toast.LENGTH_LONG).show()
+        if (usbDevice == null) {
+            return
+        }
+
+        val cmds = arg1.getIntArrayExtra(CURRENT_COMMAND)
+
+        if (cmds == null || cmds.size < 4 || cmds[3] != cmds.size) {
+            Toast.makeText(this, "command formatting error", Toast.LENGTH_LONG).show()
+            return
+        }
+
+        //Toast.makeText(this, "start send data cmds[2]"+ cmds[2], Toast.LENGTH_LONG).show()
+
+
+        Thread {
+
+
+            if (serialPort != null) {
+
+                //open sync fro writing
+                if (serialPort!!.syncOpen()) {
+
+                    //val cmds: IntArray = intArrayOf(2,1,240,7,45,0,3)
+                    val myBytes = ByteArray(cmds.size)
+                    var i = 0
+                    val iteratorList = cmds.iterator()
+                    while (iteratorList != null && iteratorList.hasNext()) {
+                        val cmd = iteratorList.next()
+                        if (i < myBytes.size) {
+                            myBytes[i++] = cmd.toUByte().toByte()
+                        }
+                    }
+
+                    val mOutputStream = serialPort?.outputStream
+
+                    mOutputStream?.setTimeout(1000)
+                    mOutputStream?.write(myBytes)
+                    mOutputStream?.close()
+                }
+
+            }
+            //Toast.makeText(this, "start send data2", Toast.LENGTH_LONG).show()
+//            val cmd = "31CE"//""sfd\n"
+//
+//            val mOutputStream = serialPortIn?.outputStream
+//            val bytes: ByteArray = cmd.toByteArray()
+//
+//            mOutputStream?.setTimeout(1000)
+//            mOutputStream?.write(bytes)
+
+
+        }.start()
+    }
+
 
     private fun readData() {
         if (usbDevice == null) {
@@ -324,7 +392,74 @@ class ServiceConnectSensor : ParentService() {
                         parsingBits(arrSix)
                     }
                     arr = ArrayList()
+                } else if (appCode == SET_RF_ON_TIMER && arr.size % 7 == 0) {
+                    while (arr.size >= 7) {
+                        val arrSeven = ArrayList<Int>()
+
+                        var i = 0
+                        val iteratorList = arr.listIterator()
+                        while (iteratorList != null && iteratorList.hasNext() && i < 7) {
+                            i++
+                            val bitsItem = iteratorList.next()
+                            arrSeven.add(bitsItem)
+                            iteratorList.remove()
+                        }
+
+                        //send the response
+                        val inn = Intent(ACTION_USB_RESPONSE_CACHE)
+                        //inn.putIntegerArrayListExtra("myImage",myBytesInt)
+                        inn.putExtra(USB_CACHE_RESPONSE_KEY, arrSeven)
+                        sendBroadcast(inn)
+//                        //TODO :test if success or failed
+//                        //parsingBits(arrSeven)
+                    }
+                    arr = ArrayList()
+                } else if (appCode == GET_SENS_LEVEL && arr.size % 8 == 0) {
+                    while (arr.size >= 8) {
+                        val arrEight = ArrayList<Int>()
+
+                        var i = 0
+                        val iteratorList = arr.listIterator()
+                        while (iteratorList != null && iteratorList.hasNext() && i < 8) {
+                            i++
+                            val bitsItem = iteratorList.next()
+                            arrEight.add(bitsItem)
+                            iteratorList.remove()
+                        }
+
+                        //send the response
+                        val inn = Intent(ACTION_USB_RESPONSE_CACHE)
+                        //inn.putIntegerArrayListExtra("myImage",myBytesInt)
+                        inn.putExtra(USB_CACHE_RESPONSE_KEY, arrEight)
+                        sendBroadcast(inn)
+//                        //TODO :test if success or failed
+//                        //parsingBits(arrSeven)
+                    }
+                    arr = ArrayList()
+                } else if (appCode == SET_SENS_LEVEL && arr.size % 7 == 0) {
+                    while (arr.size >= 7) {
+                        val arrSeven = ArrayList<Int>()
+
+                        var i = 0
+                        val iteratorList = arr.listIterator()
+                        while (iteratorList != null && iteratorList.hasNext() && i < 7) {
+                            i++
+                            val bitsItem = iteratorList.next()
+                            arrSeven.add(bitsItem)
+                            iteratorList.remove()
+                        }
+
+                        //send the response
+                        val inn = Intent(ACTION_USB_RESPONSE_CACHE)
+                        //inn.putIntegerArrayListExtra("myImage",myBytesInt)
+                        inn.putExtra(USB_CACHE_RESPONSE_KEY, arrSeven)
+                        sendBroadcast(inn)
+//                        //TODO :test if success or failed
+//                        //parsingBits(arrSeven)
+                    }
+                    arr = ArrayList()
                 }
+
 
         }
 

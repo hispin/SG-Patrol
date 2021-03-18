@@ -40,33 +40,49 @@
         <!--<ScrollView android:layout_width="wrap_content" android:layout_height="wrap_content">-->
         <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvDetector"
-        android:name="com.app.simplehostdev.viewLayer.fragments.NewReservationFragment"
-        android:layout_width="match_parent"
+                android:name="com.app.simplehostdev.viewLayer.fragments.NewReservationFragment"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:context=".fragment.MainUartFragment"
-        tools:listitem="@layout/sensor_item"
-        android:scrollbars="vertical"
-        android:clipToPadding="false"
-        />
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:context=".fragment.MainUartFragment"
+                tools:listitem="@layout/sensor_item"
+                android:scrollbars="vertical"
+                android:clipToPadding="false"
+
+                />
+
+        <!--        <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+        <!--                android:id="@+id/floatAddSensor"-->
+        <!--                android:layout_width="wrap_content"-->
+        <!--                android:layout_height="wrap_content"-->
+        <!--                android:layout_marginBottom="32dp"-->
+        <!--                android:clickable="true"-->
+        <!--                android:contentDescription="@string/des"-->
+        <!--                android:focusable="true"-->
+        <!--                android:src="@drawable/ic_action_settings"-->
+        <!--                android:tint="@color/design_default_color_primary_dark"-->
+        <!--                android:visibility="invisible"-->
+        <!--                app:backgroundTint="@color/divider_list" />-->
         <!--</ScrollView>-->
 
     </LinearLayout>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:src="@drawable/ic_action_settings"
+    <ImageButton
+            android:id="@+id/ibSendCommand"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:clickable="true"
+            android:layout_marginRight="30dp"
             app:layout_constraintRight_toRightOf="parent"
+            android:layout_marginBottom="30dp"
+            android:background="@drawable/circle_view"
+            android:contentDescription="@string/des"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:id="@+id/floatAddSensor"
-            app:backgroundTint="@color/divider_list"
-            android:tint="@color/design_default_color_primary_dark"
-            android:layout_marginEnd="32dp"
-            android:layout_marginBottom="32dp"
-            android:visibility="invisible"
-    />
+            android:src="@drawable/send_command"
+            android:visibility="visible" />
 
 
+    <FrameLayout
+            android:id="@+id/flCommands"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -153,8 +153,18 @@ open class ConfigurationFragment : ParentFragment(), CallToParentInterface {
         togForwardSensorEmail?.isChecked =
             getBooleanInPreference(activity, IS_FORWARD_ALARM_EMAIL, false)
         togForwardSensorEmail?.setOnCheckedChangeListener { buttonView, isChecked ->
-            //update the status of the alarm vibrate : on/off
-            setBooleanInPreference(activity, IS_FORWARD_ALARM_EMAIL, isChecked)
+            if (isChecked) {
+                if (checkFilledEmail()) {
+                    //update the status of the alarm vibrate : on/off
+                    setBooleanInPreference(activity, IS_FORWARD_ALARM_EMAIL, isChecked)
+                } else {
+                    togForwardSensorEmail?.isChecked =
+                        getBooleanInPreference(activity, IS_FORWARD_ALARM_EMAIL, false)
+                }
+            } else {
+                //update the status of the alarm vibrate : on/off
+                setBooleanInPreference(activity, IS_FORWARD_ALARM_EMAIL, isChecked)
+            }
         }
 
         togIsSensorAlwaysShow = view.findViewById(R.id.togIsSensorAlwaysShow)
@@ -203,6 +213,26 @@ open class ConfigurationFragment : ParentFragment(), CallToParentInterface {
 
 
         return view
+    }
+
+    //check if the user has been fill the email details
+    private fun checkFilledEmail(): Boolean {
+        val userName = getStringInPreference(activity, USER_NAME_MAIL, "-1")
+        val password = getStringInPreference(activity, PASSWORD_MAIL, "-1")
+        val recipient = getStringInPreference(activity, RECIPIENT_MAIL, "-1")
+        val server = getStringInPreference(activity, SERVER_MAIL, "-1")
+        val port = getIntInPreference(activity, PORT_MAIL, -1)
+        val isSSL = getBooleanInPreference(activity, IS_SSL_MAIL, false)
+
+        //check if the account mail has been filled
+        if (userName.equals("-1") || password.equals("-1")
+            || recipient.equals("-1") || server.equals("-1")
+            || port == -1
+        ) {
+            showToast(activity, resources.getString(R.string.no_fill_account))
+            return false
+        }
+        return true
     }
 
     override fun onStart() {
@@ -453,7 +483,7 @@ open class ConfigurationFragment : ParentFragment(), CallToParentInterface {
 
 
         val etPassword: EditText = promptsView
-            .findViewById(R.id.etPassword) as EditText
+            .findViewById(R.id.tvIntruderValue) as EditText
 
         val ibTogglePass: ImageButton = promptsView
             .findViewById(R.id.ibTogglePass) as ImageButton

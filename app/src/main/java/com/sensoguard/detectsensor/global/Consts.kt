@@ -7,6 +7,10 @@ const val DISCONNECT_USB_PROCESS_KEY = "disconnect.usb.process"
 const val HANDLE_READ_DATA_EXCEPTION = "handle.read.data.exception"
 const val ACTION_USB_PERMISSION = "com.android.example.USB_PERMISSION"
 const val ACTION_TOGGLE_TEST_MODE = "toggleTestMode"
+const val ACTION_SEND_CMD = "action.send.cmd"
+const val ACTION_TIME_OUT = "action.time.out"
+const val ACTION_TIME_OUT_MAX = "action.time.out.max"
+
 
 const val GET_CURRENT_LOCATION_KEY = "handle.get.current.location"
 const val GET_CURRENT_SINGLE_LOCATION_KEY = "handle.get.current.single.location"
@@ -70,9 +74,19 @@ const val ALARM_LOW_BATTERY = "motion"
 
 const val USB_DEVICE_CONNECT_STATUS = "usbDeviceConnect"
 
+const val ACTION_USB_RESPONSE_CACHE = "handle.USB_RESPONSE_CACHE"
+const val USB_CACHE_RESPONSE_KEY = "usb_cache_response_key"
+
 const val NONE_VALIDATE_BITS = -1
 const val SIX_FOTMAT_BITS = 203
 const val TEN_FOTMAT_BITS = 202
+
+//commands
+const val SET_RF_ON_TIMER = 158
+const val GET_SENS_LEVEL = 55
+const val SET_SENS_LEVEL = 155
+
+const val GET_SENS_LEVEL_RESPONSE = "getSensLevelResponse"
 
 const val TABLAYOUT_HEIGHT_DEFAULT = 72
 
@@ -84,5 +98,25 @@ const val RECIPIENT_MAIL = "recipientail"
 const val IS_SSL_MAIL = "isSSLMail"
 const val IS_FORWARD_ALARM_EMAIL = "isForwardAlarmEmail"
 
+//key to deliver ids of sensors to command dialog
+const val SENSORS_IDS = "sensorsIds"
 
+const val CURRENT_COMMAND = "currentCommand"
 
+const val NORMAL_STATE = 0
+const val PROCESS_STATE = 1
+const val TIMEOUT_STATE = 2
+const val SUCCESS_STATE = 3
+
+const val TIMER_VALUE = "timerValue"
+
+//when the timer stop
+const val MAX_TIMEOUT = "maxTimeout"
+const val STOP_TIMER = "stopTimer"
+const val MAX_TIMER_RESPONSE = "max_timer_response"
+const val COMMAND_TYPE = "commandType"
+const val IS_REPEATED = "isRepeated"
+
+const val NONE_AWAKE = 0
+const val WAIT_AWAKE = 1
+const val OK_AWAKE = 2

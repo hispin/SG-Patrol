@@ -1,9 +1,21 @@
 package com.sensoguard.detectsensor.global
 
+import android.app.Activity
 import android.content.Context
 import android.widget.EditText
 import android.widget.Toast
 import com.sensoguard.detectsensor.R
+
+
+fun showToastUi(context: Activity, msg: String?) {
+    context.runOnUiThread(Runnable {
+        Toast.makeText(
+            context,
+            msg,
+            Toast.LENGTH_SHORT
+        ).show()
+    })
+}
 
 
 fun ToastNotify(notificationMessage: String?, context: Context) {
@@ -28,6 +40,14 @@ fun showToast(context: Context?, msg: String) {
         context,
         msg,
         Toast.LENGTH_LONG
-    )
-        .show()
+    ).show()
+}
+
+fun showShortToast(context: Context?, msg: String) {
+    if (context == null) return
+    Toast.makeText(
+        context,
+        msg,
+        Toast.LENGTH_SHORT
+    ).show()
 }

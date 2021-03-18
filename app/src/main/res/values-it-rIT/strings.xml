@@ -97,8 +97,39 @@
     <string name="user_name">User name</string>
     <string name="outgoing_mail_port_title">Outgoing  Port</string>
     <string name="recipient">Recipient</string>
-    <string name="fill_account">You have not filled in email account information</string>
+    <string name="no_fill_account">You have not filled in email account information</string>
     <string name="sender_email">Sender Email</string>
     <string name="password_title1">Password</string>
     <string name="use_ssl_title1">Using SSL</string>
+    <string name="des">description</string>
+    <string name="usb_is_disconnect">The usb is disconnected</string>
+    <string name="commands_title">Commands</string>
+    <string name="select_sensor">Select a sensor</string>
+    <string name="get_sens_level">"Get Sens Level "</string>
+    <string name="no_selected_sensor">"You did not select a sensor"</string>
+    <string name="get_sens_level_rsp">Get Sens Level Response</string>
+    <string name="close">Close</string>
+    <string name="set_sens_level">Set sens level</string>
+    <string name="select_car_sens">Select sens for alarm car</string>
+    <string name="select_intruder_sens">Select sens for intruder</string>
+    <string name="error_zero_sens">Zero can not be sent both for alert and for car and intruder</string>
+    <string name="connect">Connect</string>
+    <string name="disconnect">disconnect</string>
+    <string name="timer_off">timer off</string>
+    <string name="timer_on">timer on</string>
+    <string name="set_ref_timer">"Set RF On Timer"</string>
+    <string name="try_connect">try to connect</string>
+    <string name="no_response_sensor">"No response from the sensor"</string>
+
+    <string-array name="car_ids">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+    </string-array>
+
 </resources>

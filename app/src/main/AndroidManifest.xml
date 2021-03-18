@@ -34,6 +34,14 @@
             android:supportsRtl="true"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         <service
+                android:name=".services.TimerService"
+                android:enabled="true"
+                android:exported="true" />
+        <!--        <service-->
+        <!--                android:name=".services.TimerService"-->
+        <!--                android:exported="false"-->
+        <!--                android:permission="android.permission.BIND_JOB_SERVICE" />-->
+        <service
                 android:name=".services.ParentService"
                 android:enabled="true"
                 android:exported="true" />

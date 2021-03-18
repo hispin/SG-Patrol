@@ -46,6 +46,7 @@ class MainActivity : ParentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
 
         configureGeneralCatch()
+
         //Fabric.with(this, Crashlytics())
 
         super.onCreate(savedInstanceState)

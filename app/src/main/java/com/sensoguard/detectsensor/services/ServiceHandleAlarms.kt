@@ -391,6 +391,13 @@ class ServiceHandleAlarms : ParentService() {
 
     //send alarm email
     private fun sendEmailBakground(msg: String) {
+
+        //check if forward alarm email is active
+        val isForwardAlarmEmail = getBooleanInPreference(this, IS_FORWARD_ALARM_EMAIL, false)
+        if (!isForwardAlarmEmail) {
+            return
+        }
+
         val userName = getStringInPreference(this, USER_NAME_MAIL, "-1")
         val password = getStringInPreference(this, PASSWORD_MAIL, "-1")
         val recipient = getStringInPreference(this, RECIPIENT_MAIL, "-1")
@@ -403,13 +410,8 @@ class ServiceHandleAlarms : ParentService() {
             || recipient.equals("-1") || server.equals("-1")
             || port == -1
         ) {
-            showToast(this, resources.getString(R.string.fill_account))
-            return
-        }
-
-        //check if forward alarm email is active
-        val isForwardAlarmEmail = getBooleanInPreference(this, IS_FORWARD_ALARM_EMAIL, false)
-        if (!isForwardAlarmEmail) {
+            //Bugs fixed : cancel this message
+            //showToast(this, resources.getString(R.string.no_fill_account))
             return
         }
 

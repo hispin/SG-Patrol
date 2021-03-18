@@ -17,7 +17,7 @@
             android:textAllCaps="false"
             android:textColor="@color/black"
             android:textSize="14.7sp"
-            app:layout_constraintBottom_toTopOf="@+id/tvPassword"
+            app:layout_constraintBottom_toTopOf="@+id/ivIntruder"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView" />
 
@@ -37,7 +37,7 @@
             app:layout_constraintWidth_default="percent" />
 
     <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tvPassword"
+            android:id="@+id/ivIntruder"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="25dp"
@@ -50,7 +50,7 @@
             app:layout_constraintTop_toBottomOf="@+id/tvSenderEmail" />
 
     <androidx.appcompat.widget.AppCompatEditText
-            android:id="@+id/etPassword"
+            android:id="@+id/tvIntruderValue"
             android:layout_width="0dp"
             android:layout_height="30dp"
             android:layout_marginStart="2dp"
@@ -58,9 +58,9 @@
             android:background="@drawable/edit_text_border"
             android:inputType="textPassword"
             android:textSize="14.7sp"
-            app:layout_constraintBottom_toBottomOf="@+id/tvPassword"
+            app:layout_constraintBottom_toBottomOf="@+id/ivIntruder"
             app:layout_constraintStart_toStartOf="@+id/etSenderEmail"
-            app:layout_constraintTop_toTopOf="@+id/tvPassword"
+            app:layout_constraintTop_toTopOf="@+id/ivIntruder"
             app:layout_constraintWidth_percent="0.4" />
 
     <ImageButton
@@ -69,9 +69,9 @@
             android:layout_height="wrap_content"
             android:background="@color/transparent"
             android:contentDescription=""
-            app:layout_constraintBottom_toBottomOf="@+id/etPassword"
-            app:layout_constraintStart_toEndOf="@+id/etPassword"
-            app:layout_constraintTop_toTopOf="@+id/etPassword"
+            app:layout_constraintBottom_toBottomOf="@+id/tvIntruderValue"
+            app:layout_constraintStart_toEndOf="@+id/tvIntruderValue"
+            app:layout_constraintTop_toTopOf="@+id/tvIntruderValue"
             app:layout_constraintWidth_percent="0.1"
             app:srcCompat="@drawable/ic_show_pass" />
 
@@ -86,8 +86,8 @@
             android:textColor="@color/black"
             android:textSize="14.7sp"
             app:layout_constraintBottom_toTopOf="@+id/tvMailServerPort"
-            app:layout_constraintStart_toStartOf="@+id/tvPassword"
-            app:layout_constraintTop_toBottomOf="@+id/tvPassword" />
+            app:layout_constraintStart_toStartOf="@+id/ivIntruder"
+            app:layout_constraintTop_toBottomOf="@+id/ivIntruder" />
 
     <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/etMailServer"

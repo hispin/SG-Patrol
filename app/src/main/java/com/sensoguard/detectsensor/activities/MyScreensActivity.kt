@@ -21,9 +21,7 @@ import android.widget.ToggleButton
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentStatePagerAdapter
+import androidx.fragment.app.*
 import androidx.lifecycle.ViewModelProviders
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
@@ -389,6 +387,7 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, java.util.Observ
         setFilter()
     }
 
+
     override fun onStop() {
         super.onStop()
         try {
@@ -477,7 +476,7 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, java.util.Observ
             //set event of click ic_on top menu
             when (position) {
                 0 -> {
-                    fragment = MainUartFragment()
+                    fragment = SensorsFragment()
                     fragment.arguments = Bundle().apply {
                         // Our object is just an integer :-P
                         putInt("ARG_OBJECT", position + 1)
@@ -526,19 +525,28 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, java.util.Observ
 
 
     override fun onBackPressed() {
-        super.onBackPressed()
-        sendBroadcast(Intent(STOP_ALARM_SOUND))
-        //start activity for loading new language if it has been changed
-        startActivity(Intent(this, MainActivity::class.java))
+        //back press when the command fragment is showed
+        val prev = supportFragmentManager.findFragmentByTag("CommandsFragment")
+        if (prev != null && prev.isAdded) {
+            val df: DialogFragment = prev as DialogFragment
+            df.dismiss()
 
+        } else {//normal
+            super.onBackPressed()
+            sendBroadcast(Intent(STOP_ALARM_SOUND))
+            //start activity for loading new language if it has been changed
+            startActivity(Intent(this, MainActivity::class.java))
+        }
     }
 
     //set the language of the app (calling  from activity)
     override fun updateLanguage() {
         setAppLanguage(this, GeneralItemMenu.selectedItem)
         this.finish()
+        intent.putExtra(CURRENT_ITEM_TOP_MENU_KEY, 3)
         this.startActivity(intent)
     }
+
 
     override fun update(o: Observable?, arg: Any?) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.

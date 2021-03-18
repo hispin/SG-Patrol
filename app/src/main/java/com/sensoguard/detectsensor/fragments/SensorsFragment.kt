@@ -1,41 +1,25 @@
 package com.sensoguard.detectsensor.fragments
 
-//import android.support.v4.app.Fragment
-
-//import android.support.design.widget.FloatingActionButton
-//import android.support.v4.content.ContextCompat
-//import android.support.v7.widget.DividerItemDecoration
-//import android.support.v7.widget.LinearLayoutManager
-//import android.support.v7.widget.RecyclerView
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.*
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.sensoguard.detectsensor.R
 import com.sensoguard.detectsensor.adapters.SensorsAdapter
 import com.sensoguard.detectsensor.classes.Sensor
 import com.sensoguard.detectsensor.global.*
 import com.sensoguard.detectsensor.interfaces.OnAdapterListener
-
-
-//import android.R
-
-
+import com.sensoguard.detectsensor.interfaces.OnFragmentListener
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -46,13 +30,13 @@ private const val ARG_PARAM2 = "param2"
 /**
  * A simple [Fragment] subclass.
  * Activities that contain this fragment must implement the
- * [MainUartFragment.OnFragmentInteractionListener] interface
+ * [SensorsFragment.OnFragmentInteractionListener] interface
  * to handle interaction events.
- * Use the [MainUartFragment.newInstance] factory method to
+ * Use the [SensorsFragment.newInstance] factory method to
  * create an instance of this fragment.
  *
  */
-class MainUartFragment : ParentFragment(), OnAdapterListener {
+class SensorsFragment : ParentFragment(), OnAdapterListener {
 
 
     // TODO: Rename and change types of parameters
@@ -62,12 +46,25 @@ class MainUartFragment : ParentFragment(), OnAdapterListener {
     //private var listener: OnAdapterListener? = null
     var tvShowLogs: TextView? = null
     var bs: StringBuilder? = null
-    private var floatAddSensor: FloatingActionButton? = null
+
+    //private var floatAddSensor: FloatingActionButton? = null
+    private var ibSendCommand: ImageButton? = null
+    //private var floatSendCommand: FloatingActionButton? = null
+
     private var sensors: ArrayList<Sensor>? = null
     private var rvSensor: RecyclerView? = null
     private var sensorsAdapter: SensorsAdapter? = null
     private val listenerPref: SharedPreferences.OnSharedPreferenceChangeListener? = null
+    private var listener: OnFragmentListener? = null
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is OnFragmentListener) {
+            listener = context
+        } else {
+            throw RuntimeException("$context must implement OnAdapterListener")
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,9 +77,9 @@ class MainUartFragment : ParentFragment(), OnAdapterListener {
     //create shared preference handler change
     private val appStateChangeListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
         when (key) {
-           DETECTORS_LIST_KEY_PREF -> {
-               refreshSensorsFromPref()
-           }
+            DETECTORS_LIST_KEY_PREF -> {
+                refreshSensorsFromPref()
+            }
         }
     }
 
@@ -124,7 +121,12 @@ class MainUartFragment : ParentFragment(), OnAdapterListener {
         fun askBeforeDeleteExtraSensor() {
             val dialog= AlertDialog.Builder(activity)
                 //set message, title, and icon
-                .setTitle(activity?.resources?.getString(R.string.remove_extra_sensors)).setMessage(activity?.resources?.getString(R.string.content_delete_extra_sensor)).setIcon(android.R.drawable.ic_menu_delete
+                .setTitle(activity?.resources?.getString(R.string.remove_extra_sensors)).setMessage(
+                    activity?.resources?.getString(
+                        R.string.content_delete_extra_sensor
+                    )
+                ).setIcon(
+                    android.R.drawable.ic_menu_delete
 
                 )
 
@@ -141,7 +143,7 @@ class MainUartFragment : ParentFragment(), OnAdapterListener {
                                 if (id.toInt() > numSensorsRequest!!) {
                                     items.remove()
                                 }
-                            }catch(ex:NumberFormatException){
+                            } catch (ex: NumberFormatException) {
                                 //do nothing
                             }
                         }
@@ -152,8 +154,8 @@ class MainUartFragment : ParentFragment(), OnAdapterListener {
                 }
 
 
-                .setNegativeButton(activity?.resources?.getString(R.string.no)) {
-                        dialog, _ -> dialog.dismiss() }.create()
+                .setNegativeButton(activity?.resources?.getString(R.string.no)) { dialog, _ -> dialog.dismiss() }
+                .create()
             dialog.show()
 
         }
@@ -181,15 +183,20 @@ class MainUartFragment : ParentFragment(), OnAdapterListener {
                 val sensors= populateSensorsFromLocally()
 
 
-                try{
-                    numSensorsRequest=etId.text.toString().toInt()
-                }catch (ex:NumberFormatException){
-                    Toast.makeText(this.context, "exception ${ex.message}", Toast.LENGTH_LONG).show()
+                try {
+                    numSensorsRequest = etId.text.toString().toInt()
+                } catch (ex: NumberFormatException) {
+                    Toast.makeText(this.context, "exception ${ex.message}", Toast.LENGTH_LONG)
+                        .show()
                     return@setOnClickListener
                 }
 
-                if(numSensorsRequest!=null && numSensorsRequest!! >254){
-                    Toast.makeText(this.context, resources.getString(R.string.invalid_mum_sensors), Toast.LENGTH_LONG).show()
+                if(numSensorsRequest!=null && numSensorsRequest!! >254) {
+                    Toast.makeText(
+                        this.context,
+                        resources.getString(R.string.invalid_mum_sensors),
+                        Toast.LENGTH_LONG
+                    ).show()
                     return@setOnClickListener
                 }
 
@@ -223,23 +230,23 @@ class MainUartFragment : ParentFragment(), OnAdapterListener {
         dialog.show()
     }
 
-    private fun isIdExist(detectorsArr:ArrayList<Sensor>, id:String):Boolean{
-        for(item in detectorsArr){
-            if(item.getId() == id){
+    private fun isIdExist(detectorsArr: ArrayList<Sensor>, id: String): Boolean {
+        for (item in detectorsArr) {
+            if (item.getId() == id) {
                 return true
             }
         }
         return false
     }
 
-    private fun saveNameDetector(detector:Sensor){
-        val detectorsArr=populateSensorsFromLocally()
+    private fun saveNameDetector(detector: Sensor) {
+        val detectorsArr = populateSensorsFromLocally()
         if (detectorsArr != null) {
 
-            val iteratorList=detectorsArr.listIterator()
+            val iteratorList = detectorsArr.listIterator()
             while (iteratorList != null && iteratorList.hasNext()) {
                 val detectorItem = iteratorList.next()
-                if(detectorItem.getId() == detector.getId()){
+                if (detectorItem.getId() == detector.getId()) {
                     detector.getName()?.let { detectorItem.setName(it) }
                 }
             }
@@ -251,7 +258,7 @@ class MainUartFragment : ParentFragment(), OnAdapterListener {
     //get the sensors from locally
     private fun populateSensorsFromLocally(): ArrayList<Sensor>?  {
         val detectors: ArrayList<Sensor>?
-        val detectorListStr=getStringInPreference(activity,DETECTORS_LIST_KEY_PREF, ERROR_RESP)
+        val detectorListStr = getStringInPreference(activity, DETECTORS_LIST_KEY_PREF, ERROR_RESP)
 
         detectors = if(detectorListStr.equals(ERROR_RESP)){
             ArrayList()
@@ -306,18 +313,30 @@ class MainUartFragment : ParentFragment(), OnAdapterListener {
         val view = inflater.inflate(R.layout.fragment_sensors, container, false)
         tvShowLogs = view.findViewById(R.id.tvShowLogs)
         rvSensor = view.findViewById(R.id.rvDetector)
-        floatAddSensor = view.findViewById(R.id.floatAddSensor)
-        floatAddSensor?.setOnClickListener {
-            showDialog()
+
+
+        ibSendCommand = view.findViewById(R.id.ibSendCommand)
+        ibSendCommand?.setOnClickListener {
+            val isConnected = getBooleanInPreference(activity, USB_DEVICE_CONNECT_STATUS, false)
+            //if the usb is connected then open dialog of commands
+            //if(isConnected) {
+            openCommands()
+//            }else{
+//               showToast(activity, resources.getString(R.string.usb_is_disconnect))
+//            }
         }
-        bs= StringBuilder()
+        bs = StringBuilder()
         return view
     }
+
 
     override fun onStart() {
         super.onStart()
 
-        activity?.getSharedPreferences(SHARED_PREF_FILE_NAME, Context.MODE_PRIVATE)?.registerOnSharedPreferenceChangeListener(appStateChangeListener)
+        activity?.getSharedPreferences(SHARED_PREF_FILE_NAME, Context.MODE_PRIVATE)
+            ?.registerOnSharedPreferenceChangeListener(
+                appStateChangeListener
+            )
 
         setFilter()
 
@@ -330,7 +349,7 @@ class MainUartFragment : ParentFragment(), OnAdapterListener {
     private fun refreshSensorsFromPref(){
         sensors= ArrayList()
         //sensors?.add(Sensor(resources.getString(R.string.id_title),resources.getString(R.string.name_title)))
-        val detectorListStr=getStringInPreference(activity,DETECTORS_LIST_KEY_PREF, ERROR_RESP)
+        val detectorListStr = getStringInPreference(activity, DETECTORS_LIST_KEY_PREF, ERROR_RESP)
 
         if(detectorListStr.equals(ERROR_RESP)){
             //ArrayList()
@@ -348,25 +367,25 @@ class MainUartFragment : ParentFragment(), OnAdapterListener {
     override fun onStop() {
         super.onStop()
         activity?.unregisterReceiver(usbReceiver)
-        activity?.getSharedPreferences(SHARED_PREF_FILE_NAME, Context.MODE_PRIVATE)?.unregisterOnSharedPreferenceChangeListener(appStateChangeListener)
+        activity?.getSharedPreferences(SHARED_PREF_FILE_NAME, Context.MODE_PRIVATE)
+            ?.unregisterOnSharedPreferenceChangeListener(
+                appStateChangeListener
+            )
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    fun onButtonPressed(uri: Uri) {
-        //listener?.onFragmentInteraction(uri)
-    }
 
     private fun setFilter() {
         val filter = IntentFilter("handle.read.data")
+        //filter.addAction(ACTION_USB_RESPONSE_CACHE)
         activity?.registerReceiver(usbReceiver, filter)
     }
 
     private val usbReceiver = object : BroadcastReceiver() {
-        override fun onReceive(arg0: Context, arg1: Intent) {
-            if (arg1.action == "handle.read.data") {
+        override fun onReceive(arg0: Context, inn: Intent) {
+            if (inn.action == "handle.read.data") {
 
                 //TODO return the code
-                val bit = arg1.getIntegerArrayListExtra("data")
+                val bit = inn.getIntegerArrayListExtra("data")
 
                 if (bit != null) {
                     for (item in bit) {
@@ -377,6 +396,21 @@ class MainUartFragment : ParentFragment(), OnAdapterListener {
                 tvShowLogs?.text = bs.toString()
 
             }
+//            else if(inn.action == ACTION_USB_RESPONSE_CACHE){
+//                val arr = inn.getIntegerArrayListExtra(USB_CACHE_RESPONSE_KEY)
+//
+//                var msg=""
+//                val iteratorList = arr?.listIterator()
+//                while (iteratorList != null && iteratorList.hasNext()) {
+//                    val item = iteratorList.next()
+//                    msg+=item.toUByte().toString()+" "
+//                }
+//
+//                showToast(
+//                    activity,
+//                    msg
+//                )
+//            }
         }
     }
 
@@ -393,11 +427,51 @@ class MainUartFragment : ParentFragment(), OnAdapterListener {
         // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
-            MainUartFragment().apply {
+            SensorsFragment().apply {
                 arguments = Bundle().apply {
                     putString(ARG_PARAM1, param1)
                     putString(ARG_PARAM2, param2)
                 }
             }
+    }
+
+    //open fragment dialog to make commands
+    private fun openCommands() {
+
+        val sensorsIds = getSensorsIds()
+
+        val fr = CommandsFragment()
+
+        if (sensorsIds.size > 0) {
+            val bnd = Bundle()
+            bnd.putStringArrayList(SENSORS_IDS, sensorsIds)
+            fr.arguments = bnd
+        }
+//        //deliver selected camera to continue add data
+//
+        val fm = activity?.supportFragmentManager
+//        fm?.addOnBackStackChangedListener {
+//            //if the dialog is close then the add button is visible
+//            if (fm.backStackEntryCount == 0) {
+//                floatSendCommand?.visibility = View.VISIBLE
+//            } else {
+//                floatSendCommand?.visibility = View.INVISIBLE
+//            }
+//        }
+        val fragmentTransaction = fm?.beginTransaction()
+        fragmentTransaction?.addToBackStack(fr.tag)
+        fragmentTransaction?.add(R.id.flCommands, fr, "CommandsFragment")
+        fragmentTransaction?.commit()
+    }
+
+    //get sensors id
+    private fun getSensorsIds(): ArrayList<String> {
+        val sensorsIds = ArrayList<String>()
+        val iteratorList = sensors?.listIterator()
+        while (iteratorList != null && iteratorList.hasNext()) {
+            val sensorItem = iteratorList.next()
+            sensorsIds.add(sensorItem.getId())
+        }
+        return sensorsIds
     }
 }
