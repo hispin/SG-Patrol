@@ -15,6 +15,7 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.TextView
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatSpinner
 import androidx.appcompat.widget.AppCompatTextView
@@ -43,13 +44,15 @@ private const val ARG_PARAM2 = "param2"
 class CommandsFragment : DialogFragment() {
 
     //private var isConnected: Boolean=false
-    private var statusAwak = NONE_AWAKE
-    private var myCommand: Command? = null
+    private var statusAwake = NONE_AWAKE
+
+    //private var myCommand: Command? = null
     private var sensorsIds = ArrayList<String>()
     private var spSensorsIds: AppCompatSpinner? = null
     private var commandsAdapter: CommandAdapter? = null
     private var rvCommands: RecyclerView? = null
     private var btnConnect: Button? = null
+    private var tvTest: TextView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -102,25 +105,33 @@ class CommandsFragment : DialogFragment() {
         return view
     }
 
+    //hag
+    var count = 0
+
     private fun initViews(view: View?) {
+        tvTest = view?.findViewById(R.id.tvTest)
         rvCommands = view?.findViewById(R.id.rvCommands)
         btnConnect = view?.findViewById(R.id.btnConnect)
         btnConnect?.setOnClickListener {
-            if (statusAwak == NONE_AWAKE) {
+            //hag
+            //activity?.sendBroadcast(Intent(STOP_READ_DATA_KEY))
+            if (statusAwake == NONE_AWAKE) {
 
                 val isConnected = getBooleanInPreference(activity, USB_DEVICE_CONNECT_STATUS, false)
                 //if the usb is connected then open dialog of commands
-                //if (isConnected) {
-                sendSetRefTimer(3, 30, WAIT_AWAKE)
-                //} else {
-                //showToast(activity, resources.getString(R.string.usb_is_disconnect))
-                //}
-
-
+                //hag
+                if (isConnected) {
+                    //max timer in seconds
+                    count = 0
+                    sendSetRefTimer(3, 240, WAIT_AWAKE)
+                } else {
+                    showToast(activity, resources.getString(R.string.usb_is_disconnect))
+                }
             }
         }
     }
 
+    // send set ref timer command
     private fun sendSetRefTimer(timerValue: Int, maxTimeout: Int, status: Int) {
 
         if (spSensorsIds?.selectedItem.toString() == resources.getString(R.string.select_sensor)) {
@@ -129,22 +140,28 @@ class CommandsFragment : DialogFragment() {
             try {
                 val id = Integer.parseInt(spSensorsIds?.selectedItem.toString())
                 val cmdSetRefTimer: IntArray = intArrayOf(2, id, SET_RF_ON_TIMER, 7, 45, 0, 3)
-                myCommand = Command(
+                UserSession.instance.myCommand = Command(
                     resources.getString(R.string.set_ref_timer),
                     cmdSetRefTimer,
                     R.drawable.ic_parameters
                 )
-                myCommand?.maxTimeout = 240
+                UserSession.instance.myCommand?.maxTimeout = maxTimeout
 
                 //start timer every 3 second and stop after 30 seconds
                 startTimerService(true, timerValue, maxTimeout)
 
-                if (myCommand != null) {
-                    sendCommand(myCommand!!)
+                if (UserSession.instance.myCommand != null) {
+                    sendCommand(UserSession.instance.myCommand!!)
                 }
 
-                btnConnect?.text = resources.getString(R.string.try_connect)
-                statusAwak = status
+                statusAwake = status
+
+                if (statusAwake == WAIT_AWAKE) {
+                    btnConnect?.text = resources.getString(R.string.try_connect)
+                } else if (statusAwake == OK_AWAKE) {
+                    btnConnect?.text = resources.getString(R.string.disconnect)
+                }
+
                 //isConnected=true
 
             } catch (ex: NumberFormatException) {
@@ -168,10 +185,14 @@ class CommandsFragment : DialogFragment() {
         }
     }
 
+
     override fun onStart() {
         super.onStart()
         setFilter()
         refreshCommandsAdapter()
+
+        var state = getStringInPreference(activity, "connState", "-1")
+        tvTest?.text = state
     }
 
     override fun onStop() {
@@ -211,9 +232,15 @@ class CommandsFragment : DialogFragment() {
             //if the usb is connected then open dialog of commands
             if (isConnected) {
 
-                //check if sensor has been responded
-                if (statusAwak != OK_AWAKE) {
+                //check if sensor has been responded and it has been awake
+                if (statusAwake != OK_AWAKE) {
                     showToast(activity, resources.getString(R.string.no_response_sensor))
+                    return@CommandAdapter
+                }
+
+                //check if sensor has been responded and it has been awake
+                if (UserSession.instance.myCommand?.state == PROCESS_STATE) {
+                    showToast(activity, resources.getString(R.string.another_process))
                     return@CommandAdapter
                 }
 
@@ -221,7 +248,7 @@ class CommandsFragment : DialogFragment() {
                 if (spSensorsIds?.selectedItem.toString() == resources.getString(R.string.select_sensor)) {
                     showToast(activity, resources.getString(R.string.no_selected_sensor))
                 } else {
-                    myCommand = command
+                    UserSession.instance.myCommand = command
                     if (command.commandContent?.size != null
                         && command.commandContent.size > 1
                     ) {
@@ -229,18 +256,13 @@ class CommandsFragment : DialogFragment() {
                         //start timer
                         startTimerService(false, 4, -1)
 
-//                        Handler(Looper.getMainLooper()).postDelayed(object : Runnable {
-//                            override fun run() {
-//                                sendRfCmd()
-//                            }
-//                        },1000)
 
                         //set the sensor id
                         command.commandContent[1] =
                             Integer.parseInt(spSensorsIds?.selectedItem.toString())
 
                         //start progress bar
-                        myCommand?.state = PROCESS_STATE
+                        UserSession.instance.myCommand?.state = PROCESS_STATE
                         commandsAdapter?.notifyDataSetChanged()
 
 
@@ -275,11 +297,22 @@ class CommandsFragment : DialogFragment() {
 
     //sen command to sensor
     private fun sendCommand(command: Command) {
-        val inn = Intent(ACTION_SEND_CMD)
-        val bnd = Bundle()
-        bnd.putIntArray(CURRENT_COMMAND, command.commandContent)
-        inn.putExtras(bnd)
-        activity?.sendBroadcast(inn)
+
+
+        //val inn = Intent(ACTION_SEND_CMD)
+        //val bnd = Bundle()
+
+        UserSession.instance.commandContent = command.commandContent
+
+        //bnd.putIntArray(CURRENT_COMMAND, command.commandContent)
+
+        //hag
+        //Log.d("TestCommand","send command")
+        //count++
+        //showToast(activity, count.toString()+ " array size="+command.commandContent?.size)
+        //showToast(activity, command.commandContent!![1].toString())
+        //inn.replaceExtras(bnd)
+        activity?.sendBroadcast(Intent(ACTION_SEND_CMD))
     }
 
 
@@ -296,8 +329,9 @@ class CommandsFragment : DialogFragment() {
     private fun setFilter() {
         val filter = IntentFilter("handle.read.data")
         filter.addAction(ACTION_USB_RESPONSE_CACHE)
-        filter.addAction(ACTION_TIME_OUT)
+        filter.addAction(ACTION_INTERVAL)
         filter.addAction(MAX_TIMER_RESPONSE)
+        filter.addAction("test.brod")
         activity?.registerReceiver(usbReceiver, filter)
     }
 
@@ -308,9 +342,9 @@ class CommandsFragment : DialogFragment() {
 
                 //response of get sens command
                 if (arr != null && arr.size > 5 && arr[2].toUByte().toInt() == GET_SENS_LEVEL) {
-                    if (myCommand?.state == PROCESS_STATE) {
+                    if (UserSession.instance.myCommand?.state == PROCESS_STATE) {
                         //stop progress bar
-                        myCommand?.state = SUCCESS_STATE
+                        UserSession.instance.myCommand?.state = SUCCESS_STATE
                         commandsAdapter?.notifyDataSetChanged()
                         showResponseInDialog(arr[4], arr[5])
                     }
@@ -318,56 +352,63 @@ class CommandsFragment : DialogFragment() {
                 } else if (arr != null && arr.size == 7 && arr[2].toUByte()
                         .toInt() == SET_SENS_LEVEL
                 ) {
-                    if (myCommand?.state == PROCESS_STATE) {
+                    if (UserSession.instance.myCommand?.state == PROCESS_STATE) {
                         //stop progress bar
-                        myCommand?.state = SUCCESS_STATE
+                        UserSession.instance.myCommand?.state = SUCCESS_STATE
                         commandsAdapter?.notifyDataSetChanged()
                     }
                     //accept response from command of RF timer
                 } else if (arr != null && arr.size == 7 && arr[2].toUByte()
                         .toInt() == SET_RF_ON_TIMER
+                //&& arr[4].toUByte().toInt() == 1
                 ) {
-                    statusAwak = OK_AWAKE
+                    statusAwake = OK_AWAKE
                     btnConnect?.text = resources.getString(R.string.disconnect)
                     startTimerService(true, 20, -1)
 
                 }
-                    //time out (no max)
-                } else if (inn.action == ACTION_TIME_OUT) {
-                    val commandType = inn.getStringExtra(COMMAND_TYPE)
+                //time out (no max)
+            } else if (inn.action == ACTION_INTERVAL) {
+                val commandType = inn.getStringExtra(COMMAND_TYPE)
 
-                    //if the command is set ref timer
-                    if (commandType.equals(resources.getString(R.string.set_ref_timer))) {
+                //if the interval is belong to the command "set ref timer"
+                //do nothing ,ServiceConnectSensor also handle it
+                if (commandType.equals(resources.getString(R.string.set_ref_timer))) {
 
-                        //showShortToast(activity, "interval")
-                        //send another command
-                        if (myCommand?.commandName.equals(resources.getString(R.string.set_ref_timer))) {
-                            myCommand?.let { sendCommand(it) }
-                        }
+                    //showShortToast(activity, "interval")
+                    //do nothing ,ServiceConnectSensor also handle it
 
-                    } else if (myCommand?.state == PROCESS_STATE) {
+                    //accept interval after other commands (timeout, not repeated)
+                } else if (UserSession.instance.myCommand?.state == PROCESS_STATE) {
 
-                        //stop progress bar
-                        myCommand?.state = TIMEOUT_STATE
-                        commandsAdapter?.notifyDataSetChanged()
-                        //showToast(activity, "timeout")
+                    //stop progress bar
+                    UserSession.instance.myCommand?.state = TIMEOUT_STATE
+                    commandsAdapter?.notifyDataSetChanged()
+                    //showToast(activity, "timeout")
 
-                        //renew the normal Timer RF commands timer
-                        if (statusAwak == OK_AWAKE) {
-                            //startTimerService(true,20,-1)
-                            sendSetRefTimer(20, -1, OK_AWAKE)
-                        }
-                    } else {
-                        //renew the normal Timer RF commands timer
-                        if (statusAwak == OK_AWAKE) {
-                            sendSetRefTimer(20, -1, OK_AWAKE)
-                        }
+                    //if the sensor awake then renew the normal Timer RF commands timer
+                    if (statusAwake == OK_AWAKE) {
+                        sendSetRefTimer(20, -1, OK_AWAKE)
                     }
-                } else if (inn.action == MAX_TIMER_RESPONSE) {
-                    btnConnect?.text = resources.getString(R.string.connect)
-                    statusAwak = NONE_AWAKE
+                } else {
+                    //renew the normal Timer RF commands timer
+                    if (statusAwake == OK_AWAKE) {
+                        sendSetRefTimer(20, -1, OK_AWAKE)
+                    }
                 }
+            } else if (inn.action == MAX_TIMER_RESPONSE) {
+                btnConnect?.text = resources.getString(R.string.connect)
+                statusAwake = NONE_AWAKE
             }
+            //hag test
+//            else if (inn.action == "test.brod") {
+//                   //count++
+//                   val s=  inn.getIntExtra("size", -1)
+//                   val appcode=  inn.getIntExtra("appcode", -1)
+//
+//                   showToast(activity, "size=$s appcode=$appcode")
+//            }
+        }
         }
 
         //show dialog to show response

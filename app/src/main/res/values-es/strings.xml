@@ -120,6 +120,7 @@
     <string name="set_ref_timer">"Set RF On Timer"</string>
     <string name="try_connect">try to connect</string>
     <string name="no_response_sensor">"No response from the sensor"</string>
+    <string name="another_process">There is another process</string>
 
     <string-array name="car_ids">
         <item>0</item>

@@ -116,9 +116,10 @@
     <string name="disconnect">התנתק</string>
     <string name="timer_off">טיימר כבוי</string>
     <string name="timer_on">טיימר דלוק</string>
-    <string name="set_ref_timer">"Set RF On Timer"</string>
+    <string name="set_ref_timer">Set RF On Timer</string>
     <string name="try_connect">מנסה להתחבר</string>
-    <string name="no_response_sensor">"אין תגובה מהחיישן"</string>
+    <string name="no_response_sensor">אין תגובה מהחיישן</string>
+    <string name="another_process">יש תהליך אחר</string>
 
     <string-array name="car_ids">
         <item>0</item>

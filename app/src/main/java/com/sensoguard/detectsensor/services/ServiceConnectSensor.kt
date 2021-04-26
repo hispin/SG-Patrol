@@ -21,6 +21,7 @@ import com.felhr.usbserial.UsbSerialInterface
 import com.sensoguard.detectsensor.R
 import com.sensoguard.detectsensor.classes.Alarm
 import com.sensoguard.detectsensor.classes.AlarmSensor
+import com.sensoguard.detectsensor.classes.Command
 import com.sensoguard.detectsensor.classes.Sensor
 import com.sensoguard.detectsensor.global.*
 import java.text.SimpleDateFormat
@@ -52,8 +53,13 @@ class ServiceConnectSensor : ParentService() {
     override fun onCreate() {
         super.onCreate()
         startSysForeGround()
+        try {
+            unregisterReceiver(usbReceiver)
+        } catch (ex: java.lang.Exception) {
+        }
         setFilter()
     }
+
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
@@ -63,40 +69,44 @@ class ServiceConnectSensor : ParentService() {
         return START_NOT_STICKY
     }
 
+
     private val usbReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, arg1: Intent) {
+        override fun onReceive(context: Context, inn: Intent) {
             when {
-                arg1.action == CHECK_AVAILABLE_KEY -> {
+                inn.action == CHECK_AVAILABLE_KEY -> {
                     findUsbDevices()
                 }
-                arg1.action == DISCONNECT_USB_PROCESS_KEY -> {
+                inn.action == DISCONNECT_USB_PROCESS_KEY -> {
                     setBooleanInPreference(
                         this@ServiceConnectSensor,
                         USB_DEVICE_CONNECT_STATUS,
                         false
                     )
                     serialPort?.close()
+                    //bug fixed :stop timer of commands if needed
+                    sendBroadcast(Intent(STOP_TIMER))
                     //serialPortIn?.syncClose()
                     this@ServiceConnectSensor.stopSelf()
                 }
-                arg1.action == STOP_READ_DATA_KEY -> {
+                inn.action == STOP_READ_DATA_KEY -> {
                     //setBooleanInPreference(this@ServiceConnectSensor,USB_DEVICE_CONNECT,false)
+                    //showShortToast(context,serialPort?.isOpen.toString())
                     serialPort?.close()
                     //serialPortIn?.syncClose()
                     //this@ServiceConnectSensor.stopSelf()
                 }
-                arg1.action == HANDLE_READ_DATA_EXCEPTION -> {
-                    val msg = arg1.getStringExtra("data")
+                inn.action == HANDLE_READ_DATA_EXCEPTION -> {
+                    val msg = inn.getStringExtra("data")
                     Toast.makeText(
                         applicationContext,
                         "handle read bit int: $msg",
                         Toast.LENGTH_LONG
                     ).show()
                 }
-                arg1.action == ACTION_USB_PERMISSION -> {
+                inn.action == ACTION_USB_PERMISSION -> {
                     openConnection()
                 }
-                arg1.action == Intent.ACTION_SCREEN_OFF -> {
+                inn.action == Intent.ACTION_SCREEN_OFF -> {
                     //Toast.makeText(this@ServiceConnectSensor, "MyScreensActivity start sound", Toast.LENGTH_LONG).show()
 //                    setBooleanInPreference(
 //                        this@ServiceConnectSensor,
@@ -107,11 +117,56 @@ class ServiceConnectSensor : ParentService() {
 //                    sendBroadcast(Intent(USB_CONNECTION_OFF_UI))
 //                    this@ServiceConnectSensor.stopSelf()
                 }
-                arg1.action == ACTION_SEND_CMD -> {
 
-                    sendData(arg1)
+                //Bug fixed : accept trigger directly from timer and not from other receiver
+                inn.action == ACTION_INTERVAL -> {
+
+                    val commandType = inn.getStringExtra(COMMAND_TYPE)
+                    //if the interval is belong to the command "set ref timer"
+                    if (commandType.equals(resources.getString(R.string.set_ref_timer))) {
+
+                        //send another command
+                        if (UserSession.instance.myCommand?.commandName.equals(resources.getString(R.string.set_ref_timer))) {
+                            sendData()
+                        }
+                    }
+
+                }
+                //send manual command after time out of others commands
+                inn.action == ACTION_SEND_CMD -> {
+                    sendData()
+                }
+                //if stop timer refresh broadcast receiver registration to prevent multiple triggers
+                inn.action == STOP_TIMER -> {
+                    //showToast(this@ServiceConnectSensor,"unregister")
+                    unregisterReceiver(this)
+                    setFilter()
                 }
 
+                inn.action == CHECK_USB_CONN_SW -> {
+
+
+                    //check SW connection
+                    if (serialPort != null) {
+                        if (serialPort?.isOpen == false) {
+                            stopConnectConfiguration()
+                            return
+                        }
+                    }
+
+                    manager = getSystemService(Context.USB_SERVICE) as UsbManager
+
+
+                    //check if find devices via USB
+                    //Bug fixed: if usb has been disconnected during sleep
+                    // mode the button still green
+                    val usbDevices = manager?.deviceList
+
+                    if (usbDevices != null && usbDevices.isEmpty()) {
+                        stopConnectConfiguration()
+                    }
+
+                }
 
             }
 
@@ -119,6 +174,25 @@ class ServiceConnectSensor : ParentService() {
 
 
     }
+
+    private fun stopConnectConfiguration() {
+        setBooleanInPreference(
+            this@ServiceConnectSensor,
+            USB_DEVICE_CONNECT_STATUS,
+            false
+        )
+
+        //update UI
+        sendBroadcast(Intent(USB_CONNECTION_OFF_UI))
+
+        //bug fixed :stop timer of commands if needed
+        sendBroadcast(Intent(STOP_TIMER))
+        //serialPortIn?.syncClose()
+        this@ServiceConnectSensor.stopSelf()
+    }
+
+
+    var prevCalendar = Calendar.getInstance()
 
     override fun onDestroy() {
         super.onDestroy()
@@ -144,7 +218,9 @@ class ServiceConnectSensor : ParentService() {
         filter.addAction(Intent.ACTION_SCREEN_OFF)
         filter.addAction(Intent.ACTION_SCREEN_ON)
         filter.addAction(ACTION_SEND_CMD)
-        //filter.addAction(CREATE_ALARM_KEY)
+        filter.addAction(ACTION_INTERVAL)
+        filter.addAction(CHECK_USB_CONN_SW)
+
         registerReceiver(usbReceiver, filter)
     }
 
@@ -215,13 +291,14 @@ class ServiceConnectSensor : ParentService() {
        usbManager.requestPermission(usbDevice, mPermissionIntent)
    }
 
-    private fun sendData(arg1: Intent) {
+    private fun sendData() {
         //Toast.makeText(this, "start send data", Toast.LENGTH_LONG).show()
         if (usbDevice == null) {
             return
         }
 
-        val cmds = arg1.getIntArrayExtra(CURRENT_COMMAND)
+        //val cmds = arg1.getIntArrayExtra(CURRENT_COMMAND)
+        val cmds = UserSession.instance.commandContent
 
         if (cmds == null || cmds.size < 4 || cmds[3] != cmds.size) {
             Toast.makeText(this, "command formatting error", Toast.LENGTH_LONG).show()
@@ -239,6 +316,7 @@ class ServiceConnectSensor : ParentService() {
                 //open sync fro writing
                 if (serialPort!!.syncOpen()) {
 
+
                     //val cmds: IntArray = intArrayOf(2,1,240,7,45,0,3)
                     val myBytes = ByteArray(cmds.size)
                     var i = 0
@@ -252,8 +330,12 @@ class ServiceConnectSensor : ParentService() {
 
                     val mOutputStream = serialPort?.outputStream
 
+
+
                     mOutputStream?.setTimeout(1000)
                     mOutputStream?.write(myBytes)
+                    //hag : bug fixed : unwanted data when write to USB
+                    mOutputStream?.flush()
                     mOutputStream?.close()
                 }
 
@@ -270,7 +352,6 @@ class ServiceConnectSensor : ParentService() {
 
         }.start()
     }
-
 
     private fun readData() {
         if (usbDevice == null) {
@@ -333,6 +414,8 @@ class ServiceConnectSensor : ParentService() {
                 .build()
 
             startForeground(1, notification)
+
+
         }
     }
 
@@ -354,6 +437,11 @@ class ServiceConnectSensor : ParentService() {
             //general validate of the bits and get the format
             val appCode = validateBitsAndGetFormat(arr)
 
+//            val inn = Intent("test.brod")
+//            inn.putExtra("size",arr.size)
+//            inn.putExtra("appcode",appCode)
+//            sendBroadcast(inn)
+//            arr = ArrayList()
             //Log.d("testMulti","ServiceConnect size:"+arr.size+" appCode:"+appCode)
 
             if (arr != null && arr.size > 0)
@@ -730,6 +818,13 @@ class ServiceConnectSensor : ParentService() {
                 iteratorList.remove()
             }
         }
+    }
+
+    //sen command to sensor
+    private fun sendCommand(command: Command) {
+
+        UserSession.instance.commandContent = command.commandContent
+
     }
 
 }

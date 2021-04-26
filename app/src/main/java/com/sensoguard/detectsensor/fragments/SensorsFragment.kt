@@ -329,6 +329,12 @@ class SensorsFragment : ParentFragment(), OnAdapterListener {
         return view
     }
 
+    //trigger also when changing tabs
+    override fun onPause() {
+        super.onPause()
+        activity?.sendBroadcast(Intent(STOP_TIMER))
+    }
+
 
     override fun onStart() {
         super.onStart()

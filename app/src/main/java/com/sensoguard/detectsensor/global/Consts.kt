@@ -8,7 +8,7 @@ const val HANDLE_READ_DATA_EXCEPTION = "handle.read.data.exception"
 const val ACTION_USB_PERMISSION = "com.android.example.USB_PERMISSION"
 const val ACTION_TOGGLE_TEST_MODE = "toggleTestMode"
 const val ACTION_SEND_CMD = "action.send.cmd"
-const val ACTION_TIME_OUT = "action.time.out"
+const val ACTION_INTERVAL = "action.interval"
 const val ACTION_TIME_OUT_MAX = "action.time.out.max"
 
 
@@ -113,6 +113,11 @@ const val TIMER_VALUE = "timerValue"
 //when the timer stop
 const val MAX_TIMEOUT = "maxTimeout"
 const val STOP_TIMER = "stopTimer"
+const val STOP_GENERAL_TIMER = "stopGeneralTimer"
+
+//check usb sw connection key
+const val CHECK_USB_CONN_SW = "checkUsbConnSw"
+
 const val MAX_TIMER_RESPONSE = "max_timer_response"
 const val COMMAND_TYPE = "commandType"
 const val IS_REPEATED = "isRepeated"

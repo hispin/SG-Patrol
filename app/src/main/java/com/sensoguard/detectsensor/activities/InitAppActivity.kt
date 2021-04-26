@@ -29,8 +29,13 @@ class InitAppActivity : ParentActivity() {
         setBooleanInPreference(this, USB_DEVICE_CONNECT_STATUS, false)
 
         setContentView(R.layout.activity_init_app)
+
+        //start timer to supervise the usb software connection
+        //startTimerGeneralService()
+
         setReadPhoneStatePermission()
     }
+
 
     //get the IMEI of the device and check it with the locally
     private fun configureActivation(){

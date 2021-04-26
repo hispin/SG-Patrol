@@ -34,6 +34,7 @@ import com.sensoguard.detectsensor.global.*
 import com.sensoguard.detectsensor.interfaces.OnFragmentListener
 import com.sensoguard.detectsensor.services.ServiceConnectSensor
 import com.sensoguard.detectsensor.services.ServiceHandleAlarms
+import com.sensoguard.detectsensor.services.TimerGeneralService
 import kotlinx.android.synthetic.main.activity_my_screens.*
 import java.util.*
 
@@ -62,6 +63,7 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, java.util.Observ
 //        Log.d(TAG, "home")
 //        //stopUsbReadConnection()
 //    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -110,8 +112,19 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, java.util.Observ
         }
         configureActionBar()
         //editActionBar(false)
+        startTimerGeneralService()
     }
 
+    //start timer to supervise the usb software connection
+    private fun startTimerGeneralService() {
+        val intent = Intent(this, TimerGeneralService::class.java)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(intent)
+        } else {
+            startService(intent)
+        }
+    }
 
     //create timeout for reset sensor to regular icon and cancel the alarm icon
     private fun startTimer() {
@@ -198,6 +211,7 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, java.util.Observ
                     //
 
                 }
+                //when disconnect the device from USB
                 arg1.action == UsbManager.ACTION_USB_DEVICE_DETACHED -> {
                     //Toast.makeText(this@MyScreensActivity, "detach", Toast.LENGTH_SHORT).show()
                     stopUsbReadConnection()
@@ -336,6 +350,7 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, java.util.Observ
             } else {
                 setBooleanInPreference(this, USB_DEVICE_CONNECT_STATUS, false)
                 sendBroadcast(Intent(STOP_READ_DATA_KEY))
+                //sendBroadcast(Intent(DISCONNECT_USB_PROCESS_KEY))
                 sendBroadcast(Intent(STOP_ALARM_SOUND))
             }
         }

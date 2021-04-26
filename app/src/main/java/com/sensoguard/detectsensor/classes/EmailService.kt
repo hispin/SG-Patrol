@@ -69,8 +69,7 @@ class EmailService(private val server: String, private val port: Int) {
         try {
             Transport.send(msg)
             msg.setFlag(Flags.Flag.DELETED, true)
-
-            Log.d("", "test")
+            //Log.d("", "test")
         } catch (ex: SendFailedException) {
             Log.d("testEmail", ex.message.toString())
             Log.d("testEmail", ex.cause.toString())
@@ -80,6 +79,11 @@ class EmailService(private val server: String, private val port: Int) {
             Log.d("testEmail", ex.cause.toString())
             msg.setFlag(Flags.Flag.DELETED, true)
         }
+//        catch (ex : Exception){
+//            Log.d("testEmail", ex.message.toString())
+//            Log.d("testEmail", ex.cause.toString())
+//            msg.setFlag(Flags.Flag.DELETED, true)
+//        }
     }
 
     companion object {

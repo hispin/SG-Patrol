@@ -1,5 +1,6 @@
 package com.sensoguard.detectsensor.services
 
+
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.BroadcastReceiver
@@ -10,19 +11,22 @@ import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import com.sensoguard.detectsensor.R
-import com.sensoguard.detectsensor.global.*
+import com.sensoguard.detectsensor.global.CHECK_USB_CONN_SW
+import com.sensoguard.detectsensor.global.STOP_GENERAL_TIMER
 import java.util.*
 
-class TimerService : ParentService() {
+class TimerGeneralService : ParentService() {
 
     //set if the timer is repeated
-    private var isRepeated: Boolean? = false
-    private var commandType: String? = "default"
     var notificationTimer: Timer? = null
-    var timerValue: Int = 1
-    var maxTimeout = 60
-    var counter = 0
-    //var isContinue = false
+
+
+    override fun onTaskRemoved(rootIntent: Intent?) {
+        super.onTaskRemoved(rootIntent)
+        notificationTimer?.cancel()
+        notificationTimer = null
+        stopSelf()
+    }
 
 
     override fun onBind(intent: Intent): IBinder {
@@ -39,11 +43,6 @@ class TimerService : ParentService() {
 
         setFilter()
 
-        commandType = intent?.getStringExtra(COMMAND_TYPE)
-        isRepeated = intent?.getBooleanExtra(IS_REPEATED, false)
-        timerValue = intent?.getIntExtra(TIMER_VALUE, 1)!!
-        maxTimeout = intent.getIntExtra(MAX_TIMEOUT, -1)
-
 
         //if the timer is is already active
         try {
@@ -57,12 +56,7 @@ class TimerService : ParentService() {
         startNotifTask()
 
         notificationTimer = Timer()
-        //check if the timer is will repeated
-        if (isRepeated == true) {
-            notificationTimer?.schedule(notificationTask, timerValue * 1000L, timerValue * 1000L)
-        } else {
-            notificationTimer?.schedule(notificationTask, timerValue * 1000L)
-        }
+        notificationTimer?.schedule(notificationTask, 3 * 1000L, 3 * 1000L)
 
         return START_NOT_STICKY
     }
@@ -71,35 +65,10 @@ class TimerService : ParentService() {
     fun startNotifTask() {
         notificationTask = object : TimerTask() {
             override fun run() {
-                if (isRepeated != null && !isRepeated!!) {
-                    //release the timer to enable the next timer
-                    notificationTimer?.cancel()
-                    notificationTimer = null
-                    sendBroadcast(Intent(ACTION_INTERVAL))
-                    stopSelf()
-                    return
-                }
-
-                //if defined max timer
-                if (maxTimeout != -1) {
-                    counter += timerValue
-                    if (counter < maxTimeout) {
-                        val intent = Intent(ACTION_INTERVAL)
-                        intent.putExtra(COMMAND_TYPE, resources.getString(R.string.set_ref_timer))
-                        sendBroadcast(intent)
-                    } else {
-                        //reach to max time out
-                        notificationTimer?.cancel()
-                        notificationTimer = null
-                        sendBroadcast(Intent(MAX_TIMER_RESPONSE))
-                        stopSelf()
-                    }
-                } else {
-                    val intent = Intent(ACTION_INTERVAL)
-                    intent.putExtra(COMMAND_TYPE, resources.getString(R.string.set_ref_timer))
-                    sendBroadcast(intent)
-                }
-
+                //check SW usb connection
+                sendBroadcast(Intent(CHECK_USB_CONN_SW))
+                //Log.d("testGeneralTimer","ok")
+                //showShortToast(this@TimerGeneralService,"generalTimer")
             }
         }
     }
@@ -111,17 +80,16 @@ class TimerService : ParentService() {
     }
 
     private fun setFilter() {
-        val filter = IntentFilter(STOP_TIMER)
-        filter.addAction(STOP_TIMER)
+        val filter = IntentFilter(STOP_GENERAL_TIMER)
         registerReceiver(usbReceiver, filter)
     }
 
     private val usbReceiver = object : BroadcastReceiver() {
         override fun onReceive(arg0: Context, inn: Intent) {
-            if (inn.action == STOP_TIMER) {
+            if (inn.action == STOP_GENERAL_TIMER) {
                 notificationTimer?.cancel()
                 notificationTimer = null
-                sendBroadcast(Intent(MAX_TIMER_RESPONSE))
+                //sendBroadcast(Intent(MAX_TIMER_RESPONSE))
                 stopSelf()
             }
         }
@@ -156,6 +124,4 @@ class TimerService : ParentService() {
             startForeground(1, notification)
         }
     }
-
-
 }
