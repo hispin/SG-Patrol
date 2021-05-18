@@ -135,10 +135,10 @@
     </string-array>
 
     <string-array name="sensor_type">
-        <item>Seismic</item>
-        <item>PIR</item>
-        <item>Radar</item>
-        <item>Vibration</item>
+        <item>סיסמי</item>
+        <item>נפח</item>
+        <item>רדאר</item>
+        <item>רעידות</item>
     </string-array>
 
 </resources>

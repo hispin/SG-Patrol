@@ -683,6 +683,7 @@ class ServiceConnectSensor : ParentService() {
             inn.putExtra(CREATE_ALARM_IS_ARMED, currentSensorLocally.isArmed())
             inn.putExtra(CREATE_ALARM_TYPE_KEY, type)
             inn.putExtra(CREATE_ALARM_TYPE_INDEX_KEY, typeIndex)
+            inn.putExtra(SENSOR_TYPE_INDEX_KEY, currentSensorLocally.getTypeID())
             sendBroadcast(inn)
         }
         sendBroadcast(Intent(HANDLE_ALARM_KEY))

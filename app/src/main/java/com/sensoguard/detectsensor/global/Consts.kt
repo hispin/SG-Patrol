@@ -51,6 +51,7 @@ const val CREATE_ALARM_TYPE_KEY = "CreateAlarmTypeKey"
 const val CREATE_ALARM_TYPE_INDEX_KEY = "CreateAlarmTypeIndexKey"
 const val CREATE_ALARM_IS_ARMED = "CreateAlarmIsArmedKey"
 const val MAP_TYPE_KEY = "mapTypeKey"
+const val SENSOR_TYPE_INDEX_KEY = "SensorTypeId"
 
 
 const val ERROR_RESP = "-1"
@@ -125,3 +126,8 @@ const val IS_REPEATED = "isRepeated"
 const val NONE_AWAKE = 0
 const val WAIT_AWAKE = 1
 const val OK_AWAKE = 2
+
+const val SEISMIC_TYPE = 0L
+const val PIR_TYPE = 1L
+const val RADAR_TYPE = 2L
+const val VIBRATION_TYPE = 3L

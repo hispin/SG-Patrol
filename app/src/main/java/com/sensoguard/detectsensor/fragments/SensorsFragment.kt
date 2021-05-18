@@ -252,6 +252,7 @@ class SensorsFragment : ParentFragment(), OnAdapterListener {
                 if (detectorItem.getId() == detector.getId()) {
                     detector.getName()?.let { detectorItem.setName(it) }
                     detector.getType()?.let { detectorItem.setType(it) }
+                    detector.getTypeID()?.let { detectorItem.setTypeID(it) }
                 }
             }
 
@@ -296,6 +297,7 @@ class SensorsFragment : ParentFragment(), OnAdapterListener {
                     sensor.getName()?.let { sensorItem.setName(it) }
                     sensor.getId().let { sensorItem.setId(it) }
                     sensor.getType().let { sensorItem.setType(it) }
+                    sensor.getTypeID().let { sensorItem.setTypeID(it) }
                     sensor.isArmed().let { sensorItem.setArm(it) }
                     sensor.getLatitude().let { sensorItem.setLatitude(it) }
                     sensor.getLongtitude().let { sensorItem.setLongtitude(it) }
@@ -512,6 +514,8 @@ class SensorsFragment : ParentFragment(), OnAdapterListener {
 
                 sensor.setName(etName.text.toString())
                 sensor.setType(spSensorsType.selectedItem.toString())
+                //set the position of selected item as type id
+                sensor.setTypeID(spSensorsType.selectedItemId)
 
                 //save in local the changes of the sensors
                 saveSensors(sensor)

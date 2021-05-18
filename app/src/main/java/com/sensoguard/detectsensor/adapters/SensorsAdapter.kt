@@ -140,10 +140,15 @@ class SensorsAdapter(
 //           }
 
 
-               tvId?.text = sensor.getId()
-               tvName?.text = sensor.getName()
+            tvId?.text = sensor.getId()
+            tvName?.text = sensor.getName()
             etName?.hint = sensor.getName()
-            tvType?.text = sensor.getType()
+            val values = context.resources.getStringArray(R.array.sensor_type)
+            if (sensor.getTypeID() != null
+                && (sensor.getTypeID()!! < values.size && sensor.getTypeID()!! >= 0)
+            ) {
+                tvType?.text = values[sensor.getTypeID()?.toInt()!!]
+            }
 
         }
     }

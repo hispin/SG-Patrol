@@ -112,6 +112,9 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, MapboxMap.OnMoveList
     private val CAR_ICON_ID = "CAR_ICON_ID"
     private val INTRUDER_ICON_ID = "INTRUDER_ICON_ID"
     private val SENSOR_OFF_ICON_ID = "SENSOR_OFF_ICON_ID"
+    private val PIR_ICON_ID = "PIR_ICON_ID"
+    private val RADAR_ICON_ID = "RADAR_ICON_ID"
+    private val VIBRATION_ICON_ID = "VIBRATION_ICON_ID"
 
     private var locationManager: LocationManager? = null
 
@@ -412,23 +415,45 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, MapboxMap.OnMoveList
                 sensorItem.getLongtitude()!!
             )
 
-        //set icon according to type alarm
-        val alarmTypeIcon: Feature? =
-            when (typeIdx) {
-                ALARM_CAR -> {
-                    loc?.let { addMarker(it, CAR_ICON_ID, sensorItem.getName()) }
+        var alarmTypeIcon: Feature? = null
+
+        //car ,intruder and off are relevant when type = seismic
+        if (sensorItem.getTypeID() == SEISMIC_TYPE) {
+            //set icon according to type alarm
+            alarmTypeIcon =
+                when (typeIdx) {
+                    ALARM_CAR -> {
+                        loc?.let { addMarker(it, CAR_ICON_ID, sensorItem.getName()) }
+                    }
+                    ALARM_INTRUDER -> {
+                        loc?.let { addMarker(it, INTRUDER_ICON_ID, sensorItem.getName()) }
+                    }
+                    ALARM_SENSOR_OFF -> {
+                        loc?.let { addMarker(it, SENSOR_OFF_ICON_ID, sensorItem.getName()) }
+                    }
+                    //ALARM_LOW_BATTERY->context?.let { con -> convertBitmapToBitmapDiscriptor(con,R.drawable.ic_alarm_low_battery)}
+                    else -> {
+                        loc?.let { addMarker(it, RED_ICON_ID, sensorItem.getName()) }
+                    }
                 }
-                ALARM_INTRUDER -> {
-                    loc?.let { addMarker(it, INTRUDER_ICON_ID, sensorItem.getName()) }
+        } else {
+            alarmTypeIcon =
+                when (sensorItem.getTypeID()) {
+                    PIR_TYPE -> loc?.let { addMarker(it, PIR_ICON_ID, sensorItem.getName()) }
+                    RADAR_TYPE -> loc?.let { addMarker(it, RADAR_ICON_ID, sensorItem.getName()) }
+                    VIBRATION_TYPE -> loc?.let {
+                        addMarker(
+                            it,
+                            VIBRATION_ICON_ID,
+                            sensorItem.getName()
+                        )
+                    }
+                    else -> {
+                        loc?.let { addMarker(it, RED_ICON_ID, sensorItem.getName()) }
+                    }
                 }
-                ALARM_SENSOR_OFF -> {
-                    loc?.let { addMarker(it, SENSOR_OFF_ICON_ID, sensorItem.getName()) }
-                }
-                //ALARM_LOW_BATTERY->context?.let { con -> convertBitmapToBitmapDiscriptor(con,R.drawable.ic_alarm_low_battery)}
-                else -> {
-                    loc?.let { addMarker(it, RED_ICON_ID, sensorItem.getName()) }
-                }
-            }
+        }
+
 
         return alarmTypeIcon
     }
@@ -537,6 +562,21 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, MapboxMap.OnMoveList
                     )
                 )
                 .withImage(
+                    PIR_ICON_ID, BitmapFactory.decodeResource(
+                        requireActivity().resources, R.drawable.ic_pir
+                    )
+                )
+                .withImage(
+                    RADAR_ICON_ID, BitmapFactory.decodeResource(
+                        requireActivity().resources, R.drawable.ic_radar
+                    )
+                )
+                .withImage(
+                    VIBRATION_ICON_ID, BitmapFactory.decodeResource(
+                        requireActivity().resources, R.drawable.ic_vibration
+                    )
+                )
+                .withImage(
                     RED_ICON_ID, BitmapFactory.decodeResource(
                         requireActivity().resources, R.drawable.ic_sensor_alarm
                     )
@@ -567,6 +607,9 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, MapboxMap.OnMoveList
                                     Expression.stop(CAR_ICON_ID, CAR_ICON_ID),
                                     Expression.stop(INTRUDER_ICON_ID, INTRUDER_ICON_ID),
                                     Expression.stop(SENSOR_OFF_ICON_ID, SENSOR_OFF_ICON_ID),
+                                    Expression.stop(PIR_ICON_ID, PIR_ICON_ID),
+                                    Expression.stop(RADAR_ICON_ID, RADAR_ICON_ID),
+                                    Expression.stop(VIBRATION_ICON_ID, VIBRATION_ICON_ID),
                                     Expression.stop(RED_ICON_ID, RED_ICON_ID)
                                 )
                             ),
@@ -636,6 +679,21 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, MapboxMap.OnMoveList
                         )
                     )
                     .withImage(
+                        PIR_ICON_ID, BitmapFactory.decodeResource(
+                            requireActivity().resources, R.drawable.ic_pir
+                        )
+                    )
+                    .withImage(
+                        RADAR_ICON_ID, BitmapFactory.decodeResource(
+                            requireActivity().resources, R.drawable.ic_radar
+                        )
+                    )
+                    .withImage(
+                        VIBRATION_ICON_ID, BitmapFactory.decodeResource(
+                            requireActivity().resources, R.drawable.ic_vibration
+                        )
+                    )
+                    .withImage(
                         RED_ICON_ID, BitmapFactory.decodeResource(
                             requireActivity().resources, R.drawable.ic_sensor_alarm
                         )
@@ -666,6 +724,9 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, MapboxMap.OnMoveList
                                         Expression.stop(CAR_ICON_ID, CAR_ICON_ID),
                                         Expression.stop(INTRUDER_ICON_ID, INTRUDER_ICON_ID),
                                         Expression.stop(SENSOR_OFF_ICON_ID, SENSOR_OFF_ICON_ID),
+                                        Expression.stop(PIR_ICON_ID, PIR_ICON_ID),
+                                        Expression.stop(RADAR_ICON_ID, RADAR_ICON_ID),
+                                        Expression.stop(VIBRATION_ICON_ID, VIBRATION_ICON_ID),
                                         Expression.stop(RED_ICON_ID, RED_ICON_ID)
                                     )
                                 ),

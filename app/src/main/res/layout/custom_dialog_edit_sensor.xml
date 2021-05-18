@@ -23,6 +23,8 @@
 
     <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/etName"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
             style="@style/edit_sensor_fields"
             android:layout_width="wrap_content"
             android:layout_marginStart="8dp"
@@ -31,33 +33,41 @@
             app:layout_constraintStart_toEndOf="@+id/tvEmail1"
             app:layout_constraintTop_toTopOf="@+id/tvEmail1" />
 
-    <!--    <androidx.appcompat.widget.AppCompatEditText-->
-    <!--            android:id="@+id/etType"-->
-    <!--            style="@style/edit_sensor_fields"-->
-    <!--            android:layout_width="wrap_content"-->
-    <!--            android:layout_marginStart="8dp"-->
-    <!--            android:ems="10"-->
-    <!--            app:layout_constraintBottom_toBottomOf="@+id/tvEmail2"-->
-    <!--            app:layout_constraintStart_toEndOf="@+id/tvEmail2"-->
-    <!--            app:layout_constraintTop_toTopOf="@+id/tvEmail2" />-->
-
-    <androidx.appcompat.widget.AppCompatSpinner
-            android:id="@+id/spSensorsType"
-            android:layout_width="130dp"
+    <RelativeLayout
+            android:id="@+id/rlMyStudySubject"
+            android:layout_width="150dp"
             android:layout_height="30dp"
-            android:layout_centerVertical="true"
-            android:layout_gravity="center"
             android:layout_marginStart="8dp"
-            android:background="@drawable/shape_bg_subjects_spinner"
-            android:entries="@array/sensor_type"
-            android:gravity="center"
-            android:popupBackground="@drawable/shape_bg_subjects_spinner"
-            android:spinnerMode="dropdown"
             app:layout_constraintBottom_toBottomOf="@+id/tvEmail2"
             app:layout_constraintStart_toEndOf="@+id/tvEmail2"
             app:layout_constraintTop_toTopOf="@+id/tvEmail2"
-            tools:listitem="@layout/support_simple_spinner_dropdown_item" />
 
+            >
+
+        <androidx.appcompat.widget.AppCompatSpinner
+                android:id="@+id/spSensorsType"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/shape_bg_subjects_spinner"
+                android:entries="@array/sensor_type"
+                android:gravity="center"
+                android:popupBackground="@drawable/shape_bg_subjects_spinner"
+                android:spinnerMode="dropdown"
+                tools:listitem="@layout/support_simple_spinner_dropdown_item" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center"
+                android:layout_marginEnd="5dp"
+                android:contentDescription="@string/app_name"
+                app:srcCompat="@drawable/ic_spinner_arrow" />
+    </RelativeLayout>
 
     <TextView
             android:id="@+id/tvEmail1"

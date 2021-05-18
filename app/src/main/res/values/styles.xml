@@ -76,4 +76,9 @@
 
     </style>
 
+    <!--    <style name="MySpinner" parent="Theme.AppCompat.Light.DarkActionBar">-->
+    <!--        <item name="android:dividerHeight">2dp</item>-->
+    <!--        <item name="android:divider">#000</item>-->
+    <!--    </style>-->
+
 </resources>

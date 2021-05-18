@@ -79,23 +79,43 @@ class ServiceHandleAlarms : ParentService() {
                 CREATE_ALARM_KEY -> {
                     val alarmSensorId = intent.getStringExtra(CREATE_ALARM_ID_KEY)
                     val type = intent.getStringExtra(CREATE_ALARM_TYPE_KEY)
+                    val sensorTypeId = intent.getLongExtra(SENSOR_TYPE_INDEX_KEY, -1)
                     val date = getStrDateTimeByMilliSeconds(
                         Calendar.getInstance().timeInMillis,
                         "dd/MM/yy kk:mm:ss",
                         context
                     )
-                    val msg = resources.getString(
-                        R.string.email_content,
-                        type,
-                        alarmSensorId,
-                        date
-                    )// "$type alarm from unit $alarmSensorId "
-                    Toast.makeText(
-                        context,
-                        "$type alarm from unit $alarmSensorId ",
-                        Toast.LENGTH_LONG
-                    )
-                        .show()
+
+                    var msg: String? = null
+                    if (sensorTypeId == SEISMIC_TYPE) {
+                        msg = resources.getString(
+                            R.string.email_content,
+                            type,
+                            alarmSensorId,
+                            date
+                        )// "$type alarm from unit $alarmSensorId "
+                        Toast.makeText(
+                            context,
+                            "$type alarm from unit $alarmSensorId ",
+                            Toast.LENGTH_LONG
+                        )
+                            .show()
+                    } else {
+                        val values = resources.getStringArray(R.array.sensor_type)
+                        val sensorType = values[sensorTypeId.toInt()]
+                        msg = resources.getString(
+                            R.string.email_content,
+                            sensorType,
+                            alarmSensorId,
+                            date
+                        )
+                        Toast.makeText(
+                            context,
+                            "$sensorType alarm from unit $alarmSensorId ",
+                            Toast.LENGTH_LONG
+                        )
+                            .show()
+                    }
                     sendEmailBakground(msg)
                     //play sound and vibrate
                     playAlarmSound()
@@ -105,13 +125,25 @@ class ServiceHandleAlarms : ParentService() {
                 CREATE_ALARM_NOT_DEFINED_KEY -> {
                     val alarmSensorId = intent.getStringExtra(CREATE_ALARM_ID_KEY)
                     val type = intent.getStringExtra(CREATE_ALARM_TYPE_KEY)
-                    Toast.makeText(
-                        context,
-                        "$type alarm from unit $alarmSensorId ",
-                        Toast.LENGTH_LONG
-                    )
-                        .show()
-                    //accept test alarm (for testing)
+                    val sensorTypeId = intent.getLongExtra(SENSOR_TYPE_INDEX_KEY, -1)
+                    if (sensorTypeId == SEISMIC_TYPE) {
+                        Toast.makeText(
+                            context,
+                            "$type alarm from unit $alarmSensorId ",
+                            Toast.LENGTH_LONG
+                        )
+                            .show()
+                        //accept test alarm (for testing)
+                    } else {
+                        val values = resources.getStringArray(R.array.sensor_type)
+                        val sensorType = values[sensorTypeId.toInt()]
+                        Toast.makeText(
+                            context,
+                            "$sensorType alarm from unit $alarmSensorId ",
+                            Toast.LENGTH_LONG
+                        )
+                            .show()
+                    }
                 }
                 READ_DATA_KEY_TEST -> {
                     val bit = intent.getIntegerArrayListExtra("data")
@@ -235,6 +267,7 @@ class ServiceHandleAlarms : ParentService() {
                         //inn.putExtra(CREATE_ALARM_LONGTITUDE_KEY,currentSensorLocally.getLongtitude())
                         inn.putExtra(CREATE_ALARM_TYPE_KEY, type)
                         inn.putExtra(CREATE_ALARM_TYPE_INDEX_KEY, typeIndex)
+                        inn.putExtra(SENSOR_TYPE_INDEX_KEY, currentSensorLocally.getTypeID())
                         sendBroadcast(inn)
 
                         //play sound and vibrate

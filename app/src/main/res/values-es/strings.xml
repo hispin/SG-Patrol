@@ -136,10 +136,10 @@
     </string-array>
 
     <string-array name="sensor_type">
-        <item>Seismic</item>
-        <item>PIR</item>
+        <item>Sísmico</item>
+        <item>Volumen</item>
         <item>Radar</item>
-        <item>Vibration</item>
+        <item>Vibración</item>
     </string-array>
 
 </resources>
