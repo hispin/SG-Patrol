@@ -41,7 +41,7 @@ class MainActivity : ParentActivity() {
         val verName = packageManager.getPackageInfo(packageName, 0).versionName
         val verTitle = "version:$verName"
         tvShowVer?.text = verTitle
-        var test = "master"
+        var Test = "br3"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
