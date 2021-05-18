@@ -41,6 +41,8 @@ class MainActivity : ParentActivity() {
         val verName = packageManager.getPackageInfo(packageName, 0).versionName
         val verTitle = "version:$verName"
         tvShowVer?.text = verTitle
+
+        var branch = "MyFistBranch"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
