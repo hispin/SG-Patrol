@@ -42,7 +42,6 @@ class MainActivity : ParentActivity() {
         val verTitle = "version:$verName"
         tvShowVer?.text = verTitle
 
-        var branch = "MyFistBranch"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
