@@ -29,7 +29,7 @@ private const val ARG_PARAM2 = "param2"
 
 class AlarmsLogFragment : ParentFragment(), OnAdapterListener {
 
-    override fun saveDetector(detector: Sensor) {
+    override fun saveSensors(detector: Sensor) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 

@@ -123,7 +123,7 @@ class ServiceConnectSensor : ParentService() {
 
                     val commandType = inn.getStringExtra(COMMAND_TYPE)
                     //if the interval is belong to the command "set ref timer"
-                    if (commandType.equals(resources.getString(R.string.set_ref_timer))) {
+                    if (commandType != null && commandType == resources.getString(R.string.set_ref_timer)) {
 
                         //send another command
                         if (UserSession.instance.myCommand?.commandName.equals(resources.getString(R.string.set_ref_timer))) {
@@ -162,9 +162,16 @@ class ServiceConnectSensor : ParentService() {
                     // mode the button still green
                     val usbDevices = manager?.deviceList
 
-                    if (usbDevices != null && usbDevices.isEmpty()) {
+                    //manager?.deviceList?.values?.first()
+                    //(usbDevices==null) ||
+                    if ((usbDevices == null) || usbDevices.isEmpty()) {
                         stopConnectConfiguration()
                     }
+//                    else{
+//                        if(connection!=null && serialPort!=null && usbDevices != null) {
+//                            onConnectConfiguration()
+//                        }
+//                    }
 
                 }
 
@@ -173,6 +180,16 @@ class ServiceConnectSensor : ParentService() {
         }
 
 
+    }
+
+    //change to on the UI of USB connection
+    private fun onConnectConfiguration() {
+        setBooleanInPreference(
+            this@ServiceConnectSensor,
+            USB_DEVICE_CONNECT_STATUS,
+            true
+        )
+        sendBroadcast(Intent(USB_CONNECTION_ON_UI))
     }
 
     private fun stopConnectConfiguration() {
@@ -235,7 +252,8 @@ class ServiceConnectSensor : ParentService() {
 
         if (usbDevices!=null && usbDevices.isEmpty()) {
             Toast.makeText(this, "not finding devices", Toast.LENGTH_LONG).show()
-            sendBroadcast(Intent(USB_CONNECTION_OFF_UI))
+            stopConnectConfiguration()
+            //sendBroadcast(Intent(USB_CONNECTION_OFF_UI))
             return
         }
 
@@ -243,21 +261,23 @@ class ServiceConnectSensor : ParentService() {
 
         if(usbDevice!=null){
             tryOpenConnection()
-        }else{
+        }else {
             Toast.makeText(this, "not finding usbDevice", Toast.LENGTH_LONG).show()
-            sendBroadcast(Intent(USB_CONNECTION_OFF_UI))
+            stopConnectConfiguration()
+            //sendBroadcast(Intent(USB_CONNECTION_OFF_UI))
         }
     }
 
     //open connection ,if get failed send error message
     private fun openConnection(){
         connection = manager?.openDevice(usbDevice)
-        if(connection==null){
-            sendBroadcast(Intent(USB_CONNECTION_OFF_UI))
+        if(connection==null) {
+            stopConnectConfiguration()
+            //sendBroadcast(Intent(USB_CONNECTION_OFF_UI))
             //Toast.makeText(this@ServiceConnectSensor,"connection failed",Toast.LENGTH_LONG).show()
         }else{
             //setBooleanInPreference(this,USB_DEVICE_CONNECT,true)
-            sendBroadcast(Intent(USB_CONNECTION_ON_UI))
+            //sendBroadcast(Intent(USB_CONNECTION_ON_UI))
             Toast.makeText(this@ServiceConnectSensor, "connection success", Toast.LENGTH_SHORT)
                 .show()
             readData()
@@ -268,11 +288,17 @@ class ServiceConnectSensor : ParentService() {
     private fun tryOpenConnection(){
         usbDevice?.let {
             connection = manager?.openDevice(usbDevice)
-            if(connection==null){
+
+            if(connection==null) {
                 sendBroadcast(Intent(USB_CONNECTION_OFF_UI))
+                setBooleanInPreference(
+                    this@ServiceConnectSensor,
+                    USB_DEVICE_CONNECT_STATUS,
+                    false
+                )
                 registerUsbPermission(it)
             }else{
-                sendBroadcast(Intent(USB_CONNECTION_ON_UI))
+                //sendBroadcast(Intent(USB_CONNECTION_ON_UI))
                 //Toast.makeText(this,"connection success",Toast.LENGTH_LONG).show()
                 readData()
             }
@@ -377,6 +403,7 @@ class ServiceConnectSensor : ParentService() {
                     serialPort!!.read(mCallback)
                     serialPort!!.getCTS(ctsCallback)
                     serialPort!!.getDSR(dsrCallback)
+                    onConnectConfiguration()
                 }
 
             }

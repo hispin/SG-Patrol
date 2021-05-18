@@ -71,7 +71,7 @@ private const val ARG_PARAM2 = "param2"
  */
 class MapSensorsFragment : ParentFragment(), OnMapReadyCallback, OnAdapterListener {
 
-    override fun saveDetector(detector: Sensor) {}
+    override fun saveSensors(detector: Sensor) {}
 
 
     private var dialog: Dialog? = null

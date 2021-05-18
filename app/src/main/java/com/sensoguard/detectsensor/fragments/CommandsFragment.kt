@@ -15,7 +15,6 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
-import android.widget.TextView
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatSpinner
 import androidx.appcompat.widget.AppCompatTextView
@@ -52,7 +51,7 @@ class CommandsFragment : DialogFragment() {
     private var commandsAdapter: CommandAdapter? = null
     private var rvCommands: RecyclerView? = null
     private var btnConnect: Button? = null
-    private var tvTest: TextView? = null
+    //private var tvTest: TextView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -109,7 +108,7 @@ class CommandsFragment : DialogFragment() {
     var count = 0
 
     private fun initViews(view: View?) {
-        tvTest = view?.findViewById(R.id.tvTest)
+        //tvTest = view?.findViewById(R.id.tvTest)
         rvCommands = view?.findViewById(R.id.rvCommands)
         btnConnect = view?.findViewById(R.id.btnConnect)
         btnConnect?.setOnClickListener {
@@ -191,8 +190,8 @@ class CommandsFragment : DialogFragment() {
         setFilter()
         refreshCommandsAdapter()
 
-        var state = getStringInPreference(activity, "connState", "-1")
-        tvTest?.text = state
+        //var state = getStringInPreference(activity, "connState", "-1")
+        //tvTest?.text = state
     }
 
     override fun onStop() {
@@ -373,7 +372,7 @@ class CommandsFragment : DialogFragment() {
 
                 //if the interval is belong to the command "set ref timer"
                 //do nothing ,ServiceConnectSensor also handle it
-                if (commandType.equals(resources.getString(R.string.set_ref_timer))) {
+                if (commandType != null && commandType == resources.getString(R.string.set_ref_timer)) {
 
                     //showShortToast(activity, "interval")
                     //do nothing ,ServiceConnectSensor also handle it

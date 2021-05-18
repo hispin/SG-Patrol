@@ -9,6 +9,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.widget.*
+import androidx.appcompat.widget.AppCompatButton
+import androidx.appcompat.widget.AppCompatEditText
+import androidx.appcompat.widget.AppCompatSpinner
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -97,8 +100,8 @@ class SensorsFragment : ParentFragment(), OnAdapterListener {
 
         sensorsAdapter = activity?.let { adapter ->
             sensors?.let { arr ->
-                SensorsAdapter(arr, adapter, MainUartFragment@ this) { _ ->
-
+                SensorsAdapter(arr, adapter, this) { _sensor ->
+                    showEditSensorDialog(_sensor)
                 }
             }
         }
@@ -248,6 +251,7 @@ class SensorsFragment : ParentFragment(), OnAdapterListener {
                 val detectorItem = iteratorList.next()
                 if (detectorItem.getId() == detector.getId()) {
                     detector.getName()?.let { detectorItem.setName(it) }
+                    detector.getType()?.let { detectorItem.setType(it) }
                 }
             }
 
@@ -270,34 +274,36 @@ class SensorsFragment : ParentFragment(), OnAdapterListener {
 
 
     private fun validIsEmpty(editText: EditText): Boolean {
-        var isValid=true
+        var isValid = true
 
         if (editText.text.isNullOrBlank()) {
             editText.error = resources.getString(R.string.empty_field_error)
-            isValid=false
+            isValid = false
         }
 
         return isValid
     }
 
-    override fun saveDetector(detector: Sensor) {
-        val detectorsArr=populateSensorsFromLocally()
-        if (detectorsArr != null) {
+    //save sensors in locally
+    override fun saveSensors(sensor: Sensor) {
+        val sensorsArr = populateSensorsFromLocally()
+        if (sensorsArr != null) {
 
-            val iteratorList=detectorsArr.listIterator()
+            val iteratorList = sensorsArr.listIterator()
             while (iteratorList != null && iteratorList.hasNext()) {
-                var detectorItem = iteratorList.next()
-                if(detectorItem.getId() == detector.getId()){
-                    detector.getName()?.let { detectorItem.setName(it) }
-                    detector.getId().let { detectorItem.setId(it) }
-                    detector.isArmed().let { detectorItem.setArm(it) }
-                    detector.getLatitude().let { detectorItem.setLatitude(it) }
-                    detector.getLongtitude().let { detectorItem.setLongtitude(it) }
+                var sensorItem = iteratorList.next()
+                if (sensorItem.getId() == sensor.getId()) {
+                    sensor.getName()?.let { sensorItem.setName(it) }
+                    sensor.getId().let { sensorItem.setId(it) }
+                    sensor.getType().let { sensorItem.setType(it) }
+                    sensor.isArmed().let { sensorItem.setArm(it) }
+                    sensor.getLatitude().let { sensorItem.setLatitude(it) }
+                    sensor.getLongtitude().let { sensorItem.setLongtitude(it) }
                 }
             }
 
         }
-        detectorsArr?.let { activity?.let { context -> storeSensorsToLocally(it, context) } }
+        sensorsArr?.let { activity?.let { context -> storeSensorsToLocally(it, context) } }
     }
 
     //ic_edit name (maybe come from adapter)
@@ -319,11 +325,11 @@ class SensorsFragment : ParentFragment(), OnAdapterListener {
         ibSendCommand?.setOnClickListener {
             val isConnected = getBooleanInPreference(activity, USB_DEVICE_CONNECT_STATUS, false)
             //if the usb is connected then open dialog of commands
-            //if(isConnected) {
-            openCommands()
-//            }else{
-//               showToast(activity, resources.getString(R.string.usb_is_disconnect))
-//            }
+            if (isConnected) {
+                openCommands()
+            } else {
+                showToast(activity, resources.getString(R.string.usb_is_disconnect))
+            }
         }
         bs = StringBuilder()
         return view
@@ -366,7 +372,7 @@ class SensorsFragment : ParentFragment(), OnAdapterListener {
                 temp?.let { tmp -> sensors?.addAll(tmp) } }
         }
 
-        sensorsAdapter?.setDetects(sensors)
+        sensorsAdapter?.setSensors(sensors)
         sensorsAdapter?.notifyDataSetChanged()
     }
 
@@ -479,5 +485,54 @@ class SensorsFragment : ParentFragment(), OnAdapterListener {
             sensorsIds.add(sensorItem.getId())
         }
         return sensorsIds
+    }
+
+    //show dialog to edit sensor info
+    private fun showEditSensorDialog(sensor: Sensor) {
+
+        if (this.context != null) {
+            val dialog = Dialog(this.requireContext())
+            dialog.setContentView(R.layout.custom_dialog_edit_sensor)
+
+            dialog.setCancelable(true)
+
+            val etName = dialog.findViewById<AppCompatEditText>(R.id.etName)
+            val spSensorsType = dialog.findViewById<AppCompatSpinner>(R.id.spSensorsType)
+
+            val values = resources.getStringArray(R.array.sensor_type)
+
+            //show the current type in spinner
+            spSensorsType.setSelection(values.indexOf(sensor.getType()))
+
+            etName.setText(sensor.getName())
+            //etType.setText(sensor.getType())
+
+            val btnOK = dialog.findViewById<AppCompatButton>(R.id.btnOK)
+            btnOK.setOnClickListener {
+
+                sensor.setName(etName.text.toString())
+                sensor.setType(spSensorsType.selectedItem.toString())
+
+                //save in local the changes of the sensors
+                saveSensors(sensor)
+
+                //refresh the list view
+                sensorsAdapter?.notifyDataSetChanged()
+
+
+
+                dialog.dismiss()
+//                }
+
+            }
+            val btnCancel = dialog.findViewById<AppCompatButton>(R.id.btnCancel)
+            btnCancel.setOnClickListener {
+                dialog.dismiss()
+            }
+
+            dialog.show()
+        }
+
+
     }
 }

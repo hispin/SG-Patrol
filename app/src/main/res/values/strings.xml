@@ -9,7 +9,7 @@
     <string name="invalid_mum_sensors">invalid number of sensors</string>
     <string name="name_title">NAME</string>
     <string name="id_title">ID</string>
-    <string name="map_location_title">MAP LOCATION</string>
+    <string name="map_location_title">PLACED</string>
     <string name="status_title">ACTIVE</string>
     <string name="type_title">TYPE</string>
     <string name="time_title">TIME</string>
@@ -135,6 +135,8 @@
     <string name="try_connect">try to connect</string>
     <string name="no_response_sensor">"No response from the sensor"</string>
     <string name="another_process">There is another process</string>
+    <string name="seismic">Seismic</string>
+    <string name="edit_sensor">Edit Sensor</string>
 
 
     <string-array name="car_ids">
@@ -146,6 +148,13 @@
         <item>5</item>
         <item>6</item>
         <item>7</item>
+    </string-array>
+
+    <string-array name="sensor_type">
+        <item>Seismic</item>
+        <item>PIR</item>
+        <item>Radar</item>
+        <item>Vibration</item>
     </string-array>
 
 </resources>

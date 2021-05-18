@@ -6,7 +6,8 @@ class Sensor {
     private var longitude: Double?=null
     private var latitude: Double?=null
     private var name: String?=null
-    private var id: String?=null
+    private var id: String? = null
+    private var type: String? = "Seismic"
     private var isArmed = false
     var isLocallyDefined:Boolean=false
     //private var type:Int?=null
@@ -34,19 +35,27 @@ class Sensor {
         return name
     }
 
-    fun setName(_name:String){
-        name=_name
+    fun setName(_name: String) {
+        name = _name
     }
 
-    fun setArm(state:Boolean){
-        isArmed=state
+    fun getType(): String? {
+        return type
     }
 
-    fun isArmed():Boolean{
+    fun setType(_type: String?) {
+        type = _type
+    }
+
+    fun setArm(state: Boolean) {
+        isArmed = state
+    }
+
+    fun isArmed(): Boolean {
         return isArmed
     }
 
-    fun getLatitude():Double?{
+    fun getLatitude(): Double? {
         return latitude
     }
 

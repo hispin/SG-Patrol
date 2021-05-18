@@ -9,7 +9,7 @@
     <string name="invalid_mum_sensors">numero di sensori non valido</string>
     <string name="name_title">NOME</string>
     <string name="id_title">ID</string>
-    <string name="map_location_title">POSIZIONE DELLA MAPPA</string>
+    <string name="map_location_title">POSTO</string>
     <string name="status_title">ATTIVO</string>
     <string name="type_title">GENERE</string>
     <string name="time_title">TEMPO</string>
@@ -30,7 +30,7 @@
     <string name="not_located">Non situato</string>
     <string name="located">collocato</string>
     <string name="date_title">DATA</string>
-    <string name="save">Salva</string>
+    <string name="save">SALVA</string>
     <string name="define_sensor_amount">Definire la quantità del sensore</string>
     <string name="choose_alarm_sound">Scegli il suono della sveglia</string>
     <string name="vibration_when_alarm">Vibrazione in caso di allarme</string>
@@ -74,33 +74,33 @@
     <string name="basic_offline_deleted_toast">basic offline deleted toast</string>
     <string name="no_selected_location">No places selected</string>
     <string name="sensor_details">Sensor details</string>
-    <string name="save_offline_map">Save offline map</string>
+    <string name="save_offline_map">SALVA LINEA OFFLINE</string>
     <string name="results">Results</string>
-    <string name="save_map">Save map</string>
-    <string name="delete_last_map">Delete the last map</string>
+    <string name="save_map">SALVA MAPPA</string>
+    <string name="delete_last_map">ELIMINA L\'ULTIMA MAPPA</string>
     <string name="disconnect_usb">Disconnect the usb</string>
     <string name="this_will_disconnect_the_usb">This will disconnect the usb</string>
-    <string name="always_show_sensor_name">Always show the sensor name</string>
+    <string name="always_show_sensor_name">Mostra sempre il nome del sensore</string>
     <string name="next">Next</string>
     <string name="previous">Previous</string>
-    <string name="forward_email">Forward email</string>
+    <string name="forward_email">Inoltra email</string>
     <string name="password_title">Password:</string>
     <string name="incoming_email_server_title">Incoming Email server:</string>
     <string name="incoming_email_server_port_title">Incoming Email Port:</string>
     <string name="use_ssl_title">Using SSL:</string>
-    <string name="cancel">Cancel</string>
-    <string name="email_setting">Email Settings</string>
+    <string name="cancel">ANNULLA</string>
+    <string name="email_setting">Impostazioni e-mail</string>
     <string name="an_alert_was_received">An alert was received</string>
     <string name="email_content">accept %1$s alarm from unit %2$s  in %3$s</string>
     <string name="mail_address_title">Email Address:</string>
-    <string name="outgoing_mail_server_title">Outgoing  Server</string>
+    <string name="outgoing_mail_server_title">Server in uscita</string>
     <string name="user_name">User name</string>
-    <string name="outgoing_mail_port_title">Outgoing  Port</string>
-    <string name="recipient">Recipient</string>
+    <string name="outgoing_mail_port_title">Porta in uscita</string>
+    <string name="recipient">Destinatario</string>
     <string name="no_fill_account">You have not filled in email account information</string>
-    <string name="sender_email">Sender Email</string>
-    <string name="password_title1">Password</string>
-    <string name="use_ssl_title1">Using SSL</string>
+    <string name="sender_email">Email del mittente</string>
+    <string name="password_title1">Parola d\'ordine</string>
+    <string name="use_ssl_title1">Utilizzando SSL</string>
     <string name="des">description</string>
     <string name="usb_is_disconnect">The usb is disconnected</string>
     <string name="commands_title">Commands</string>
@@ -121,6 +121,8 @@
     <string name="try_connect">try to connect</string>
     <string name="no_response_sensor">"No response from the sensor"</string>
     <string name="another_process">There is another process</string>
+    <string name="seismic">Seismic</string>
+    <string name="edit_sensor">Edit Sensor</string>
 
     <string-array name="car_ids">
         <item>0</item>
@@ -131,6 +133,13 @@
         <item>5</item>
         <item>6</item>
         <item>7</item>
+    </string-array>
+
+    <string-array name="sensor_type">
+        <item>Seismic</item>
+        <item>PIR</item>
+        <item>Radar</item>
+        <item>Vibration</item>
     </string-array>
 
 </resources>

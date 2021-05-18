@@ -61,5 +61,19 @@
         <item name="android:paddingEnd">2dp</item>
     </style>
 
+    <style name="edit_sensor_fields">
+        <item name="android:layout_height">30dp</item>
+        <item name="android:textSize">14.7sp</item>
+        <item name="android:background">@drawable/edit_text_border</item>
+        <item name="android:inputType">text</item>
+    </style>
+
+    <style name="emailAccountStyle">
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ems">14</item>
+
+
+    </style>
 
 </resources>

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="350dp"
+        android:layout_height="330dp"
+        android:orientation="vertical">
+
+
+    <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvCommandTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:gravity="center_horizontal"
+            android:text="@string/edit_sensor"
+            android:textColor="@color/medium_green"
+            android:textSize="15.3sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.3"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/etName"
+            style="@style/edit_sensor_fields"
+            android:layout_width="wrap_content"
+            android:layout_marginStart="8dp"
+            android:ems="10"
+            app:layout_constraintBottom_toBottomOf="@+id/tvEmail1"
+            app:layout_constraintStart_toEndOf="@+id/tvEmail1"
+            app:layout_constraintTop_toTopOf="@+id/tvEmail1" />
+
+    <!--    <androidx.appcompat.widget.AppCompatEditText-->
+    <!--            android:id="@+id/etType"-->
+    <!--            style="@style/edit_sensor_fields"-->
+    <!--            android:layout_width="wrap_content"-->
+    <!--            android:layout_marginStart="8dp"-->
+    <!--            android:ems="10"-->
+    <!--            app:layout_constraintBottom_toBottomOf="@+id/tvEmail2"-->
+    <!--            app:layout_constraintStart_toEndOf="@+id/tvEmail2"-->
+    <!--            app:layout_constraintTop_toTopOf="@+id/tvEmail2" />-->
+
+    <androidx.appcompat.widget.AppCompatSpinner
+            android:id="@+id/spSensorsType"
+            android:layout_width="130dp"
+            android:layout_height="30dp"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/shape_bg_subjects_spinner"
+            android:entries="@array/sensor_type"
+            android:gravity="center"
+            android:popupBackground="@drawable/shape_bg_subjects_spinner"
+            android:spinnerMode="dropdown"
+            app:layout_constraintBottom_toBottomOf="@+id/tvEmail2"
+            app:layout_constraintStart_toEndOf="@+id/tvEmail2"
+            app:layout_constraintTop_toTopOf="@+id/tvEmail2"
+            tools:listitem="@layout/support_simple_spinner_dropdown_item" />
+
+
+    <TextView
+            android:id="@+id/tvEmail1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="48dp"
+            android:lineSpacingExtra="-9.9sp"
+            android:text="@string/name_title"
+            android:textColor="@color/black"
+            android:textSize="14.7sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvCommandTitle" />
+
+    <TextView
+            android:id="@+id/tvEmail2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="48dp"
+            android:lineSpacingExtra="-9.9sp"
+            android:text="@string/type_title"
+            android:textColor="@color/black"
+            android:textSize="14.7sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/etName" />
+
+
+    <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnOK"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:layout_marginEnd="32dp"
+            android:layout_marginBottom="32dp"
+            android:background="@color/green1"
+            android:lineSpacingExtra="-9.9sp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:text="@string/OK"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="14.7sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+            android:id="@+id/btnCancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginBottom="32dp"
+            android:background="@color/orange"
+            android:lineSpacingExtra="-9.9sp"
+            android:text="@string/cancel"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="14.7sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

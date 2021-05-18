@@ -1019,7 +1019,7 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, MapboxMap.OnMoveList
         showDialogSensorsList()
     }
 
-    override fun saveDetector(detector: Sensor) {}
+    override fun saveSensors(detector: Sensor) {}
 
     //reciever
     private val usbReceiver = object : BroadcastReceiver() {

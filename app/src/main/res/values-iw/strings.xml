@@ -9,7 +9,7 @@
     <string name="id_title">מספר</string>
     <string name="map_location_title">מיקום</string>
     <string name="status_title">מצב</string>
-    <string name="type_title">סוג אירוע</string>
+    <string name="type_title">סוג</string>
     <string name="time_title">זמן</string>
     <string name="yes">כן</string>
     <string name="no">לא</string>
@@ -42,7 +42,7 @@
         <item>הליכה</item>
         <item>תנועה</item>
         <item>חיישן מנותק</item>
-        <item>חודעת מערכת תקינה</item>
+        <item>הודעת מערכת תקינה</item>
         <item>סוללה חלשה</item>
         <item>גילוי משולב</item>
     </string-array>
@@ -120,6 +120,8 @@
     <string name="try_connect">מנסה להתחבר</string>
     <string name="no_response_sensor">אין תגובה מהחיישן</string>
     <string name="another_process">יש תהליך אחר</string>
+    <string name="seismic">Seismic</string>
+    <string name="edit_sensor">Edit Sensor</string>
 
     <string-array name="car_ids">
         <item>0</item>
@@ -130,6 +132,13 @@
         <item>5</item>
         <item>6</item>
         <item>7</item>
+    </string-array>
+
+    <string-array name="sensor_type">
+        <item>Seismic</item>
+        <item>PIR</item>
+        <item>Radar</item>
+        <item>Vibration</item>
     </string-array>
 
 </resources>
