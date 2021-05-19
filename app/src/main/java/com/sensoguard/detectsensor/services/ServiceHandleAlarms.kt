@@ -102,7 +102,13 @@ class ServiceHandleAlarms : ParentService() {
                             .show()
                     } else {
                         val values = resources.getStringArray(R.array.sensor_type)
-                        val sensorType = values[sensorTypeId.toInt()]
+
+                        val idx = sensorTypeId.toInt()
+                        var sensorType = ""
+                        if (idx >= 0 && idx < values.size) {
+                            sensorType = values[idx]
+                        }
+
                         msg = resources.getString(
                             R.string.email_content,
                             sensorType,
@@ -136,7 +142,13 @@ class ServiceHandleAlarms : ParentService() {
                         //accept test alarm (for testing)
                     } else {
                         val values = resources.getStringArray(R.array.sensor_type)
-                        val sensorType = values[sensorTypeId.toInt()]
+
+                        val idx = sensorTypeId.toInt()
+                        var sensorType = ""
+                        if (idx >= 0 && idx < values.size) {
+                            sensorType = values[idx]
+                        }
+
                         Toast.makeText(
                             context,
                             "$sensorType alarm from unit $alarmSensorId ",
