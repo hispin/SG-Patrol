@@ -12,11 +12,11 @@ class Sensor {
     private var type: String? = "Seismic"
     private var typeId: Long? = SEISMIC_TYPE
     private var isArmed = false
-    var isLocallyDefined:Boolean=false
+    var isLocallyDefined: Boolean = false
     //private var type:Int?=null
 
-    constructor( _uid: String?,_name: String?){
-        id=_uid
+    constructor(_uid: String?, _name: String?) {
+        id = _uid
         name = _name
         isArmed = true
     }

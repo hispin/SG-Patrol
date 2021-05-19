@@ -120,8 +120,11 @@
     <string name="try_connect">מנסה להתחבר</string>
     <string name="no_response_sensor">אין תגובה מהחיישן</string>
     <string name="another_process">יש תהליך אחר</string>
-    <string name="seismic">Seismic</string>
+    <string name="seismic">סיסמי</string>
     <string name="edit_sensor">Edit Sensor</string>
+    <string name="pir">נפח</string>
+    <string name="radar">רדאר</string>
+    <string name="vibration">רעידות</string>
 
     <string-array name="car_ids">
         <item>0</item>
@@ -133,6 +136,7 @@
         <item>6</item>
         <item>7</item>
     </string-array>
+
 
     <string-array name="sensor_type">
         <item>סיסמי</item>

@@ -501,10 +501,15 @@ class SensorsFragment : ParentFragment(), OnAdapterListener {
             val etName = dialog.findViewById<AppCompatEditText>(R.id.etName)
             val spSensorsType = dialog.findViewById<AppCompatSpinner>(R.id.spSensorsType)
 
-            val values = resources.getStringArray(R.array.sensor_type)
+//            val values = resources.getStringArray(R.array.sensor_type)//arrayOf(resources.getString(R.string.seismic),resources.getString(R.string.pir),resources.getString(R.string.radar),resources.getString(R.string.vibration))//arrayOf("Seismic","PIR","Radar","Vibration")//resources.getStringArray(R.array.sensor_type)
+//
+//            val spinnerArrayAdapter: ArrayAdapter<String> = ArrayAdapter<String>(
+//                requireActivity(), android.R.layout.simple_spinner_item, values
+//            )
+//            spSensorsType.adapter = spinnerArrayAdapter
 
             //show the current type in spinner
-            spSensorsType.setSelection(values.indexOf(sensor.getType()))
+            sensor.getTypeID()?.let { spSensorsType.setSelection(it.toInt()) }
 
             etName.setText(sensor.getName())
             //etType.setText(sensor.getType())
@@ -526,7 +531,6 @@ class SensorsFragment : ParentFragment(), OnAdapterListener {
 
 
                 dialog.dismiss()
-//                }
 
             }
             val btnCancel = dialog.findViewById<AppCompatButton>(R.id.btnCancel)

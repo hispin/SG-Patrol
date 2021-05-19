@@ -137,7 +137,9 @@
     <string name="another_process">There is another process</string>
     <string name="seismic">Seismic</string>
     <string name="edit_sensor">Edit Sensor</string>
-
+    <string name="pir">PIR</string>
+    <string name="radar">Radar</string>
+    <string name="vibration">Vibration</string>
 
     <string-array name="car_ids">
         <item>0</item>

@@ -121,8 +121,11 @@
     <string name="try_connect">try to connect</string>
     <string name="no_response_sensor">"No response from the sensor"</string>
     <string name="another_process">There is another process</string>
-    <string name="seismic">Seismic</string>
+    <string name="seismic">Sísmico</string>
     <string name="edit_sensor">Edit Sensor</string>
+    <string name="pir">Volumen</string>
+    <string name="radar">Radar</string>
+    <string name="vibration">Vibración</string>
 
     <string-array name="car_ids">
         <item>0</item>
@@ -134,6 +137,7 @@
         <item>6</item>
         <item>7</item>
     </string-array>
+
 
     <string-array name="sensor_type">
         <item>Sísmico</item>
