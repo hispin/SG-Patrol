@@ -28,12 +28,12 @@
     <string name="sensor_table_title">Sensors Table</string>
     <string name="map_title">Map</string>
     <string name="config_title">Configuration</string>
-    <string name="alarm_log_title">Alarm log</string>
+    <string name="alarm_log_title">Alarm Log</string>
     <string name="not_located">Not Located</string>
     <string name="located">Located</string>
     <string name="date_title">DATE</string>
     <string name="save">save</string>
-    <string name="define_sensor_amount">Define sensor amount</string>
+    <string name="define_sensor_amount">Number of sensors</string>
     <string name="choose_alarm_sound">Choose alarm sound</string>
     <string name="vibration_when_alarm">Vibration when alarm</string>
     <string name="alarm_flickering_time">Alarm flickering time</string>
@@ -41,13 +41,13 @@
 
 
     <string-array name="state_types">
-        <item>car</item>
-        <item>intruder</item>
-        <item>motion</item>
-        <item>sensor disconnected</item>
-        <item>system ok</item>
-        <item>low battery</item>
-        <item>dual tech alarm</item>
+        <item>Car</item>
+        <item>Intruder</item>
+        <item>Motion</item>
+        <item>Sensor disconnected</item>
+        <item>System ok</item>
+        <item>Low battery</item>
+        <item>Dual tech alarm</item>
     </string-array>
     <string name="load_settings_export_settings">Load settings / export settings</string>
     <string name="map_view">Map view</string>
@@ -140,6 +140,7 @@
     <string name="pir">PIR</string>
     <string name="radar">Radar</string>
     <string name="vibration">Vibration</string>
+    <string name="connected">connected</string>
 
     <string-array name="car_ids">
         <item>0</item>

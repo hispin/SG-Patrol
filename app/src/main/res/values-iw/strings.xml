@@ -125,6 +125,7 @@
     <string name="pir">נפח</string>
     <string name="radar">רדאר</string>
     <string name="vibration">רעידות</string>
+    <string name="connected">מחובר</string>
 
     <string-array name="car_ids">
         <item>0</item>

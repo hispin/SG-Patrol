@@ -609,12 +609,26 @@ class ServiceConnectSensor : ParentService() {
             return
         }
 
-        val type = stateTypes?.get(typeIndex)
 
         val alarmSensorId = bit[1].toUByte().toString()
 
         //get locally sensor that match to sensor of alarm
         val currentSensorLocally = getLocallySensorAlarm(alarmSensorId)
+        //currentSensorLocally.
+
+        var type: String? = null//stateTypes?.get(typeIndex)
+
+        //Bug fixed:set car or intruder when the type of sensor is Seismic
+        if (currentSensorLocally?.getTypeID() == SEISMIC_TYPE) {
+            type = stateTypes?.get(typeIndex)
+            //otherwise set the type of sensor as type of alarm
+        } else if (currentSensorLocally?.getTypeID() == PIR_TYPE
+            || currentSensorLocally?.getTypeID() == RADAR_TYPE
+            || currentSensorLocally?.getTypeID() == VIBRATION_TYPE
+        ) {
+            type = currentSensorLocally.getType()
+        }
+
 
         // for  toast ,that cannot showed here because it is not UI thread
         val innAlarmNotDefined = Intent(CREATE_ALARM_NOT_DEFINED_KEY)
@@ -626,6 +640,8 @@ class ServiceConnectSensor : ParentService() {
             sendBroadcast(Intent(RESET_MARKERS_KEY))
             // for  toast ,that cannot showed here because it is not UI thread
             sendBroadcast(innAlarmNotDefined)
+
+
             addAlarmToHistory(
                 false,
                 "undefined",

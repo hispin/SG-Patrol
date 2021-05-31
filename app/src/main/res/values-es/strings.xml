@@ -126,6 +126,7 @@
     <string name="pir">Volumen</string>
     <string name="radar">Radar</string>
     <string name="vibration">Vibración</string>
+    <string name="connected">connected</string>
 
     <string-array name="car_ids">
         <item>0</item>

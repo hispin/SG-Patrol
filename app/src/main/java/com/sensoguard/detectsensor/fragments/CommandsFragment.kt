@@ -158,7 +158,7 @@ class CommandsFragment : DialogFragment() {
                 if (statusAwake == WAIT_AWAKE) {
                     btnConnect?.text = resources.getString(R.string.try_connect)
                 } else if (statusAwake == OK_AWAKE) {
-                    btnConnect?.text = resources.getString(R.string.disconnect)
+                    btnConnect?.text = resources.getString(R.string.connected)
                 }
 
                 //isConnected=true
@@ -362,7 +362,7 @@ class CommandsFragment : DialogFragment() {
                 //&& arr[4].toUByte().toInt() == 1
                 ) {
                     statusAwake = OK_AWAKE
-                    btnConnect?.text = resources.getString(R.string.disconnect)
+                    btnConnect?.text = resources.getString(R.string.connected)
                     startTimerService(true, 20, -1)
 
                 }

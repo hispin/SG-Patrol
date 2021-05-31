@@ -251,7 +251,17 @@ class ServiceHandleAlarms : ParentService() {
                             )
                         }
                     } else {
-                        type?.let { addAlarmToHistory(currentSensorLocally, it) }
+                        //Bug fixed:set car or intruder when the type of sensor is Seismic
+                        if (currentSensorLocally.getTypeID() == SEISMIC_TYPE) {
+                            type?.let { addAlarmToHistory(currentSensorLocally, it) }
+                            //otherwise set the type of sensor as type of alarm
+                        } else if (currentSensorLocally.getTypeID() == PIR_TYPE
+                            || currentSensorLocally.getTypeID() == RADAR_TYPE
+                            || currentSensorLocally.getTypeID() == VIBRATION_TYPE
+                        ) {
+                            currentSensorLocally.getType()
+                                ?.let { addAlarmToHistory(currentSensorLocally, it) }
+                        }
 
 
                         //////////////add alarm to queue

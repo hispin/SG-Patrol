@@ -70,6 +70,11 @@ class CommandAdapter(
 
                 if (commands[adapterPosition].commandName == context.resources.getString(R.string.set_sens_level)) {
                     commands[adapterPosition].isExpand = !commands[adapterPosition].isExpand
+                    //Bug fixed:when expand the command ,zero the car and intruder selection (for update ses command)
+                    if (commands[adapterPosition].isExpand) {
+                        commands[adapterPosition].sensCar = 0
+                        commands[adapterPosition].sensIntruder = 0
+                    }
                     notifyDataSetChanged()
                 } else if (adapterPosition >= 0) {
                     itemClick.invoke(commands[adapterPosition])
@@ -88,7 +93,11 @@ class CommandAdapter(
             conExpand = _itemView.findViewById(R.id.conExpand)
             myCardView = _itemView.findViewById(R.id.myCardView)
             spCarSens = _itemView.findViewById(R.id.spCarSens)
+            //Bug fixed:set the last selection as long as the command of update sens is open
+            spCarSens?.setSelection(commands[adapterPosition].sensCar)
             spIntruderSens = _itemView.findViewById(R.id.spIntruderSens)
+            //set the last selection as long as the command of update sens is open
+            spIntruderSens?.setSelection(commands[adapterPosition].sensIntruder)
             btnSendCmd = _itemView.findViewById(R.id.btnSendCmd)
 
 
@@ -133,6 +142,10 @@ class CommandAdapter(
                     showToast(context, context.getString(R.string.error_zero_sens))
                 } else {
                     if (commands[adapterPosition].commandName == context.resources.getString(R.string.set_sens_level)) {
+                        commands[adapterPosition].sensCar =
+                            spCarSens?.selectedItem.toString().toInt()
+                        commands[adapterPosition].sensIntruder =
+                            spIntruderSens?.selectedItem.toString().toInt()
                         commands[adapterPosition].commandContent?.set(
                             4,
                             spCarSens?.selectedItem.toString().toInt()

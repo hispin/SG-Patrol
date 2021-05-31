@@ -478,9 +478,14 @@ open class ConfigurationFragment : ParentFragment(), CallToParentInterface {
         val promptsView: View = li.inflate(R.layout.custom_account_setting, null)
 
 
+//        val tvSenderEmail: TextView = promptsView
+//            .findViewById(R.id.tvSenderEmail) as TextView
+//
+//        tvSenderEmail.isSelected = true
+
+
         val etUserName: EditText = promptsView
             .findViewById(R.id.etSenderEmail) as EditText
-
 
         val etPassword: EditText = promptsView
             .findViewById(R.id.tvIntruderValue) as EditText

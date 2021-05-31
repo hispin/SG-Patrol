@@ -27,4 +27,12 @@
             android:text="Medium Text"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textSize="14sp" />
+
+    <TextView
+            android:id="@+id/tvCameraType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Medium Text"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textSize="14sp" />
 </LinearLayout>
