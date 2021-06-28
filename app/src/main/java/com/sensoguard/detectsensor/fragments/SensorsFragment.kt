@@ -327,11 +327,11 @@ class SensorsFragment : ParentFragment(), OnAdapterListener {
         ibSendCommand?.setOnClickListener {
             val isConnected = getBooleanInPreference(activity, USB_DEVICE_CONNECT_STATUS, false)
             //if the usb is connected then open dialog of commands
-            if (isConnected) {
-                openCommands()
-            } else {
-                showToast(activity, resources.getString(R.string.usb_is_disconnect))
-            }
+            //if (isConnected) {
+            openCommands()
+//            } else {
+//                showToast(activity, resources.getString(R.string.usb_is_disconnect))
+//            }
         }
         bs = StringBuilder()
         return view

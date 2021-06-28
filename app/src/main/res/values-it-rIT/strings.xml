@@ -90,8 +90,8 @@
     <string name="use_ssl_title">Using SSL:</string>
     <string name="cancel">ANNULLA</string>
     <string name="email_setting">Impostazioni e-mail</string>
-    <string name="an_alert_was_received">An alert was received</string>
-    <string name="email_content">accept %1$s alarm from unit %2$s  in %3$s</string>
+    <string name="an_alert_was_received">È stato ricevuto un avviso</string>
+    <string name="email_content">Accetta %1$s Allarme vibrazione dall\'unità %2$s  in %3$s</string>
     <string name="mail_address_title">Email Address:</string>
     <string name="outgoing_mail_server_title">Server in uscita</string>
     <string name="user_name">User name</string>
@@ -103,22 +103,22 @@
     <string name="use_ssl_title1">Utilizzando SSL</string>
     <string name="des">description</string>
     <string name="usb_is_disconnect">The usb is disconnected</string>
-    <string name="commands_title">Commands</string>
-    <string name="select_sensor">Select a sensor</string>
-    <string name="get_sens_level">"Get Sens Level "</string>
+    <string name="commands_title">Comandi</string>
+    <string name="select_sensor">Seleziona un sensore</string>
+    <string name="get_sens_level">Ottieni livello sensoriSens</string>
     <string name="no_selected_sensor">"You did not select a sensor"</string>
     <string name="get_sens_level_rsp">Get Sens Level Response</string>
     <string name="close">Close</string>
-    <string name="set_sens_level">Set sens level</string>
+    <string name="set_sens_level">Imposta livello sensore</string>
     <string name="select_car_sens">Select sens for alarm car</string>
     <string name="select_intruder_sens">Select sens for intruder</string>
     <string name="error_zero_sens">Zero can not be sent both for alert and for car and intruder</string>
-    <string name="connect">Connect</string>
+    <string name="connect">COLLEGARE</string>
     <string name="disconnect">disconnect</string>
     <string name="timer_off">timer off</string>
     <string name="timer_on">timer on</string>
     <string name="set_ref_timer">"Set RF On Timer"</string>
-    <string name="try_connect">try to connect</string>
+    <string name="try_connect">PROVA A CONNETTERTI</string>
     <string name="no_response_sensor">"No response from the sensor"</string>
     <string name="another_process">There is another process</string>
     <string name="seismic">Sismico</string>
@@ -126,7 +126,7 @@
     <string name="pir">Volume</string>
     <string name="radar">Radar</string>
     <string name="vibration">Vibrazione</string>
-    <string name="connected">connected</string>
+    <string name="connected">COLLEGATO</string>
 
     <string-array name="car_ids">
         <item>0</item>

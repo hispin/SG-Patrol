@@ -123,10 +123,10 @@ class MainActivity : ParentActivity() {
 
             super.onBackPressed()
             //disconnect usb device and stop the process
-            sendBroadcast(Intent(DISCONNECT_USB_PROCESS_KEY))
+            //sendBroadcast(Intent(DISCONNECT_USB_PROCESS_KEY))
             setBooleanInPreference(this@MainActivity, USB_DEVICE_CONNECT_STATUS, false)
             sendBroadcast(Intent(DISCONNECT_USB_PROCESS_KEY))
-            sendBroadcast(Intent(STOP_GENERAL_TIMER))
+            //sendBroadcast(Intent(STOP_GENERAL_TIMER))
 
             dialog.dismiss()
 

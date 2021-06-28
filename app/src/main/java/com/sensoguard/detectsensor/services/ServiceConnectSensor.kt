@@ -27,6 +27,7 @@ import com.sensoguard.detectsensor.global.*
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.system.exitProcess
 
 
 class ServiceConnectSensor : ParentService() {
@@ -46,8 +47,14 @@ class ServiceConnectSensor : ParentService() {
         super.onTaskRemoved(rootIntent)
         setBooleanInPreference(this@ServiceConnectSensor, USB_DEVICE_CONNECT_STATUS, false)
         serialPort?.close()
+        serialPort = null
+        sendBroadcast(Intent(STOP_GENERAL_TIMER))
         //serialPortIn?.syncClose()
-        this@ServiceConnectSensor.stopSelf()
+
+        //bug fixed : the device does not accept alarm after reopen the application after kill all
+        android.os.Process.killProcess(android.os.Process.myPid())
+        exitProcess(10)
+        //this@ServiceConnectSensor.stopSelf()
     }
 
     override fun onCreate() {
@@ -58,11 +65,29 @@ class ServiceConnectSensor : ParentService() {
         } catch (ex: java.lang.Exception) {
         }
         setFilter()
+        //start the timer that check the connection
+        startTimerGeneralService()
+    }
+
+    //start timer to supervise the usb software connection
+    private fun startTimerGeneralService() {
+        val intent = Intent(this, TimerGeneralService::class.java)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(intent)
+        } else {
+            startService(intent)
+        }
     }
 
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
+
+        //close the connection
+//        connection = null
+//        serialPort?.close()
+//        serialPort = null
 
         findUsbDevices()
 
@@ -73,20 +98,34 @@ class ServiceConnectSensor : ParentService() {
     private val usbReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, inn: Intent) {
             when {
+
+                inn.action == UsbManager.ACTION_USB_DEVICE_ATTACHED -> {
+                    //sendBroadcast(Intent("yes_connection"))
+                    findUsbDevices()
+                }
+                //when disconnect the device from USB
+                inn.action == UsbManager.ACTION_USB_DEVICE_DETACHED -> {
+                    //sendBroadcast(Intent("no_connection"))
+                    stopConnectConfiguration()
+                }
+
                 inn.action == CHECK_AVAILABLE_KEY -> {
                     findUsbDevices()
                 }
                 inn.action == DISCONNECT_USB_PROCESS_KEY -> {
-                    setBooleanInPreference(
-                        this@ServiceConnectSensor,
-                        USB_DEVICE_CONNECT_STATUS,
-                        false
-                    )
-                    serialPort?.close()
-                    //bug fixed :stop timer of commands if needed
-                    sendBroadcast(Intent(STOP_TIMER))
-                    //serialPortIn?.syncClose()
-                    this@ServiceConnectSensor.stopSelf()
+
+                    stopConnectConfiguration()
+//                    setBooleanInPreference(
+//                        this@ServiceConnectSensor,
+//                        USB_DEVICE_CONNECT_STATUS,
+//                        false
+//                    )
+//                    serialPort?.close()
+//                    serialPort = null
+//                    //bug fixed :stop timer of commands if needed
+//                    sendBroadcast(Intent(STOP_TIMER))
+//                    //serialPortIn?.syncClose()
+//                    this@ServiceConnectSensor.stopSelf()
                 }
                 inn.action == STOP_READ_DATA_KEY -> {
                     //setBooleanInPreference(this@ServiceConnectSensor,USB_DEVICE_CONNECT,false)
@@ -146,6 +185,13 @@ class ServiceConnectSensor : ParentService() {
                 inn.action == CHECK_USB_CONN_SW -> {
 
 
+//                    if(connection==null){
+//                        sendBroadcast(Intent("not_connection"))
+//                    }else{
+//                        sendBroadcast(Intent("yes_connection"))
+//                    }
+
+
                     //check SW connection
                     if (serialPort != null) {
                         if (serialPort?.isOpen == false) {
@@ -162,16 +208,15 @@ class ServiceConnectSensor : ParentService() {
                     // mode the button still green
                     val usbDevices = manager?.deviceList
 
-                    //manager?.deviceList?.values?.first()
-                    //(usbDevices==null) ||
+
                     if ((usbDevices == null) || usbDevices.isEmpty()) {
                         stopConnectConfiguration()
+                    } else {
+                        sendBroadcast(Intent(USB_DEVICES_NOT_EMPTY))
+                        //if(connection!=null && serialPort!=null && usbDevices != null) {
+                        //onConnectConfiguration()
+                        //}
                     }
-//                    else{
-//                        if(connection!=null && serialPort!=null && usbDevices != null) {
-//                            onConnectConfiguration()
-//                        }
-//                    }
 
                 }
 
@@ -189,10 +234,16 @@ class ServiceConnectSensor : ParentService() {
             USB_DEVICE_CONNECT_STATUS,
             true
         )
-        sendBroadcast(Intent(USB_CONNECTION_ON_UI))
+        sendBroadcast(Intent(USB_DEVICES_NOT_EMPTY))
     }
 
     private fun stopConnectConfiguration() {
+
+        //close the connection
+        connection = null
+        serialPort?.close()
+        serialPort = null
+
         setBooleanInPreference(
             this@ServiceConnectSensor,
             USB_DEVICE_CONNECT_STATUS,
@@ -200,12 +251,12 @@ class ServiceConnectSensor : ParentService() {
         )
 
         //update UI
-        sendBroadcast(Intent(USB_CONNECTION_OFF_UI))
+        sendBroadcast(Intent(USB_DEVICES_EMPTY))
 
         //bug fixed :stop timer of commands if needed
         sendBroadcast(Intent(STOP_TIMER))
         //serialPortIn?.syncClose()
-        this@ServiceConnectSensor.stopSelf()
+        //this@ServiceConnectSensor.stopSelf()
     }
 
 
@@ -217,6 +268,7 @@ class ServiceConnectSensor : ParentService() {
         try {
             if (serialPort != null) {
                 serialPort!!.close()
+                sendBroadcast(Intent(STOP_GENERAL_TIMER))
                 //serialPortIn?.syncClose()
             }
 
@@ -228,6 +280,8 @@ class ServiceConnectSensor : ParentService() {
 
     private fun setFilter() {
         val filter = IntentFilter(CHECK_AVAILABLE_KEY)
+        filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED)
+        filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED)
         filter.addAction(HANDLE_READ_DATA_EXCEPTION)
         filter.addAction(STOP_READ_DATA_KEY)
         filter.addAction(ACTION_USB_PERMISSION)
@@ -290,7 +344,7 @@ class ServiceConnectSensor : ParentService() {
             connection = manager?.openDevice(usbDevice)
 
             if(connection==null) {
-                sendBroadcast(Intent(USB_CONNECTION_OFF_UI))
+                sendBroadcast(Intent(USB_DEVICES_EMPTY))
                 setBooleanInPreference(
                     this@ServiceConnectSensor,
                     USB_DEVICE_CONNECT_STATUS,

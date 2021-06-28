@@ -57,14 +57,14 @@
                         android:id="@+id/tvCommandTitle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="73.3dp"
+                        android:layout_marginStart="16dp"
                         android:lineSpacingExtra="-9.9sp"
                         android:text="@string/commands_title"
                         android:textColor="@color/dark4"
                         android:textSize="16.7sp"
                         app:layout_constraintBottom_toBottomOf="parent"
 
-                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/ivIcon"
                         app:layout_constraintTop_toTopOf="parent" />
 
                 <androidx.appcompat.widget.AppCompatImageView

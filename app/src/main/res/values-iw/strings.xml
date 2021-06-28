@@ -91,7 +91,7 @@
     <string name="cancel">ביטול</string>
     <string name="email_setting">הגדרות אימייל</string>
     <string name="an_alert_was_received">התקבלה התראה</string>
-    <string name="email_content">"התקבלה התראה מסוג %1$s מיחידה %2$s ב %3$s"</string>
+    <string name="email_content">"התקבלה התראה מחיישן %1$s מיחידה %2$s ב %3$s"</string>
     <string name="outgoing_mail_server_title">שרת דואר יוצא</string>
     <string name="user_name">שם משתמש</string>
     <string name="outgoing_mail_port_title">פורט דואר יוצא</string>

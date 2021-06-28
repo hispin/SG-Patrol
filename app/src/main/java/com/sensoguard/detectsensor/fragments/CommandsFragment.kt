@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.sensoguard.detectsensor.R
 import com.sensoguard.detectsensor.adapters.CommandAdapter
 import com.sensoguard.detectsensor.classes.Command
+import com.sensoguard.detectsensor.classes.Sensor
 import com.sensoguard.detectsensor.global.*
 import com.sensoguard.detectsensor.services.TimerService
 import java.util.*
@@ -52,6 +53,8 @@ class CommandsFragment : DialogFragment() {
     private var rvCommands: RecyclerView? = null
     private var btnConnect: Button? = null
     //private var tvTest: TextView? = null
+
+    var selectedSensor: Sensor? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -82,8 +85,16 @@ class CommandsFragment : DialogFragment() {
 
             }
 
-            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                p1: View?,
+                position: Int,
+                p3: Long
+            ) {
                 activity?.sendBroadcast(Intent(STOP_TIMER))
+                var item = parent?.getItemAtPosition(position) as String
+                getSelectedSensor(item)
+                refreshCommandsAdapter()
             }
         }
 
@@ -102,6 +113,30 @@ class CommandsFragment : DialogFragment() {
         }
 
         return view
+    }
+
+    //get the sensor by the selected item
+    private fun getSelectedSensor(id: String) {
+        var sensors = ArrayList<Sensor>()
+        //sensors?.add(Sensor(resources.getString(R.string.id_title),resources.getString(R.string.name_title)))
+        val sensorsListStr = getStringInPreference(activity, DETECTORS_LIST_KEY_PREF, ERROR_RESP)
+
+        if (sensorsListStr.equals(ERROR_RESP)) {
+            //ArrayList()
+        } else {
+            sensorsListStr?.let {
+                val temp = convertJsonToSensorList(it)
+                temp?.let { tmp -> sensors.addAll(tmp) }
+            }
+        }
+
+        val items = sensors.listIterator()
+        while (items.hasNext()) {
+            val item = items.next()
+            if (item.getId() == id) {
+                selectedSensor = item
+            }
+        }
     }
 
     //hag
@@ -188,7 +223,7 @@ class CommandsFragment : DialogFragment() {
     override fun onStart() {
         super.onStart()
         setFilter()
-        refreshCommandsAdapter()
+        //refreshCommandsAdapter()
 
         //var state = getStringInPreference(activity, "connState", "-1")
         //tvTest?.text = state
@@ -203,26 +238,29 @@ class CommandsFragment : DialogFragment() {
 
         val commands: ArrayList<Command> = ArrayList()
 
-        val cmdGetSens: IntArray = intArrayOf(2, -1, 55, 6, 0, 3)
+        //commands of seismic
+        if (selectedSensor?.getTypeID() == SEISMIC_TYPE) {
 
-        commands.add(
-            Command(
-                resources.getString(R.string.get_sens_level),
-                cmdGetSens,
-                R.drawable.ic_parameters
+            val cmdGetSens: IntArray = intArrayOf(2, -1, 55, 6, 0, 3)
+
+            commands.add(
+                Command(
+                    resources.getString(R.string.get_sens_level),
+                    cmdGetSens,
+                    R.drawable.ic_parameters
+                )
             )
-        )
 
-        val cmdSetSens: IntArray = intArrayOf(2, -1, 155, 7, -1, -1, 3)
+            val cmdSetSens: IntArray = intArrayOf(2, -1, 155, 7, -1, -1, 3)
 
-        commands.add(
-            Command(
-                resources.getString(R.string.set_sens_level),
-                cmdSetSens,
-                R.drawable.ic_parameters
+            commands.add(
+                Command(
+                    resources.getString(R.string.set_sens_level),
+                    cmdSetSens,
+                    R.drawable.ic_parameters
+                )
             )
-        )
-
+        }
         commandsAdapter = CommandAdapter(commands, requireContext()) { command: Command ->
 
 

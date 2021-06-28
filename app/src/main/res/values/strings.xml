@@ -106,7 +106,7 @@
     <string name="cancel">Cancel</string>
     <string name="email_setting">Email Settings</string>
     <string name="an_alert_was_received">An alert was received</string>
-    <string name="email_content">accept %1$s alarm from unit %2$s in %3$s</string>
+    <string name="email_content">Accept %1$s alarm from unit %2$s in %3$s</string>
     <string name="outgoing_mail_server_title">Outgoing  Server</string>
     <string name="user_name">User name</string>
     <string name="outgoing_mail_port_title">Outgoing  Port</string>
@@ -123,7 +123,7 @@
     <string name="no_selected_sensor">"You did not select a sensor"</string>
     <string name="get_sens_level_rsp">Get Sens Level Response</string>
     <string name="close">Close</string>
-    <string name="set_sens_level">Set sens level</string>
+    <string name="set_sens_level">Set Sens Level</string>
     <string name="select_car_sens">Select sens for alarm car</string>
     <string name="select_intruder_sens">Select sens for intruder</string>
     <string name="error_zero_sens">Zero can not be sent both for alert and for car and intruder</string>

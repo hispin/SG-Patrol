@@ -34,7 +34,6 @@ import com.sensoguard.detectsensor.global.*
 import com.sensoguard.detectsensor.interfaces.OnFragmentListener
 import com.sensoguard.detectsensor.services.ServiceConnectSensor
 import com.sensoguard.detectsensor.services.ServiceHandleAlarms
-import com.sensoguard.detectsensor.services.TimerGeneralService
 import kotlinx.android.synthetic.main.activity_my_screens.*
 import java.util.*
 
@@ -112,19 +111,19 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, java.util.Observ
         }
         configureActionBar()
         //editActionBar(false)
-        startTimerGeneralService()
+        //startTimerGeneralService()
     }
 
-    //start timer to supervise the usb software connection
-    private fun startTimerGeneralService() {
-        val intent = Intent(this, TimerGeneralService::class.java)
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(intent)
-        } else {
-            startService(intent)
-        }
-    }
+//    //start timer to supervise the usb software connection
+//    private fun startTimerGeneralService() {
+//        val intent = Intent(this, TimerGeneralService::class.java)
+//
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            startForegroundService(intent)
+//        } else {
+//            startService(intent)
+//        }
+//    }
 
     //create timeout for reset sensor to regular icon and cancel the alarm icon
     private fun startTimer() {
@@ -195,35 +194,46 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, java.util.Observ
     }
 
     private val usbReceiver = object : BroadcastReceiver() {
-        override fun onReceive(arg0: Context, arg1: Intent) {
+        override fun onReceive(context: Context, arg1: Intent) {
             when {
-                arg1.action == USB_CONNECTION_OFF_UI -> {
-                    setBooleanInPreference(this@MyScreensActivity, USB_DEVICE_CONNECT_STATUS, false)
-                    editActionBar(false)
+                arg1.action == USB_DEVICES_EMPTY -> {
+                    //setBooleanInPreference(this@MyScreensActivity, USB_DEVICE_CONNECT_STATUS, false)
+                    setUIusbConnection(false)
 
                 }
-                arg1.action == USB_CONNECTION_ON_UI -> {
-                    setBooleanInPreference(this@MyScreensActivity, USB_DEVICE_CONNECT_STATUS, true)
-                    editActionBar(true)
+                arg1.action == USB_DEVICES_NOT_EMPTY -> {
+                    val isConnected =
+                        getBooleanInPreference(context, USB_DEVICE_CONNECT_STATUS, false)
+                    //setBooleanInPreference(this@MyScreensActivity, USB_DEVICE_CONNECT_STATUS, true)
+                    if (isConnected) {
+                        setUIusbConnection(true)
+                    } else {
+                        //if there is device and the status is wrong then restart the connection
+                        startConnectionService()
+                    }
 
                 }
                 arg1.action == UsbManager.ACTION_USB_DEVICE_ATTACHED -> {
-                    //
 
                 }
                 //when disconnect the device from USB
                 arg1.action == UsbManager.ACTION_USB_DEVICE_DETACHED -> {
                     //Toast.makeText(this@MyScreensActivity, "detach", Toast.LENGTH_SHORT).show()
-                    stopUsbReadConnection()
+                    showUsbReadDisconnection()
                     playVibrate()
                     showDisconnectUsbDialog()
-
                 }
                 arg1.action == CREATE_ALARM_KEY -> {
                     startTimer()
                 }
                 arg1.action == STOP_ALARM_SOUND -> {
 
+                }
+                arg1.action == "not_connection" -> {
+                    //showToast(this@MyScreensActivity,"not_connection")
+                }
+                arg1.action == "yes_connection" -> {
+                    //showToast(this@MyScreensActivity,"yes_connection")
                 }
 
 
@@ -273,22 +283,24 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, java.util.Observ
     }
 
 
-    //stop usb read connection
-    private fun stopUsbReadConnection() {
-        setBooleanInPreference(this@MyScreensActivity, USB_DEVICE_CONNECT_STATUS, false)
+    //show usb read disconnection
+    private fun showUsbReadDisconnection() {
+        //setBooleanInPreference(this@MyScreensActivity, USB_DEVICE_CONNECT_STATUS, false)
         //bug fixed : kill also the service
-        sendBroadcast(Intent(DISCONNECT_USB_PROCESS_KEY))
-        editActionBar(false)
+        //sendBroadcast(Intent(DISCONNECT_USB_PROCESS_KEY))
+        setUIusbConnection(false)
     }
 
     private fun setFilter() {
-        val filter = IntentFilter(USB_CONNECTION_OFF_UI)
+        val filter = IntentFilter(USB_DEVICES_EMPTY)
         //filter.addAction("android.hardware.usb.action.USB_STATE")
         filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED)
         filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED)
-        filter.addAction(USB_CONNECTION_ON_UI)
+        filter.addAction(USB_DEVICES_NOT_EMPTY)
         filter.addAction(CREATE_ALARM_KEY)
         filter.addAction(STOP_ALARM_SOUND)
+        filter.addAction("not_connection")
+        filter.addAction("yes_connection")
         registerReceiver(usbReceiver, filter)
     }
 
@@ -307,8 +319,7 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, java.util.Observ
 
     }
 
-
-    private fun editActionBar(state: Boolean) {
+    private fun setUIusbConnection(state: Boolean) {
         togChangeStatus?.isChecked = state
     }
 
@@ -341,18 +352,26 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, java.util.Observ
 
         togChangeStatus?.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
-                //Toast.makeText(this,"isConnected2="+isConnected, Toast.LENGTH_SHORT).show()
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    startForegroundService(Intent(this, ServiceConnectSensor::class.java))
-                } else {
-                    startService(Intent(this, ServiceConnectSensor::class.java))
-                }
+                startConnectionService()
             } else {
                 setBooleanInPreference(this, USB_DEVICE_CONNECT_STATUS, false)
                 sendBroadcast(Intent(STOP_READ_DATA_KEY))
                 //sendBroadcast(Intent(DISCONNECT_USB_PROCESS_KEY))
                 sendBroadcast(Intent(STOP_ALARM_SOUND))
             }
+        }
+    }
+
+    //start connection service
+    private fun startConnectionService() {
+
+        val connector = Intent(this, ServiceConnectSensor::class.java)
+        //stopService(connector)
+        //Toast.makeText(this,"isConnected2="+isConnected, Toast.LENGTH_SHORT).show()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(connector)
+        } else {
+            startService(Intent(connector))
         }
     }
 

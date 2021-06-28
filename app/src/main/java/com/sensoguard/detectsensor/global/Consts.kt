@@ -42,8 +42,8 @@ const val ALARM_FLICKERING_DURATION_KEY = "alarmFlickeringDuration"
 const val ALARM_FLICKERING_DURATION_DEFAULT_VALUE_SECONDS = 30L
 
 
-const val USB_CONNECTION_OFF_UI = "usbConnectionFailed"
-const val USB_CONNECTION_ON_UI = "usbConnectionSuccess"
+const val USB_DEVICES_EMPTY = "usbDevicesEmpty"
+const val USB_DEVICES_NOT_EMPTY = "usbDevicesNotEmpty"
 
 const val CREATE_ALARM_ID_KEY = "CreateAlarmIdKey"
 const val CREATE_ALARM_NAME_KEY = "CreateAlarmNameKey"
