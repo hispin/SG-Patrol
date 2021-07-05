@@ -12,6 +12,7 @@ import android.hardware.usb.UsbDeviceConnection
 import android.hardware.usb.UsbManager
 import android.media.Ringtone
 import android.os.Build
+import android.os.Handler
 import android.os.IBinder
 import android.util.Log
 import android.widget.Toast
@@ -205,7 +206,7 @@ class ServiceConnectSensor : ParentService() {
 
                     //check if find devices via USB
                     //Bug fixed: if usb has been disconnected during sleep
-                    // mode the button still green
+                    //mode the button still green
                     val usbDevices = manager?.deviceList
 
 
@@ -502,6 +503,13 @@ class ServiceConnectSensor : ParentService() {
 
     var arr = ArrayList<Int>()
 
+    //define timer delay to clear the buffer
+    private val mHandler = Handler()
+    val runnable: Runnable = Runnable {
+        arr = ArrayList()
+    }
+
+    //runnable
     private val mCallback = UsbSerialInterface.UsbReadCallback { bytesArray ->
 
 
@@ -630,6 +638,9 @@ class ServiceConnectSensor : ParentService() {
                 }
 
 
+            //define timer delay to clear the buffer
+            mHandler.removeCallbacks { runnable }
+            mHandler.postDelayed(runnable, 200)
         }
 
     }
