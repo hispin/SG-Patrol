@@ -26,6 +26,7 @@
             android:paddingStart="5dp"
             android:paddingEnd="5dp"
             style="@style/edit_sensor_fields"
+            android:inputType="textEmailAddress"
             android:layout_width="wrap_content"
             android:layout_marginStart="8dp"
             android:ems="10"

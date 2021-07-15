@@ -30,10 +30,6 @@ class MainActivity : ParentActivity() {
     private var btnTest: AppCompatButton? = null
     //private var ivOfflineMap : AppCompatImageView?=null
 
-//    @Override
-//    protected override fun attachBaseContext(newBase:Context) {
-//        configurationLanguage()
-//    }
 
     override fun onStart() {
         super.onStart()
@@ -51,10 +47,7 @@ class MainActivity : ParentActivity() {
 
         super.onCreate(savedInstanceState)
 
-        //configurationLanguage()
-
         setContentView(R.layout.activity_main)
-
 
         //hide unwanted badge of app icon
         hideBudgetNotification()
@@ -196,20 +189,6 @@ class MainActivity : ParentActivity() {
 
     }
 
-//    private fun configurationLanguage() {
-//        LanguageManager.setLanguageList()
-//        val currentLanguage = getStringInPreference(this, CURRENT_LANG_KEY_PREF, "-1")
-//        if (currentLanguage != "-1") {
-//            GeneralItemMenu.selectedItem = currentLanguage
-//            setAppLanguage(this, GeneralItemMenu.selectedItem)
-//        } else {
-//            val deviceLang = getAppLanguage()
-//            if (LanguageManager.isExistLang(deviceLang)) {
-//                GeneralItemMenu.selectedItem = deviceLang
-//                setAppLanguage(this, GeneralItemMenu.selectedItem)
-//            }
-//        }
-//    }
 
     //Change View of fragment
     private fun replaceFragment(
