@@ -13,7 +13,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 //convert bitmap to bitmap discriptor
 fun convertBitmapToBitmapDiscriptor(context: Context, resId: Int): BitmapDescriptor? {
     val bitmap = context.let { getBitmapFromVectorDrawable(it, resId) }
-    return BitmapDescriptorFactory.fromBitmap(bitmap)
+    return bitmap?.let { BitmapDescriptorFactory.fromBitmap(it) }
 }
 
 //convert drawable to bitmap

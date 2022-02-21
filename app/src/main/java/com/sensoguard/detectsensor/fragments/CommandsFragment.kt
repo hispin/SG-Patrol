@@ -8,16 +8,18 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatSpinner
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -56,6 +58,9 @@ class CommandsFragment : DialogFragment() {
 
     var selectedSensor: Sensor? = null
 
+    // Animation
+    var animBlink: Animation? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -63,7 +68,7 @@ class CommandsFragment : DialogFragment() {
                 sensorsIds.add(resources.getString(R.string.select_sensor))
                 sensorsIds.addAll(it.getStringArrayList(SENSORS_IDS)!!)
             }
-            Log.d("", "")
+            //Log.d("", "")
         }
     }
 
@@ -76,7 +81,14 @@ class CommandsFragment : DialogFragment() {
 
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_commands_dialog, container, false)
+
         initViews(view)
+        // load the animation
+        animBlink = AnimationUtils.loadAnimation(
+            activity,
+            R.anim.flickering
+        )
+
         spSensorsIds = view.findViewById(R.id.spSensorsIds)
 
         //listener for gender selection
@@ -92,7 +104,7 @@ class CommandsFragment : DialogFragment() {
                 p3: Long
             ) {
                 activity?.sendBroadcast(Intent(STOP_TIMER))
-                var item = parent?.getItemAtPosition(position) as String
+                val item = parent?.getItemAtPosition(position) as String
                 getSelectedSensor(item)
                 refreshCommandsAdapter()
             }
@@ -117,7 +129,7 @@ class CommandsFragment : DialogFragment() {
 
     //get the sensor by the selected item
     private fun getSelectedSensor(id: String) {
-        var sensors = ArrayList<Sensor>()
+        val sensors = ArrayList<Sensor>()
         //sensors?.add(Sensor(resources.getString(R.string.id_title),resources.getString(R.string.name_title)))
         val sensorsListStr = getStringInPreference(activity, DETECTORS_LIST_KEY_PREF, ERROR_RESP)
 
@@ -191,9 +203,13 @@ class CommandsFragment : DialogFragment() {
                 statusAwake = status
 
                 if (statusAwake == WAIT_AWAKE) {
-                    btnConnect?.text = resources.getString(R.string.try_connect)
+
+                    setTryConnect()
+
                 } else if (statusAwake == OK_AWAKE) {
-                    btnConnect?.text = resources.getString(R.string.connected)
+
+                    setConnect()
+
                 }
 
                 //isConnected=true
@@ -203,6 +219,40 @@ class CommandsFragment : DialogFragment() {
             }
         }
 
+    }
+
+    /**
+     * set button as try to connecting
+     */
+    private fun setTryConnect() {
+        //set try to connect
+        if (activity != null) {
+            btnConnect?.setTextColor(
+                ContextCompat.getColor(
+                    requireActivity(),
+                    R.color.red
+                )
+            )
+        }
+        btnConnect?.text = resources.getString(R.string.try_connect)
+        btnConnect?.startAnimation(animBlink)
+    }
+
+    /**
+     * set button as connecting
+     */
+    private fun setConnect() {
+        btnConnect?.text = resources.getString(R.string.connected)
+        if (activity != null) {
+            btnConnect?.setTextColor(
+                ContextCompat.getColor(
+                    requireActivity(),
+                    R.color.turquoise_blue
+                )
+            )
+        }
+        btnConnect?.clearAnimation()
+        animBlink?.cancel()
     }
 
     //start timer
@@ -257,6 +307,16 @@ class CommandsFragment : DialogFragment() {
                 Command(
                     resources.getString(R.string.set_sens_level),
                     cmdSetSens,
+                    R.drawable.ic_parameters
+                )
+            )
+
+
+            val cmdSetSystemTime: IntArray = configureSystemTimeCmd()
+            commands.add(
+                Command(
+                    resources.getString(R.string.set_system_time),
+                    cmdSetSystemTime,
                     R.drawable.ic_parameters
                 )
             )
@@ -320,6 +380,48 @@ class CommandsFragment : DialogFragment() {
 
     }
 
+    /**
+     * configure the system time command
+     */
+    private fun configureSystemTimeCmd(): IntArray {
+        val now = Calendar.getInstance()
+
+        val dayInWeekS = now.get(Calendar.DAY_OF_WEEK).toString()
+        val dayInMonthS = now.get(Calendar.DAY_OF_MONTH).toString()
+        var monthN = now.get(Calendar.MONTH)
+        //the month is start with zero
+        monthN++
+        val monthS = monthN.toString()
+        val yearS = now.get(Calendar.YEAR).toString()
+        val hourS = now.get(Calendar.HOUR_OF_DAY).toString()
+        val minutesS = now.get(Calendar.MINUTE).toString()
+        val secondsS = now.get(Calendar.SECOND).toString()
+
+        val dayInWeek = dayInWeekS.toInt(16)
+        val dayInMonth = dayInMonthS.toInt(16)
+        val month = monthS.toInt(16)
+        val year = yearS.substring(yearS.length - 3).toInt(16)
+        val hour = hourS.toInt(16)
+        val minutes = minutesS.toInt(16)
+        val seconds = secondsS.toInt(16)
+
+
+        return intArrayOf(
+            2,
+            -1,
+            103,
+            12,
+            dayInWeek,
+            dayInMonth,
+            month,
+            year,
+            hour,
+            minutes,
+            seconds,
+            3
+        )
+    }
+
     //send rf timer command immediately after other command
     private fun sendRfCmd() {
         val id = Integer.parseInt(spSensorsIds?.selectedItem.toString())
@@ -335,20 +437,8 @@ class CommandsFragment : DialogFragment() {
     //sen command to sensor
     private fun sendCommand(command: Command) {
 
-
-        //val inn = Intent(ACTION_SEND_CMD)
-        //val bnd = Bundle()
-
         UserSession.instance.commandContent = command.commandContent
 
-        //bnd.putIntArray(CURRENT_COMMAND, command.commandContent)
-
-        //hag
-        //Log.d("TestCommand","send command")
-        //count++
-        //showToast(activity, count.toString()+ " array size="+command.commandContent?.size)
-        //showToast(activity, command.commandContent!![1].toString())
-        //inn.replaceExtras(bnd)
         activity?.sendBroadcast(Intent(ACTION_SEND_CMD))
     }
 
@@ -400,9 +490,20 @@ class CommandsFragment : DialogFragment() {
                 //&& arr[4].toUByte().toInt() == 1
                 ) {
                     statusAwake = OK_AWAKE
-                    btnConnect?.text = resources.getString(R.string.connected)
+
+                    setConnect()
+
                     startTimerService(true, 20, -1)
 
+                } else if (arr != null && arr.size == 7 && arr[2].toUByte()
+                        .toInt() == SET_TIME_SYSTEM
+                ) {
+                    if (UserSession.instance.myCommand?.state == PROCESS_STATE) {
+                        //stop progress bar
+                        UserSession.instance.myCommand?.state = SUCCESS_STATE
+                        commandsAdapter?.notifyDataSetChanged()
+                    }
+                    //accept response from command of RF timer
                 }
                 //time out (no max)
             } else if (inn.action == ACTION_INTERVAL) {

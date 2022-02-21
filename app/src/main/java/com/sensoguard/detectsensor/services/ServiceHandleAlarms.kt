@@ -156,6 +156,9 @@ class ServiceHandleAlarms : ParentService() {
                         )
                             .show()
                     }
+                    //play sound and vibrate
+                    playAlarmSound()
+                    playVibrate()
                 }
                 READ_DATA_KEY_TEST -> {
                     val bit = intent.getIntegerArrayListExtra("data")

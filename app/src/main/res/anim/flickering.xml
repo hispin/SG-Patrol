@@ -3,9 +3,11 @@
      android:fillAfter="true" >
 
     <alpha
-            android:duration="1000"
             android:fromAlpha="0.0"
             android:interpolator="@android:anim/accelerate_interpolator"
+            android:duration="600"
+            android:repeatCount="infinite"
+            android:repeatMode="reverse"
             android:toAlpha="1.0" />
 
 </set>

@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.content.*
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,6 +24,8 @@ import com.sensoguard.detectsensor.classes.Sensor
 import com.sensoguard.detectsensor.global.*
 import com.sensoguard.detectsensor.interfaces.OnAdapterListener
 import com.sensoguard.detectsensor.interfaces.OnFragmentListener
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -328,7 +331,11 @@ class SensorsFragment : ParentFragment(), OnAdapterListener {
             val isConnected = getBooleanInPreference(activity, USB_DEVICE_CONNECT_STATUS, false)
             //if the usb is connected then open dialog of commands
             //if (isConnected) {
+
+            //For testing
             openCommands()
+            //configureSystemTimeCmd()
+
 //            } else {
 //                showToast(activity, resources.getString(R.string.usb_is_disconnect))
 //            }
@@ -541,6 +548,54 @@ class SensorsFragment : ParentFragment(), OnAdapterListener {
             dialog.show()
         }
 
+
+    }
+
+    //////For testing
+    /**
+     * configure the system time command
+     */
+    private fun configureSystemTimeCmd(): IntArray {
+        val now = Calendar.getInstance()
+
+        val dayInWeekS = now.get(Calendar.DAY_OF_WEEK).toString()
+        val dayInMonthS = now.get(Calendar.DAY_OF_MONTH).toString()
+        var monthN = now.get(Calendar.MONTH)
+        //the month is start with zero
+        monthN++
+        val monthS = monthN.toString()
+        val yearS = now.get(Calendar.YEAR).toString()
+        val hourS = now.get(Calendar.HOUR_OF_DAY).toString()
+        val minutesS = now.get(Calendar.MINUTE).toString()
+        val secondsS = now.get(Calendar.SECOND).toString()
+
+        val dayInWeek = dayInWeekS.toInt(16)
+        val dayInMonth = dayInMonthS.toInt(16)
+        val month = monthS.toInt(16)
+        val year = yearS.substring(yearS.length - 3).toInt(16)
+        val hour = hourS.toInt(16)
+        val minutes = minutesS.toInt(16)
+        val seconds = secondsS.toInt(16)
+
+        Log.d("testMinutes exa", minutesS)
+        Log.d("testMinutes dec", minutes.toString())
+        Log.d("testMinutes exa", hourS)
+        Log.d("testMinutes dec", hour.toString())
+
+        return intArrayOf(
+            2,
+            -1,
+            103,
+            12,
+            dayInWeek,
+            dayInMonth,
+            month,
+            year,
+            hour,
+            minutes,
+            seconds,
+            3
+        )
 
     }
 }

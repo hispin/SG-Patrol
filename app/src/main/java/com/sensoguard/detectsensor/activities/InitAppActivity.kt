@@ -34,6 +34,7 @@ class InitAppActivity : ParentActivity() {
         //startTimerGeneralService()
 
         setReadPhoneStatePermission()
+        //configureActivation()
     }
 
 
@@ -99,6 +100,7 @@ class InitAppActivity : ParentActivity() {
         permissions: Array<String>,
         grantResults: IntArray
     ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
             PERMISSIONS_REQUEST_READ_PHONE_STATE -> {
                 // If request is cancelled, the result arrays are empty.

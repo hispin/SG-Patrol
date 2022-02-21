@@ -117,7 +117,8 @@
     <string name="timer_off">timer off</string>
     <string name="timer_on">timer on</string>
     <string name="set_ref_timer">"Set RF On Timer"</string>
-    <string name="try_connect">ESSAYEZ DE VOUS CONNECTER</string>
+    <string name="try_connect">Connecting…</string>
+    <!--    <string name="try_connect">ESSAYEZ DE VOUS CONNECTER</string>-->
     <string name="no_response_sensor">"No response from the sensor"</string>
     <string name="another_process">There is another process</string>
     <string name="seismic">Sismique</string>
@@ -126,6 +127,7 @@
     <string name="radar">Radar</string>
     <string name="vibration">Vibration</string>
     <string name="connected">LIÉ</string>
+    <string name="set_system_time">régler l\'heure du système</string>
 
     <string-array name="car_ids">
         <item>0</item>

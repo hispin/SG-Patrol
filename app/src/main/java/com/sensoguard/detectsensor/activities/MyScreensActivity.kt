@@ -71,7 +71,7 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, java.util.Observ
         startTimerListener()
 
         setContentView(R.layout.activity_my_screens)
-
+        Log.d("david", "hello")
         //store locally default values of configuration
         setConfigurationDefault()
 
@@ -458,6 +458,7 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, java.util.Observ
         permissions: Array<String>,
         grantResults: IntArray
     ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
             PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION -> {
                 setExternalPermission()

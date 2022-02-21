@@ -366,8 +366,9 @@ class ServiceConnectSensor : ParentService() {
        val mPermissionIntent = PendingIntent.getBroadcast(
            this,
            0,
+           //Bug fixed:cannot get permission for USB
            Intent(ACTION_USB_PERMISSION),
-           0
+           PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
        )
        usbManager.requestPermission(usbDevice, mPermissionIntent)
    }
@@ -633,6 +634,25 @@ class ServiceConnectSensor : ParentService() {
                         sendBroadcast(inn)
 //                        //TODO :test if success or failed
 //                        //parsingBits(arrSeven)
+                    }
+                    arr = ArrayList()
+                } else if (appCode == SET_TIME_SYSTEM && arr.size % 7 == 0) {
+                    while (arr.size >= 7) {
+                        val arrSeven = ArrayList<Int>()
+
+                        var i = 0
+                        val iteratorList = arr.listIterator()
+                        while (iteratorList != null && iteratorList.hasNext() && i < 7) {
+                            i++
+                            val bitsItem = iteratorList.next()
+                            arrSeven.add(bitsItem)
+                            iteratorList.remove()
+                        }
+
+                        //send the response
+                        val inn = Intent(ACTION_USB_RESPONSE_CACHE)
+                        inn.putExtra(USB_CACHE_RESPONSE_KEY, arrSeven)
+                        sendBroadcast(inn)
                     }
                     arr = ArrayList()
                 }

@@ -95,7 +95,7 @@ class AlarmsLogFragment : ParentFragment(), OnAdapterListener {
             this.context?.let { it1 ->
 
                 val alarmsStr = alarmsListToCsvFile(alarms, it1)
-                if (writeCsvFile(alarmsStr)) {
+                if (activity!=null && writeCsvFile(alarmsStr, requireActivity())) {
                     activity?.let { it2 -> shareCsv(it2) }
                     //Toast.makeText(context,"success",Toast.LENGTH_SHORT).show()
                 } else {

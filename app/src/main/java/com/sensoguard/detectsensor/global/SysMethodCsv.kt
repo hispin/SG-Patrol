@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Environment
+import android.util.Log
 import androidx.core.content.FileProvider
 import com.opencsv.CSVWriter
 import com.sensoguard.detectsensor.R
@@ -68,16 +69,21 @@ private fun alarmToCsvString(alarm: Alarm?, context: Context): String {
     return sb.toString()
 }
 
-fun writeCsvFile(mCsvAlarms: ArrayList<String>): Boolean {
+fun writeCsvFile(mCsvAlarms: ArrayList<String>,context:Context): Boolean {
     try {
         //create a folder
-        val folder = File(Environment.getExternalStorageDirectory(), mfolderName)
+
+        val folder = File(context.externalCacheDir, mfolderName)
         if (!folder.exists()) {
             folder.mkdirs()
         }
 
+        if(context.externalCacheDir==null){
+            return false
+        }
+
         //write to file
-        val baseDir = android.os.Environment.getExternalStorageDirectory().absolutePath
+        val baseDir = context.externalCacheDir!!.absolutePath
         val filePath = baseDir + "/" + mfolderName + "" + File.separator + mfileName
         //val filePath=baseDir + File.separator + mfileName
 
@@ -139,6 +145,8 @@ fun writeCsvFile(mCsvAlarms: ArrayList<String>): Boolean {
 
         return true
     } catch (e: Exception) {
+        //Log.d("testcsv",e.cause.toString())
+        //Log.d("testcsv",e.message.toString())
         e.printStackTrace()
     }
     return false
@@ -148,7 +156,7 @@ fun writeCsvFile(mCsvAlarms: ArrayList<String>): Boolean {
 //Share the csv file
 fun shareCsv(activity: Activity) {
 
-    val baseDir = android.os.Environment.getExternalStorageDirectory().absolutePath
+    val baseDir = activity.externalCacheDir?.absolutePath
     val filePath = baseDir + "/" + mfolderName + "" + File.separator + mfileName
     val file = File(filePath)
     val sendIntent = Intent(Intent.ACTION_SEND)

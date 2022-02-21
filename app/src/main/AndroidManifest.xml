@@ -3,7 +3,12 @@
         xmlns:tools="http://schemas.android.com/tools"
         package="com.sensoguard.detectsensor">
 
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" /> <!-- <uses-permission android:name="android.permission.READ_PRIVILEGED_PHONE_STATE" /> -->
+<!--    <uses-permission android:name="com.symbol.emdk.permission.EMDK" />-->
+
+    <!--fixing to allow device-->
+    <uses-permission
+            android:name="android.permission.READ_PHONE_STATE"
+             /> <!-- <uses-permission android:name="android.permission.READ_PRIVILEGED_PHONE_STATE" /> -->
     <uses-permission
             android:name="android.permission.READ_PRIVILEGED_PHONE_STATE"
             tools:ignore="ProtectedPermissions" />
@@ -15,24 +20,31 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!-- <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> -->
-    <uses-feature android:name="android.hardware.location.gps" />
+
+    <uses-feature
+            android:name="android.hardware.location.gps"
+             />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.VIBRATE" />
 
-    <uses-feature android:name="android.hardware.usb.host" />
+    <uses-feature
+            android:name="android.hardware.usb.host"
+             />
+
 
     <application
             android:name=".LSPatrolApp"
-            android:allowBackup="true"
-            android:fullBackupContent="@xml/my_backup"
+            android:allowBackup="false"
+
             android:icon="@drawable/ic_launcher"
             android:label="@string/app_name"
             android:requestLegacyExternalStorage="true"
             android:roundIcon="@drawable/ic_launcher"
             android:supportsRtl="true"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+<!--        <uses-library android:name="com.symbol.emdk" />-->
         <service
                 android:name=".services.TimerGeneralService"
                 android:exported="false"
@@ -48,7 +60,7 @@
         <service
                 android:name=".services.ParentService"
                 android:enabled="true"
-                android:exported="true" />
+                android:exported="false" />
 
         <activity android:name=".activities.ParentActivity" />
         <activity android:name=".activities.DownloadOfflineTilesActivity" />
@@ -56,8 +68,9 @@
         <!-- android:resource="@mipmap/ic_launcher" /> -->
         <activity
                 android:name=".activities.InitAppActivity"
-                android:screenOrientation="portrait"
-                android:theme="@style/Theme.AppCompat.NoActionBar">
+                android:screenOrientation="fullSensor"
+                android:theme="@style/Theme.AppCompat.NoActionBar"
+                android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
@@ -67,18 +80,16 @@
         </activity>
         <activity
                 android:name=".activities.ActivationActivity"
-                android:screenOrientation="portrait" />
+                android:screenOrientation="fullSensor" />
         <activity
                 android:name=".activities.MainActivity"
-                android:screenOrientation="portrait" />
+                android:screenOrientation="fullSensor" />
         <activity
                 android:name=".activities.MyScreensActivity"
-                android:screenOrientation="portrait"
+                android:screenOrientation="fullSensor"
                 android:windowSoftInputMode="adjustPan" /> <!-- prevent hiding the field by softkey -->
-        <uses-library
-                android:name="string"
-                android:required="false" />
-
+<!--        <uses-library-->
+<!--                android:name="string"  />-->
         <meta-data
                 android:name="com.google.android.geo.API_KEY"
                 android:value="AIzaSyC7lrolhXNPEeiNJuBccG6LgOwGRrBRQos" /> <!-- TODO restrict the api key -->
@@ -89,7 +100,7 @@
         <service
                 android:name=".services.ServiceConnectSensor"
                 android:enabled="true"
-                android:exported="true"
+                android:exported="false"
                 android:stopWithTask="false">
             <intent-filter>
                 <action android:name="com.androidexample.screenonoff.AEScreenOnOffService" />

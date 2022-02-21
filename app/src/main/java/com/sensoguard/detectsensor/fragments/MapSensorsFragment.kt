@@ -261,7 +261,9 @@ class MapSensorsFragment : ParentFragment(), OnMapReadyCallback, OnAdapterListen
         }
     }
 
-    override fun onMapReady(googleMap: GoogleMap?) {
+
+
+    override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
         mMap?.clear()
@@ -362,8 +364,10 @@ class MapSensorsFragment : ParentFragment(), OnMapReadyCallback, OnAdapterListen
         }
         //add marker at the focus of the map
         myLocate?.let{
-            mMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocate, 15.0f))
-            showMarkers()
+            if(myLocate!=null) {
+                mMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocate!!, 15.0f))
+                showMarkers()
+            }
             //fillSensorsMarkers()
         }
 
@@ -588,19 +592,21 @@ class MapSensorsFragment : ParentFragment(), OnMapReadyCallback, OnAdapterListen
 
         myLocatioMarker?.remove()
 
-        myLocatioMarker = mMap?.addMarker(
-            myLocate?.let {
-                MarkerOptions()
-                    .position(it)
-                    .draggable(true)
-                    .icon(context?.let { con ->
-                        convertBitmapToBitmapDiscriptor(
-                            con,
-                            R.drawable.ic_my_locate
-                        )
-                    })
-            }
-        )
+        myLocatioMarker = myLocate?.let {
+            MarkerOptions()
+                .position(it)
+                .draggable(true)
+                .icon(context?.let { con ->
+                    convertBitmapToBitmapDiscriptor(
+                        con,
+                        R.drawable.ic_my_locate
+                    )
+                })
+        }?.let {
+            mMap?.addMarker(
+                it
+            )
+        }
    }
 
     //show marker of sensor
@@ -1073,6 +1079,8 @@ class MapSensorsFragment : ParentFragment(), OnMapReadyCallback, OnAdapterListen
         detectorsArr?.let { activity?.let { context -> storeSensorsToLocally(it, context) } }
         showDialogSensorsList()
     }
+
+
 
 //    private fun setUpMap() {
 //        mMap!!.mapType = GoogleMap.MAP_TYPE_NONE

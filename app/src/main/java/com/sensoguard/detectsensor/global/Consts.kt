@@ -86,6 +86,7 @@ const val TEN_FOTMAT_BITS = 202
 const val SET_RF_ON_TIMER = 158
 const val GET_SENS_LEVEL = 55
 const val SET_SENS_LEVEL = 155
+const val SET_TIME_SYSTEM = 103
 
 const val GET_SENS_LEVEL_RESPONSE = "getSensLevelResponse"
 
