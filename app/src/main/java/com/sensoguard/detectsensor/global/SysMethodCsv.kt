@@ -85,36 +85,7 @@ fun writeCsvFile(mCsvAlarms: ArrayList<String>,context:Context): Boolean {
         //write to file
         val baseDir = context.externalCacheDir!!.absolutePath
         val filePath = baseDir + "/" + mfolderName + "" + File.separator + mfileName
-        //val filePath=baseDir + File.separator + mfileName
 
-        //val os: OutputStream = FileOutputStream(filePath)
-        //val w = PrintWriter(OutputStreamWriter(os, "UTF-8"))
-//         val iteratorList = mCsvAlarms.listIterator()
-//
-//        while (iteratorList != null && iteratorList.hasNext()) {
-//            val item=iteratorList.next()
-//            val strArr=item.split(mySeparator)
-//            w.print(strArr.toTypedArray())
-//        }
-//
-//         w.flush()
-//         w.close()
-
-
-        //////////////////
-
-//         StreamResource(object : StreamSource() {
-//             val stream: InputStream?
-//                 get() {
-//                     val exportData: List<Array<Any>> = getExportData()
-//                     val buffer = StringBuffer()
-//                     buffer.append(someData)
-//                     val bytes = buffer.toString().toByteArray()
-//                     return ByteArrayInputStream(bytes)
-//                 }
-//         }, "MyExport.csv")
-
-        //////////////////
         val file = File(filePath)
         val fileWriter = FileWriter(file)
 
@@ -131,7 +102,6 @@ fun writeCsvFile(mCsvAlarms: ArrayList<String>,context:Context): Boolean {
         }
         writer.close()
         fileWriter.close()
-        /////////////////////
 
 
         //val photoFiles=true
@@ -145,8 +115,6 @@ fun writeCsvFile(mCsvAlarms: ArrayList<String>,context:Context): Boolean {
 
         return true
     } catch (e: Exception) {
-        //Log.d("testcsv",e.cause.toString())
-        //Log.d("testcsv",e.message.toString())
         e.printStackTrace()
     }
     return false

@@ -11,13 +11,13 @@ repositories {
 }
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 33
     defaultConfig {
         applicationId "com.sensoguard.detectsensor"
-        minSdkVersion 23
-        targetSdkVersion 31
-        versionCode 111
-        versionName "1.111"
+        minSdkVersion 26
+        targetSdkVersion 33
+        versionCode 112
+        versionName "1.112"
         vectorDrawables.useSupportLibrary = true
         //testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -82,9 +82,10 @@ configurations {
 dependencies {
     //implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.6.10"
-    implementation 'com.android.support:appcompat-v7:31.1.1'
+    implementation 'com.android.support:appcompat-v7:33.1.1'
+    //implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.android.support.constraint:constraint-layout:2.0.4'
-    implementation 'com.android.support:support-v4:31.0.0'
+    implementation 'com.android.support:support-v4:33.0.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.navigation:navigation-fragment-ktx:2.4.1'
     implementation 'androidx.navigation:navigation-ui-ktx:2.4.1'
@@ -94,7 +95,7 @@ dependencies {
     implementation 'com.google.android.things:androidthings:1.0'
     implementation 'com.google.android.gms:play-services-maps:18.0.2'
     implementation 'com.github.kai-morich:usb-serial-for-android:1.7.0'
-    implementation 'com.android.support:design:31.0.0'
+    implementation 'com.android.support:design:33.0.0'
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'com.google.android.gms:play-services-location:19.0.1'
     implementation 'com.google.android.material:material:1.6.0-alpha02'

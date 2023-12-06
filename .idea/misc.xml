@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CMakeSettings">
     <configurations>
@@ -9,6 +8,7 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/Haggay/haggay/AndroidStudioProjects/SG-Patrol/app/src/main/res/layout/activity_init_app.xml" value="0.24739583333333334" />
+        <entry key="..\:/Users/Haggay/haggay/AndroidStudioProjects/SG-Patrol/app/src/main/res/layout/fragment_configuration.xml" value="0.25625" />
       </map>
     </option>
   </component>
