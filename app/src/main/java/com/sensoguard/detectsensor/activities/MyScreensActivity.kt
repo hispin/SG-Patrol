@@ -1,6 +1,7 @@
 package com.sensoguard.detectsensor.activities
 
 import android.Manifest
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -11,6 +12,7 @@ import android.hardware.usb.UsbManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.util.Log
@@ -18,10 +20,14 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.View.OnTouchListener
 import android.widget.ToggleButton
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.*
+import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.lifecycle.ViewModelProviders
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
@@ -29,8 +35,36 @@ import com.sensoguard.detectsensor.R
 import com.sensoguard.detectsensor.classes.AlarmSensor
 import com.sensoguard.detectsensor.classes.GeneralItemMenu
 import com.sensoguard.detectsensor.controler.ViewModelListener
-import com.sensoguard.detectsensor.fragments.*
-import com.sensoguard.detectsensor.global.*
+import com.sensoguard.detectsensor.fragments.AlarmsLogFragment
+import com.sensoguard.detectsensor.fragments.ConfigurationFragment
+import com.sensoguard.detectsensor.fragments.MapmobFragment
+import com.sensoguard.detectsensor.fragments.SensorsFragment
+import com.sensoguard.detectsensor.global.ACTION_TOGGLE_TEST_MODE
+import com.sensoguard.detectsensor.global.ALARM_FLICKERING_DURATION_DEFAULT_VALUE_SECONDS
+import com.sensoguard.detectsensor.global.ALARM_FLICKERING_DURATION_KEY
+import com.sensoguard.detectsensor.global.CREATE_ALARM_KEY
+import com.sensoguard.detectsensor.global.CURRENT_ITEM_TOP_MENU_KEY
+import com.sensoguard.detectsensor.global.IS_VIBRATE_WHEN_ALARM_KEY
+import com.sensoguard.detectsensor.global.MAIN_MENU_NUM_ITEM
+import com.sensoguard.detectsensor.global.MAP_SHOW_SATELLITE_VALUE
+import com.sensoguard.detectsensor.global.MAP_SHOW_VIEW_TYPE_KEY
+import com.sensoguard.detectsensor.global.PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION
+import com.sensoguard.detectsensor.global.SELECTED_NOTIFICATION_SOUND_KEY
+import com.sensoguard.detectsensor.global.STOP_ALARM_SOUND
+import com.sensoguard.detectsensor.global.STOP_READ_DATA_KEY
+import com.sensoguard.detectsensor.global.USB_DEVICES_EMPTY
+import com.sensoguard.detectsensor.global.USB_DEVICES_NOT_EMPTY
+import com.sensoguard.detectsensor.global.USB_DEVICE_CONNECT_STATUS
+import com.sensoguard.detectsensor.global.UserSession
+import com.sensoguard.detectsensor.global.getBooleanInPreference
+import com.sensoguard.detectsensor.global.getIntInPreference
+import com.sensoguard.detectsensor.global.getLongInPreference
+import com.sensoguard.detectsensor.global.getStringInPreference
+import com.sensoguard.detectsensor.global.setAppLanguage
+import com.sensoguard.detectsensor.global.setBooleanInPreference
+import com.sensoguard.detectsensor.global.setIntInPreference
+import com.sensoguard.detectsensor.global.setLongInPreference
+import com.sensoguard.detectsensor.global.setStringInPreference
 import com.sensoguard.detectsensor.interfaces.OnFragmentListener
 import com.sensoguard.detectsensor.services.ServiceConnectSensor
 import com.sensoguard.detectsensor.services.ServiceHandleAlarms
@@ -38,7 +72,7 @@ import kotlinx.android.synthetic.main.activity_my_screens.*
 import java.util.*
 
 
-class MyScreensActivity : ParentActivity(), OnFragmentListener, java.util.Observer {
+class MyScreensActivity : ParentActivity(), OnFragmentListener, Observer {
 
 
     private var clickHundler: ClickHandler? = null
@@ -463,37 +497,128 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, java.util.Observ
             PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION -> {
                 setExternalPermission()
             }
-            PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE -> {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    init()
-                }
-            }
+//            PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE -> {
+//                // If request is cancelled, the result arrays are empty.
+//                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                    init()
+//                }
+//            }
         }
 
     }
 
+    ///////////////////////
 
+
+    /**
+     * callback of external permission
+     */
+    val requestPermissionLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { isGranted: Boolean ->
+            if (isGranted) {
+                init()
+                // Permission is granted. Continue the action or workflow in your
+                // app.
+            } else {
+                // Explain to the user that the feature is unavailable because the
+                // feature requires a permission that the user has denied. At the
+                // same time, respect the user's decision. Don't link to system
+                // settings in an effort to convince the user to change their
+                // decision.
+            }
+        }
+
+    /**
+     * set external storage permission
+     */
     private fun setExternalPermission() {
         /*
      * Request location permission, so that we can get the location of the
      * device. The result of the permission request is handled by a callback,
      * onRequestPermissionsResult.
      */
-        if (ContextCompat.checkSelfPermission(
-                this.applicationContext,
+
+        val permission: String?
+        if (Build.VERSION.SDK_INT <= 32) {
+            permission = Manifest.permission.WRITE_EXTERNAL_STORAGE
+            requestPermissionLauncher.launch(
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            init()
-        } else {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE
             )
+        } else {
+            permission = Manifest.permission.READ_MEDIA_IMAGES
+        }
+        when {
+            isGrantedPermissionWRITE_EXTERNAL_STORAGE(this) -> {
+                // You can use the API that requires the permission.
+                init()
+            }
+
+//            shouldShowRequestPermissionRationale(permission) -> {
+//                // In an educational UI, explain to the user why your app requires this
+//                // permission for a specific feature to behave as expected, and what
+//                // features are disabled if it's declined. In this UI, include a
+//                // "cancel" or "no thanks" button that lets the user continue
+//                // using your app without granting the permission.
+//                //showInContextUI(...)
+//            }
+
+            else -> {
+                // You can directly ask for the permission.
+                // The registered ActivityResultCallback gets the result of this request.
+
+                if (Build.VERSION.SDK_INT <= 32) {
+                    requestPermissionLauncher.launch(
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    )
+                } else {
+                    requestPermissionLauncher.launch(
+                        Manifest.permission.READ_MEDIA_IMAGES
+
+                    )
+                }
+            }
         }
     }
+
+    /**
+     * check permission depend on sdk version
+     */
+    fun isGrantedPermissionWRITE_EXTERNAL_STORAGE(activity: Activity): Boolean {
+        if (Build.VERSION.SDK_INT <= 32) {
+            val isAllowPermissionApi28 = ActivityCompat.checkSelfPermission(
+                activity,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ) == PackageManager.PERMISSION_GRANTED
+            return isAllowPermissionApi28
+        } else {
+            val isAllowPermissionApi33 = Environment.isExternalStorageManager()
+            return isAllowPermissionApi33
+        }
+    }
+    /////////////////////
+
+//    private fun setExternalPermission() {
+//        /*
+//     * Request location permission, so that we can get the location of the
+//     * device. The result of the permission request is handled by a callback,
+//     * onRequestPermissionsResult.
+//     */
+//        if (ContextCompat.checkSelfPermission(
+//                this.applicationContext,
+//                Manifest.permission.WRITE_EXTERNAL_STORAGE
+//            ) == PackageManager.PERMISSION_GRANTED
+//        ) {
+//            init()
+//        } else {
+//            ActivityCompat.requestPermissions(
+//                this,
+//                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+//                PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE
+//            )
+//        }
+//    }
 
 
     // Since this is an object collection, use a FragmentStatePagerAdapter,

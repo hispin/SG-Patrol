@@ -16,8 +16,8 @@ android {
         applicationId "com.sensoguard.detectsensor"
         minSdkVersion 26
         targetSdkVersion 33
-        versionCode 112
-        versionName "1.112"
+        versionCode 113
+        versionName "1.113"
         vectorDrawables.useSupportLibrary = true
         //testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
