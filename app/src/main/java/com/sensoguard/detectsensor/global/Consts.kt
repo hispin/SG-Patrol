@@ -14,6 +14,7 @@ const val ACTION_TIME_OUT_MAX = "action.time.out.max"
 
 const val GET_CURRENT_LOCATION_KEY = "handle.get.current.location"
 const val GET_CURRENT_SINGLE_LOCATION_KEY = "handle.get.current.single.location"
+const val START_ALARM_SOUND = "start.alarm.sound"
 const val STOP_ALARM_SOUND = "stop.alarm.sound"
 const val CURRENT_ITEM_TOP_MENU_KEY = "currentItemTopKey"
 const val READ_DATA_KEY = "handle.read.data"

@@ -20,7 +20,48 @@ import com.sensoguard.detectsensor.classes.Alarm
 import com.sensoguard.detectsensor.classes.AlarmSensor
 import com.sensoguard.detectsensor.classes.EmailService
 import com.sensoguard.detectsensor.classes.Sensor
-import com.sensoguard.detectsensor.global.*
+import com.sensoguard.detectsensor.global.ALARM_LIST_KEY_PREF
+import com.sensoguard.detectsensor.global.CREATE_ALARM_ID_KEY
+import com.sensoguard.detectsensor.global.CREATE_ALARM_IS_ARMED
+import com.sensoguard.detectsensor.global.CREATE_ALARM_KEY
+import com.sensoguard.detectsensor.global.CREATE_ALARM_NAME_KEY
+import com.sensoguard.detectsensor.global.CREATE_ALARM_NOT_DEFINED_KEY
+import com.sensoguard.detectsensor.global.CREATE_ALARM_TYPE_INDEX_KEY
+import com.sensoguard.detectsensor.global.CREATE_ALARM_TYPE_KEY
+import com.sensoguard.detectsensor.global.DETECTORS_LIST_KEY_PREF
+import com.sensoguard.detectsensor.global.ERROR_RESP
+import com.sensoguard.detectsensor.global.HANDLE_ALARM_KEY
+import com.sensoguard.detectsensor.global.IS_FORWARD_ALARM_EMAIL
+import com.sensoguard.detectsensor.global.IS_NOTIFICATION_SOUND_KEY
+import com.sensoguard.detectsensor.global.IS_SSL_MAIL
+import com.sensoguard.detectsensor.global.IS_VIBRATE_WHEN_ALARM_KEY
+import com.sensoguard.detectsensor.global.NONE_VALIDATE_BITS
+import com.sensoguard.detectsensor.global.PASSWORD_MAIL
+import com.sensoguard.detectsensor.global.PIR_TYPE
+import com.sensoguard.detectsensor.global.PORT_MAIL
+import com.sensoguard.detectsensor.global.RADAR_TYPE
+import com.sensoguard.detectsensor.global.READ_DATA_KEY
+import com.sensoguard.detectsensor.global.READ_DATA_KEY_TEST
+import com.sensoguard.detectsensor.global.RECIPIENT_MAIL
+import com.sensoguard.detectsensor.global.RESET_MARKERS_KEY
+import com.sensoguard.detectsensor.global.SEISMIC_TYPE
+import com.sensoguard.detectsensor.global.SELECTED_NOTIFICATION_SOUND_KEY
+import com.sensoguard.detectsensor.global.SENSOR_TYPE_INDEX_KEY
+import com.sensoguard.detectsensor.global.SERVER_MAIL
+import com.sensoguard.detectsensor.global.SIX_FOTMAT_BITS
+import com.sensoguard.detectsensor.global.STOP_ALARM_SOUND
+import com.sensoguard.detectsensor.global.TEN_FOTMAT_BITS
+import com.sensoguard.detectsensor.global.USER_NAME_MAIL
+import com.sensoguard.detectsensor.global.UserSession
+import com.sensoguard.detectsensor.global.VIBRATION_TYPE
+import com.sensoguard.detectsensor.global.convertJsonToAlarmList
+import com.sensoguard.detectsensor.global.convertJsonToSensorList
+import com.sensoguard.detectsensor.global.convertToAlarmsGson
+import com.sensoguard.detectsensor.global.getBooleanInPreference
+import com.sensoguard.detectsensor.global.getIntInPreference
+import com.sensoguard.detectsensor.global.getStrDateTimeByMilliSeconds
+import com.sensoguard.detectsensor.global.getStringInPreference
+import com.sensoguard.detectsensor.global.setStringInPreference
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -157,8 +198,8 @@ class ServiceHandleAlarms : ParentService() {
                             .show()
                     }
                     //play sound and vibrate
-                    playAlarmSound()
-                    playVibrate()
+                    //playAlarmSound()
+                    //playVibrate()
                 }
                 READ_DATA_KEY_TEST -> {
                     val bit = intent.getIntegerArrayListExtra("data")

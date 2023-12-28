@@ -51,7 +51,7 @@
             android:contentDescription="sss"
             android:src="@android:drawable/ic_menu_view"
             android:tint="@color/common_google_signin_btn_text_dark_focused"
-            android:visibility="gone"
+            android:visibility="visible"
             app:backgroundTint="@color/divider_list"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />

@@ -477,7 +477,8 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, Observer {
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED
         ) {
-            setExternalPermission()
+            //setExternalPermission()
+            init()
         } else {
             ActivityCompat.requestPermissions(
                 this,
@@ -495,7 +496,8 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, Observer {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
             PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION -> {
-                setExternalPermission()
+                init()
+                //setExternalPermission()
             }
 //            PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE -> {
 //                // If request is cancelled, the result arrays are empty.
