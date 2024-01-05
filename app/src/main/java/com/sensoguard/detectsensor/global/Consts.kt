@@ -40,7 +40,7 @@ const val NO_DATA = "-1"
 
 
 const val ALARM_FLICKERING_DURATION_KEY = "alarmFlickeringDuration"
-const val ALARM_FLICKERING_DURATION_DEFAULT_VALUE_SECONDS = 30L
+const val ALARM_FLICKERING_DURATION_DEFAULT_VALUE_SECONDS = 3L
 
 
 const val USB_DEVICES_EMPTY = "usbDevicesEmpty"

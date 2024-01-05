@@ -56,6 +56,7 @@ import com.sensoguard.detectsensor.global.USB_DEVICES_EMPTY
 import com.sensoguard.detectsensor.global.USB_DEVICES_NOT_EMPTY
 import com.sensoguard.detectsensor.global.USB_DEVICE_CONNECT_STATUS
 import com.sensoguard.detectsensor.global.UserSession
+//import com.sensoguard.detectsensor.global.clearScreenOn
 import com.sensoguard.detectsensor.global.getBooleanInPreference
 import com.sensoguard.detectsensor.global.getIntInPreference
 import com.sensoguard.detectsensor.global.getLongInPreference
@@ -74,6 +75,18 @@ import java.util.*
 
 class MyScreensActivity : ParentActivity(), OnFragmentListener, Observer {
 
+
+    override fun onDestroy() {
+        super.onDestroy()
+        clearScreenOn(this)
+    }
+
+    /**
+     * clear screen on (enable sleep mode)
+     */
+    fun clearScreenOn(activity: Activity) {
+        activity.window.clearFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+    }
 
     private var clickHundler: ClickHandler? = null
 

@@ -32,3 +32,18 @@ fun dpToPx(dp: Int, context: Context): Int {
         r.displayMetrics
     ).roundToInt()
 }
+
+///**
+// * keep screen on (disable sleep mode)
+// */
+//fun keepScreenOn(rootView: View? = null,activity: Activity) {
+//    activity.window.addFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+//    rootView?.keepScreenOn = true
+//}
+//
+///**
+// * clear screen on (enable sleep mode)
+// */
+//fun clearScreenOn(activity: Activity) {
+//    activity.window.clearFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+//}

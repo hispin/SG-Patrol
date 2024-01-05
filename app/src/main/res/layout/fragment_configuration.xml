@@ -275,80 +275,80 @@
                 android:background="@color/turquoise_blue"
                 android:text="@string/save"
                 android:textColor="@color/gray2"
-                android:textSize="13.3sp"
-        />
+                android:textSize="13.3sp" />
 
-        <View android:layout_width="match_parent"
-              android:layout_height="0.7dp"
-              app:layout_constraintBottom_toBottomOf="parent"
-              android:layout_marginStart="10.7dp"
-              android:layout_marginEnd="10.7dp"
-              android:background="@color/gray4"/>
+        <View
+                android:layout_width="match_parent"
+                android:layout_height="0.7dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginStart="10.7dp"
+                android:layout_marginEnd="10.7dp"
+                android:background="@color/gray4" />
     </androidx.constraintlayout.widget.ConstraintLayout>
-    <!--load setting-->
-    <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/constLoadSettings"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            app:layout_constraintHeight_default="percent"
-            app:layout_constraintHeight_percent=".1"
-            app:layout_constraintTop_toBottomOf="@+id/constAlarmFlicker"
-    >
-        <androidx.appcompat.widget.AppCompatImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:srcCompat="@drawable/config_ic_load_export"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintHorizontal_bias="0.041"
-        />
+        <!--load setting-->
+        <!--    <androidx.constraintlayout.widget.ConstraintLayout-->
+        <!--            android:id="@+id/constLoadSettings"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="0dp"-->
+        <!--            app:layout_constraintHeight_default="percent"-->
+        <!--            app:layout_constraintHeight_percent=".1"-->
+        <!--            app:layout_constraintTop_toBottomOf="@+id/constAlarmFlicker"-->
+        <!--    >-->
+        <!--        <androidx.appcompat.widget.AppCompatImageView-->
+        <!--                android:layout_width="wrap_content"-->
+        <!--                android:layout_height="wrap_content"-->
+        <!--                app:srcCompat="@drawable/config_ic_load_export"-->
+        <!--                app:layout_constraintStart_toStartOf="parent"-->
+        <!--                app:layout_constraintEnd_toEndOf="parent"-->
+        <!--                app:layout_constraintTop_toTopOf="parent"-->
+        <!--                app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--                app:layout_constraintHorizontal_bias="0.041"-->
+        <!--        />-->
 
-        <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/load_settings_export_settings"
-                style="@style/configContentItem"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                android:ems="14"
-        />
+        <!--        <TextView-->
+        <!--                android:layout_width="wrap_content"-->
+        <!--                android:layout_height="wrap_content"-->
+        <!--                android:text="@string/load_settings_export_settings"-->
+        <!--                style="@style/configContentItem"-->
+        <!--                app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--                app:layout_constraintTop_toTopOf="parent"-->
+        <!--                app:layout_constraintStart_toStartOf="parent"-->
+        <!--                android:ems="14"-->
+        <!--        />-->
 
-        <tools:ToggleButton
-                android:id="@+id/togChangeLoadSettings"
-                android:text="ToggleButton"
-                android:layout_width="44dp"
-                android:layout_height="25dp"
-                android:background="@color/transparent"
-                android:button="@drawable/toggle_selector_active"
-                android:textOff=""
-                android:textOn=""
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintHorizontal_bias="0.954"
-        />
+        <!--        <tools:ToggleButton-->
+        <!--                android:id="@+id/togChangeLoadSettings"-->
+        <!--                android:text="ToggleButton"-->
+        <!--                android:layout_width="44dp"-->
+        <!--                android:layout_height="25dp"-->
+        <!--                android:background="@color/transparent"-->
+        <!--                android:button="@drawable/toggle_selector_active"-->
+        <!--                android:textOff=""-->
+        <!--                android:textOn=""-->
+        <!--                app:layout_constraintStart_toStartOf="parent"-->
+        <!--                app:layout_constraintEnd_toEndOf="parent"-->
+        <!--                app:layout_constraintTop_toTopOf="parent"-->
+        <!--                app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--                app:layout_constraintHorizontal_bias="0.954"-->
+        <!--        />-->
 
-        <View android:layout_width="match_parent"
-              android:layout_height="0.7dp"
-              app:layout_constraintBottom_toBottomOf="parent"
-              android:layout_marginStart="10.7dp"
-              android:layout_marginEnd="10.7dp"
-              android:background="@color/gray4"/>
-    </androidx.constraintlayout.widget.ConstraintLayout>
-    <!--map view-->
-    <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/constMapView"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            app:layout_constraintHeight_default="percent"
-            app:layout_constraintHeight_percent=".1"
-            app:layout_constraintTop_toBottomOf="@+id/constLoadSettings"
-    >
-        <androidx.appcompat.widget.AppCompatImageView
+        <!--        <View android:layout_width="match_parent"-->
+        <!--              android:layout_height="0.7dp"-->
+        <!--              app:layout_constraintBottom_toBottomOf="parent"-->
+        <!--              android:layout_marginStart="10.7dp"-->
+        <!--              android:layout_marginEnd="10.7dp"-->
+        <!--              android:background="@color/gray4"/>-->
+        <!--    </androidx.constraintlayout.widget.ConstraintLayout>-->
+        <!--map view-->
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constMapView"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                app:layout_constraintHeight_default="percent"
+                app:layout_constraintHeight_percent=".1"
+                app:layout_constraintTop_toBottomOf="@+id/constAlarmFlicker">
+
+            <androidx.appcompat.widget.AppCompatImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:srcCompat="@drawable/config_ic_map"
@@ -569,6 +569,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/IsForwardSensorEmail"
                 android:layout_width="match_parent"
+                android:visibility="invisible"
                 android:layout_height="0dp"
                 app:layout_constraintHeight_default="percent"
                 app:layout_constraintHeight_percent=".1"

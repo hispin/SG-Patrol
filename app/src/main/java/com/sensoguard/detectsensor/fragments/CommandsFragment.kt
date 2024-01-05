@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.hardware.usb.UsbManager
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -45,6 +46,10 @@ private const val ARG_PARAM2 = "param2"
  */
 class CommandsFragment : DialogFragment() {
 
+    //timer for screen on during connecting
+    private var timeoutKeepScreenOn = 16
+    private var currentKeepScreenOn = 0
+
     //private var isConnected: Boolean=false
     private var statusAwake = NONE_AWAKE
 
@@ -54,6 +59,7 @@ class CommandsFragment : DialogFragment() {
     private var commandsAdapter: CommandAdapter? = null
     private var rvCommands: RecyclerView? = null
     private var btnConnect: Button? = null
+    private var btnDisconnect: Button? = null
     //private var tvTest: TextView? = null
 
     var selectedSensor: Sensor? = null
@@ -169,23 +175,30 @@ class CommandsFragment : DialogFragment() {
                 if (isConnected) {
                     //max timer in seconds
                     count = 0
-                    sendSetRefTimer(3, 240, WAIT_AWAKE)
+                    sendSetRefTimer(2.5f, 240, WAIT_AWAKE)
                 } else {
                     showToast(activity, resources.getString(R.string.usb_is_disconnect))
                 }
             }
         }
+        btnDisconnect = view?.findViewById(R.id.btnDisconnect)
+        btnDisconnect?.setOnClickListener {
+            statusAwake = NONE_AWAKE
+            btnDisconnect?.visibility = View.GONE
+            activity?.sendBroadcast(Intent(STOP_TIMER))
+            setConnect()
+        }
     }
 
     // send set ref timer command
-    private fun sendSetRefTimer(timerValue: Int, maxTimeout: Int, status: Int) {
+    private fun sendSetRefTimer(timerValue: Float, maxTimeout: Int, status: Int) {
 
         if (spSensorsIds?.selectedItem.toString() == resources.getString(R.string.select_sensor)) {
             showToast(activity, resources.getString(R.string.no_selected_sensor))
         } else {
             try {
                 val id = Integer.parseInt(spSensorsIds?.selectedItem.toString())
-                val cmdSetRefTimer: IntArray = intArrayOf(2, id, SET_RF_ON_TIMER, 7, 45, 0, 3)
+                val cmdSetRefTimer: IntArray = intArrayOf(2, id, SET_RF_ON_TIMER, 7, 120, 0, 3)
                 UserSession.instance.myCommand = Command(
                     resources.getString(R.string.set_ref_timer),
                     cmdSetRefTimer,
@@ -203,12 +216,14 @@ class CommandsFragment : DialogFragment() {
                 statusAwake = status
 
                 if (statusAwake == WAIT_AWAKE) {
-
+                    btnDisconnect?.visibility = View.VISIBLE
                     setTryConnect()
+                    showToast(requireActivity(), "start screen on")
+                    keepScreenOn()
+                    //requireActivity().window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
                 } else if (statusAwake == OK_AWAKE) {
-
-                    setConnect()
+                    setConnected()
 
                 }
 
@@ -220,6 +235,24 @@ class CommandsFragment : DialogFragment() {
         }
 
     }
+
+    /**
+     * set button as connect
+     */
+    private fun setConnect() {
+        btnConnect?.text = resources.getString(R.string.connect)
+        if (activity != null) {
+            btnConnect?.setTextColor(
+                ContextCompat.getColor(
+                    requireActivity(),
+                    R.color.turquoise_blue
+                )
+            )
+        }
+        btnConnect?.clearAnimation()
+        animBlink?.cancel()
+    }
+
 
     /**
      * set button as try to connecting
@@ -239,9 +272,9 @@ class CommandsFragment : DialogFragment() {
     }
 
     /**
-     * set button as connecting
+     * set button as connected
      */
-    private fun setConnect() {
+    private fun setConnected() {
         btnConnect?.text = resources.getString(R.string.connected)
         if (activity != null) {
             btnConnect?.setTextColor(
@@ -256,7 +289,7 @@ class CommandsFragment : DialogFragment() {
     }
 
     //start timer
-    fun startTimerService(isRepeated: Boolean, timerValue: Int, maxTimeout: Int?) {
+    fun startTimerService(isRepeated: Boolean, timerValue: Float, maxTimeout: Int?) {
         val intent = Intent(requireContext(), TimerService::class.java)
         intent.putExtra(COMMAND_TYPE, resources.getString(R.string.set_ref_timer))
         intent.putExtra(IS_REPEATED, isRepeated)
@@ -282,6 +315,7 @@ class CommandsFragment : DialogFragment() {
     override fun onStop() {
         super.onStop()
         activity?.unregisterReceiver(usbReceiver)
+        clearScreenOn()
     }
 
     private fun refreshCommandsAdapter() {
@@ -351,7 +385,7 @@ class CommandsFragment : DialogFragment() {
                     ) {
 
                         //start timer
-                        startTimerService(false, 4, -1)
+                        startTimerService(false, 4f, -1)
 
 
                         //set the sensor id
@@ -459,6 +493,8 @@ class CommandsFragment : DialogFragment() {
         filter.addAction(ACTION_INTERVAL)
         filter.addAction(MAX_TIMER_RESPONSE)
         filter.addAction("test.brod")
+        filter.addAction(STOP_READ_DATA_KEY)
+        filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED)
         activity?.registerReceiver(usbReceiver, filter)
     }
 
@@ -491,9 +527,11 @@ class CommandsFragment : DialogFragment() {
                 ) {
                     statusAwake = OK_AWAKE
 
-                    setConnect()
+                    setConnected()
+                    showToast(requireActivity(), "connect")
+                    clearScreenOn()
 
-                    startTimerService(true, 20, -1)
+                    startTimerService(true, 20f, -1)
 
                 } else if (arr != null && arr.size == 7 && arr[2].toUByte()
                         .toInt() == SET_TIME_SYSTEM
@@ -508,6 +546,15 @@ class CommandsFragment : DialogFragment() {
                 //time out (no max)
             } else if (inn.action == ACTION_INTERVAL) {
                 val commandType = inn.getStringExtra(COMMAND_TYPE)
+
+                //keep screen on during connecting
+                if (currentKeepScreenOn < timeoutKeepScreenOn) {
+                    currentKeepScreenOn++
+                    //showToast(requireActivity(),"tick")
+                } else {
+                    clearScreenOn()
+                }
+
 
                 //if the interval is belong to the command "set ref timer"
                 //do nothing ,ServiceConnectSensor also handle it
@@ -526,18 +573,31 @@ class CommandsFragment : DialogFragment() {
 
                     //if the sensor awake then renew the normal Timer RF commands timer
                     if (statusAwake == OK_AWAKE) {
-                        sendSetRefTimer(20, -1, OK_AWAKE)
+                        sendSetRefTimer(20f, -1, OK_AWAKE)
                     }
                 } else {
                     //renew the normal Timer RF commands timer
                     if (statusAwake == OK_AWAKE) {
-                        sendSetRefTimer(20, -1, OK_AWAKE)
+                        sendSetRefTimer(20f, -1, OK_AWAKE)
                     }
                 }
             } else if (inn.action == MAX_TIMER_RESPONSE) {
+                btnDisconnect?.visibility = View.GONE
                 btnConnect?.text = resources.getString(R.string.connect)
                 statusAwake = NONE_AWAKE
+            } else if (inn.action == STOP_READ_DATA_KEY) {
+                statusAwake = NONE_AWAKE
+                btnDisconnect?.visibility = View.GONE
+                activity?.sendBroadcast(Intent(STOP_TIMER))
+                setConnect()
+            } else if (inn.action == UsbManager.ACTION_USB_DEVICE_DETACHED) {
+                statusAwake = NONE_AWAKE
+                btnDisconnect?.visibility = View.GONE
+                activity?.sendBroadcast(Intent(STOP_TIMER))
+                setConnect()
             }
+
+
             //hag test
 //            else if (inn.action == "test.brod") {
 //                   //count++
@@ -573,4 +633,13 @@ class CommandsFragment : DialogFragment() {
             }
         }
 
+    fun keepScreenOn(rootView: View? = null) {
+        requireActivity().window.addFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        rootView?.keepScreenOn = true
     }
+
+    fun clearScreenOn() {
+        requireActivity().window.clearFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+    }
+
+}

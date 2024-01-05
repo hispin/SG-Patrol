@@ -31,6 +31,19 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/send_command" />
 
+        <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnDisconnect"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/disconnect"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/tvCommandTitle"
+                app:layout_constraintTop_toTopOf="parent"
+
+                />
+
         <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvCommandTitle"
                 android:layout_width="wrap_content"

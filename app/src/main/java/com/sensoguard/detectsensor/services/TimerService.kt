@@ -10,7 +10,13 @@ import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import com.sensoguard.detectsensor.R
-import com.sensoguard.detectsensor.global.*
+import com.sensoguard.detectsensor.global.ACTION_INTERVAL
+import com.sensoguard.detectsensor.global.COMMAND_TYPE
+import com.sensoguard.detectsensor.global.IS_REPEATED
+import com.sensoguard.detectsensor.global.MAX_TIMEOUT
+import com.sensoguard.detectsensor.global.MAX_TIMER_RESPONSE
+import com.sensoguard.detectsensor.global.STOP_TIMER
+import com.sensoguard.detectsensor.global.TIMER_VALUE
 import java.util.*
 
 class TimerService : ParentService() {
@@ -19,9 +25,9 @@ class TimerService : ParentService() {
     private var isRepeated: Boolean? = false
     private var commandType: String? = "default"
     var notificationTimer: Timer? = null
-    var timerValue: Int = 1
+    var timerValue: Float = 1f
     var maxTimeout = 60
-    var counter = 0
+    var counter = 0f
     //var isContinue = false
 
 
@@ -41,7 +47,7 @@ class TimerService : ParentService() {
 
         commandType = intent?.getStringExtra(COMMAND_TYPE)
         isRepeated = intent?.getBooleanExtra(IS_REPEATED, false)
-        timerValue = intent?.getIntExtra(TIMER_VALUE, 1)!!
+        timerValue = intent?.getFloatExtra(TIMER_VALUE, 1f)!!
         maxTimeout = intent.getIntExtra(MAX_TIMEOUT, -1)
 
 
@@ -59,9 +65,13 @@ class TimerService : ParentService() {
         notificationTimer = Timer()
         //check if the timer is will repeated
         if (isRepeated == true) {
-            notificationTimer?.schedule(notificationTask, timerValue * 1000L, timerValue * 1000L)
+            notificationTimer?.schedule(
+                notificationTask,
+                (timerValue * 1000L).toLong(),
+                (timerValue * 1000L).toLong()
+            )
         } else {
-            notificationTimer?.schedule(notificationTask, timerValue * 1000L)
+            notificationTimer?.schedule(notificationTask, (timerValue * 1000L).toLong())
         }
 
         return START_NOT_STICKY
