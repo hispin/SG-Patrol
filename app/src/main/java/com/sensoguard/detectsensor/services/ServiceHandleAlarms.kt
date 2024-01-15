@@ -6,15 +6,12 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.media.Ringtone
-import android.media.RingtoneManager
-import android.net.Uri
 import android.os.Build
-import android.os.VibrationEffect
-import android.os.Vibrator
 import android.util.Log
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
 import com.sensoguard.detectsensor.R
 import com.sensoguard.detectsensor.classes.Alarm
 import com.sensoguard.detectsensor.classes.AlarmSensor
@@ -32,9 +29,8 @@ import com.sensoguard.detectsensor.global.DETECTORS_LIST_KEY_PREF
 import com.sensoguard.detectsensor.global.ERROR_RESP
 import com.sensoguard.detectsensor.global.HANDLE_ALARM_KEY
 import com.sensoguard.detectsensor.global.IS_FORWARD_ALARM_EMAIL
-import com.sensoguard.detectsensor.global.IS_NOTIFICATION_SOUND_KEY
 import com.sensoguard.detectsensor.global.IS_SSL_MAIL
-import com.sensoguard.detectsensor.global.IS_VIBRATE_WHEN_ALARM_KEY
+import com.sensoguard.detectsensor.global.MEDIA_WORKER
 import com.sensoguard.detectsensor.global.NONE_VALIDATE_BITS
 import com.sensoguard.detectsensor.global.PASSWORD_MAIL
 import com.sensoguard.detectsensor.global.PIR_TYPE
@@ -45,7 +41,6 @@ import com.sensoguard.detectsensor.global.READ_DATA_KEY_TEST
 import com.sensoguard.detectsensor.global.RECIPIENT_MAIL
 import com.sensoguard.detectsensor.global.RESET_MARKERS_KEY
 import com.sensoguard.detectsensor.global.SEISMIC_TYPE
-import com.sensoguard.detectsensor.global.SELECTED_NOTIFICATION_SOUND_KEY
 import com.sensoguard.detectsensor.global.SENSOR_TYPE_INDEX_KEY
 import com.sensoguard.detectsensor.global.SERVER_MAIL
 import com.sensoguard.detectsensor.global.SIX_FOTMAT_BITS
@@ -164,9 +159,8 @@ class ServiceHandleAlarms : ParentService() {
                             .show()
                     }
                     sendEmailBakground(msg)
-                    //play sound and vibrate
-                    playAlarmSound()
-                    playVibrate()
+                    //play sound&vibrate
+                    startWorkerMedia()
 
                 }
                 CREATE_ALARM_NOT_DEFINED_KEY -> {
@@ -337,16 +331,35 @@ class ServiceHandleAlarms : ParentService() {
                         sendBroadcast(inn)
 
                         //play sound and vibrate
-                        playAlarmSound()
-                        playVibrate()
+                        startWorkerMedia()
                     }
                     sendBroadcast(Intent(HANDLE_ALARM_KEY))
                 }
+
                 STOP_ALARM_SOUND -> {
                     stopPlayingAlarm()
                 }
             }
         }
+    }
+
+    /**
+     * stop playing alarm
+     */
+    private fun stopPlayingAlarm() {
+        WorkManager.getInstance(applicationContext).cancelAllWorkByTag(MEDIA_WORKER)
+    }
+
+    /**
+     * start media worker
+     */
+    private fun startWorkerMedia() {
+        val mediaWorkRequest =
+            OneTimeWorkRequest.Builder(MediaWorker::class.java).addTag(MEDIA_WORKER)
+                .build() //OneTimeWorkRequestBuilder < MediaWorker > ().build();
+
+        WorkManager.getInstance(this)
+            .enqueue(mediaWorkRequest)
     }
 
     //general validate of the bits and get the format
@@ -548,76 +561,6 @@ class ServiceHandleAlarms : ParentService() {
 //        }
 //    }
 
-    private var rington: Ringtone? = null
-
-    private fun stopPlayingAlarm() {
-        if (rington != null && rington?.isPlaying!!) {
-            rington?.stop()
-        }
-    }
-
-    private fun playAlarmSound() {
-
-        val isNotificationSound = getBooleanInPreference(this, IS_NOTIFICATION_SOUND_KEY, true)
-        if (!isNotificationSound) {
-            //Toast.makeText(this, "fail start sound", Toast.LENGTH_LONG).show()
-            return
-        }
-
-        val selectedSound = getStringInPreference(this, SELECTED_NOTIFICATION_SOUND_KEY, "-1")
-
-        if (!selectedSound.equals("-1")) {
-
-            synchronized(this) {
-                try {
-                    val uri = Uri.parse(selectedSound)
-
-                    if (rington != null) {//&& rington!!.isPlaying) {
-                        //if the sound it is already played,
-                        rington?.stop()
-                        //Handler().postDelayed({
-                        rington = RingtoneManager.getRingtone(this, uri)
-                        rington?.play()
-                        //Toast.makeText(this, "play sound", Toast.LENGTH_LONG).show()
-                        //}, 1)
-                    } else {
-                        rington = RingtoneManager.getRingtone(this, uri)
-                        rington?.play()
-                        //Toast.makeText(this, "play sound from Handle alarm", Toast.LENGTH_LONG).show()
-                    }
-                } catch (e: Exception) {
-                    Toast.makeText(this, "exception play sound", Toast.LENGTH_LONG).show()
-                    e.printStackTrace()
-                }
-            }
-        }
-
-    }
-
-    //execute vibrate
-    private fun playVibrate() {
-
-        val isVibrateWhenAlarm =
-            getBooleanInPreference(applicationContext, IS_VIBRATE_WHEN_ALARM_KEY, true)
-        if (isVibrateWhenAlarm) {
-            // Get instance of Vibrator from current Context
-            val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-
-            // Vibrate for 200 milliseconds
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                vibrator.vibrate(
-                    VibrationEffect.createOneShot(
-                        1000,
-                        VibrationEffect.DEFAULT_AMPLITUDE
-                    )
-                )
-            } else {
-                vibrator.vibrate(1000)
-            }
-
-        }
-
-    }
 
 
         //The system allows apps to call Context.startForegroundService() even while the app is in the background. However, the app must call that service's startForeground() method within five seconds after the service is created

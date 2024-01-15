@@ -12,7 +12,6 @@ import android.hardware.usb.UsbManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.util.Log
@@ -20,7 +19,6 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.View.OnTouchListener
 import android.widget.ToggleButton
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -56,7 +54,6 @@ import com.sensoguard.detectsensor.global.USB_DEVICES_EMPTY
 import com.sensoguard.detectsensor.global.USB_DEVICES_NOT_EMPTY
 import com.sensoguard.detectsensor.global.USB_DEVICE_CONNECT_STATUS
 import com.sensoguard.detectsensor.global.UserSession
-//import com.sensoguard.detectsensor.global.clearScreenOn
 import com.sensoguard.detectsensor.global.getBooleanInPreference
 import com.sensoguard.detectsensor.global.getIntInPreference
 import com.sensoguard.detectsensor.global.getLongInPreference
@@ -102,15 +99,6 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, Observer {
     val TAG = "MyScreensActivity"
 
 
-    //bug fixed: when press home button and return to app, the usb process does not restart properly,
-    //therefore we disconnect the service and restart it when the app loaded
-//    override fun onUserLeaveHint() {
-//        super.onUserLeaveHint()
-//        Log.d(TAG, "home")
-//        //stopUsbReadConnection()
-//    }
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
 
 
@@ -143,12 +131,10 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, Observer {
                 if (UserSession.instance.alarmSensors == null || UserSession.instance.alarmSensors?.isEmpty()!!) {
                     ViewModelProviders.of(this).get(ViewModelListener::class.java).shutDownTimer()
                     sendBroadcast(Intent(STOP_ALARM_SOUND))
-                    //stopPlayingAlarm()
                 }
 
             })
 
-        //}
     }
 
     override fun onResume() {
@@ -157,20 +143,7 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, Observer {
             startTimer()
         }
         configureActionBar()
-        //editActionBar(false)
-        //startTimerGeneralService()
     }
-
-//    //start timer to supervise the usb software connection
-//    private fun startTimerGeneralService() {
-//        val intent = Intent(this, TimerGeneralService::class.java)
-//
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//            startForegroundService(intent)
-//        } else {
-//            startService(intent)
-//        }
-//    }
 
     //create timeout for reset sensor to regular icon and cancel the alarm icon
     private fun startTimer() {
@@ -207,8 +180,6 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, Observer {
             val calendar = Calendar.getInstance()
             return when {
                 futureTimeout < calendar.timeInMillis -> true
-                //alarmProcess.marker.setIcon(context?.let { con -> convertBitmapToBitmapDiscriptor(con,R.drawable.ic_sensor_item) })
-                //alarmSensors?.remove(alarmProcess)
                 else -> false
             }
         }
@@ -271,7 +242,7 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, Observer {
                     showDisconnectUsbDialog()
                 }
                 arg1.action == CREATE_ALARM_KEY -> {
-                    startTimer()
+                    //startTimer()
                 }
                 arg1.action == STOP_ALARM_SOUND -> {
 
@@ -282,8 +253,6 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, Observer {
                 arg1.action == "yes_connection" -> {
                     //showToast(this@MyScreensActivity,"yes_connection")
                 }
-
-
             }
         }
 
@@ -512,128 +481,13 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, Observer {
                 init()
                 //setExternalPermission()
             }
-//            PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE -> {
-//                // If request is cancelled, the result arrays are empty.
-//                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                    init()
-//                }
-//            }
         }
 
     }
 
-    ///////////////////////
 
 
-    /**
-     * callback of external permission
-     */
-    val requestPermissionLauncher =
-        registerForActivityResult(
-            ActivityResultContracts.RequestPermission()
-        ) { isGranted: Boolean ->
-            if (isGranted) {
-                init()
-                // Permission is granted. Continue the action or workflow in your
-                // app.
-            } else {
-                // Explain to the user that the feature is unavailable because the
-                // feature requires a permission that the user has denied. At the
-                // same time, respect the user's decision. Don't link to system
-                // settings in an effort to convince the user to change their
-                // decision.
-            }
-        }
 
-    /**
-     * set external storage permission
-     */
-    private fun setExternalPermission() {
-        /*
-     * Request location permission, so that we can get the location of the
-     * device. The result of the permission request is handled by a callback,
-     * onRequestPermissionsResult.
-     */
-
-        val permission: String?
-        if (Build.VERSION.SDK_INT <= 32) {
-            permission = Manifest.permission.WRITE_EXTERNAL_STORAGE
-            requestPermissionLauncher.launch(
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
-            )
-        } else {
-            permission = Manifest.permission.READ_MEDIA_IMAGES
-        }
-        when {
-            isGrantedPermissionWRITE_EXTERNAL_STORAGE(this) -> {
-                // You can use the API that requires the permission.
-                init()
-            }
-
-//            shouldShowRequestPermissionRationale(permission) -> {
-//                // In an educational UI, explain to the user why your app requires this
-//                // permission for a specific feature to behave as expected, and what
-//                // features are disabled if it's declined. In this UI, include a
-//                // "cancel" or "no thanks" button that lets the user continue
-//                // using your app without granting the permission.
-//                //showInContextUI(...)
-//            }
-
-            else -> {
-                // You can directly ask for the permission.
-                // The registered ActivityResultCallback gets the result of this request.
-
-                if (Build.VERSION.SDK_INT <= 32) {
-                    requestPermissionLauncher.launch(
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE
-                    )
-                } else {
-                    requestPermissionLauncher.launch(
-                        Manifest.permission.READ_MEDIA_IMAGES
-
-                    )
-                }
-            }
-        }
-    }
-
-    /**
-     * check permission depend on sdk version
-     */
-    fun isGrantedPermissionWRITE_EXTERNAL_STORAGE(activity: Activity): Boolean {
-        if (Build.VERSION.SDK_INT <= 32) {
-            val isAllowPermissionApi28 = ActivityCompat.checkSelfPermission(
-                activity,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
-            ) == PackageManager.PERMISSION_GRANTED
-            return isAllowPermissionApi28
-        } else {
-            val isAllowPermissionApi33 = Environment.isExternalStorageManager()
-            return isAllowPermissionApi33
-        }
-    }
-    /////////////////////
-
-//    private fun setExternalPermission() {
-//        /*
-//     * Request location permission, so that we can get the location of the
-//     * device. The result of the permission request is handled by a callback,
-//     * onRequestPermissionsResult.
-//     */
-//        if (ContextCompat.checkSelfPermission(
-//                this.applicationContext,
-//                Manifest.permission.WRITE_EXTERNAL_STORAGE
-//            ) == PackageManager.PERMISSION_GRANTED
-//        ) {
-//            init()
-//        } else {
-//            ActivityCompat.requestPermissions(
-//                this,
-//                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-//                PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE
-//            )
-//        }
-//    }
 
 
     // Since this is an object collection, use a FragmentStatePagerAdapter,
@@ -758,27 +612,6 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, Observer {
         }
     }
 
-
-//    override fun onAttachedToWindow() {
-//        super.onAttachedToWindow()
-//        this.window.setType(WindowManager.LayoutParams.TYPE_KEYGUARD_DIALOG)
-//    }
-//    override fun onDestroy() {
-//        super.onDestroy()
-//        Log.d(TAG,"distroy")
-//        //stopUsbReadConnection()
-//    }
-
-//    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-//        super.onKeyDown(keyCode, event)
-//        if(keyCode == KeyEvent.KEYCODE_HOME)
-//        {
-//            Log.d("detectKey","home")
-//            //The Code Want to Perform.
-//
-//        }
-//        return true
-//    }
 }
 
 

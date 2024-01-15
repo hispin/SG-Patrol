@@ -18,8 +18,6 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
 import android.media.Ringtone
-import android.media.RingtoneManager
-import android.net.Uri
 import android.os.*
 import android.util.Log
 import android.view.LayoutInflater
@@ -52,7 +50,6 @@ import com.sensoguard.detectsensor.interfaces.OnFragmentListener
 import com.sensoguard.detectsensor.services.ServiceFindLocation
 import com.sensoguard.detectsensor.services.ServiceFindSingleLocation
 import java.util.*
-import kotlin.collections.ArrayList
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -555,7 +552,7 @@ class MapSensorsFragment : ParentFragment(), OnMapReadyCallback, OnAdapterListen
             }
 
 
-        val loc: LatLng? = LatLng(sensorItem.getLatitude()!!, sensorItem.getLongtitude()!!)
+        val loc: LatLng = LatLng(sensorItem.getLatitude()!!, sensorItem.getLongtitude()!!)
 
         mMap!!.setOnMarkerClickListener(object : GoogleMap.OnMarkerClickListener {
             override fun onMarkerClick(marker: Marker): Boolean {
@@ -721,37 +718,6 @@ class MapSensorsFragment : ParentFragment(), OnMapReadyCallback, OnAdapterListen
 
     private var rington:Ringtone?=null
 
-    private fun playAlarmSound() {
-
-        val isNotificationSound = getBooleanInPreference(activity, IS_NOTIFICATION_SOUND_KEY, true)
-        if(!isNotificationSound){
-            return
-        }
-
-        val selectedSound = getStringInPreference(activity, SELECTED_NOTIFICATION_SOUND_KEY, "-1")
-
-        if(!selectedSound.equals("-1")) {
-
-            try {
-                val uri = Uri.parse(selectedSound)
-
-                if (rington != null && rington!!.isPlaying) {
-                    //if the sound it is already played,
-                    rington?.stop()
-                    Handler().postDelayed({
-                        rington = RingtoneManager.getRingtone(activity, uri)
-                        rington?.play()
-                    }, 1000)
-                } else {
-                    rington = RingtoneManager.getRingtone(activity, uri)
-                    rington?.play()
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-
-    }
 
 
     private fun setMyLocate(myLocate: LatLng) {
@@ -920,7 +886,7 @@ class MapSensorsFragment : ParentFragment(), OnMapReadyCallback, OnAdapterListen
 
        if (editText.text.isNullOrBlank()) {
            editText.error =
-               resources.getString(com.sensoguard.detectsensor.R.string.empty_field_error)
+               resources.getString(R.string.empty_field_error)
            isValid = false
        }
 

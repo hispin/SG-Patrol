@@ -24,10 +24,55 @@ import com.sensoguard.detectsensor.classes.Alarm
 import com.sensoguard.detectsensor.classes.AlarmSensor
 import com.sensoguard.detectsensor.classes.Command
 import com.sensoguard.detectsensor.classes.Sensor
-import com.sensoguard.detectsensor.global.*
+import com.sensoguard.detectsensor.global.ACTION_INTERVAL
+import com.sensoguard.detectsensor.global.ACTION_SEND_CMD
+import com.sensoguard.detectsensor.global.ACTION_USB_PERMISSION
+import com.sensoguard.detectsensor.global.ACTION_USB_RESPONSE_CACHE
+import com.sensoguard.detectsensor.global.ALARM_LIST_KEY_PREF
+import com.sensoguard.detectsensor.global.CHECK_AVAILABLE_KEY
+import com.sensoguard.detectsensor.global.CHECK_USB_CONN_SW
+import com.sensoguard.detectsensor.global.COMMAND_TYPE
+import com.sensoguard.detectsensor.global.CREATE_ALARM_ID_KEY
+import com.sensoguard.detectsensor.global.CREATE_ALARM_IS_ARMED
+import com.sensoguard.detectsensor.global.CREATE_ALARM_KEY
+import com.sensoguard.detectsensor.global.CREATE_ALARM_NAME_KEY
+import com.sensoguard.detectsensor.global.CREATE_ALARM_NOT_DEFINED_KEY
+import com.sensoguard.detectsensor.global.CREATE_ALARM_TYPE_INDEX_KEY
+import com.sensoguard.detectsensor.global.CREATE_ALARM_TYPE_KEY
+import com.sensoguard.detectsensor.global.DETECTORS_LIST_KEY_PREF
+import com.sensoguard.detectsensor.global.DISCONNECT_USB_PROCESS_KEY
+import com.sensoguard.detectsensor.global.ERROR_RESP
+import com.sensoguard.detectsensor.global.GET_SENS_LEVEL
+import com.sensoguard.detectsensor.global.HANDLE_ALARM_KEY
+import com.sensoguard.detectsensor.global.HANDLE_READ_DATA_EXCEPTION
+import com.sensoguard.detectsensor.global.NONE_VALIDATE_BITS
+import com.sensoguard.detectsensor.global.PIR_TYPE
+import com.sensoguard.detectsensor.global.RADAR_TYPE
+import com.sensoguard.detectsensor.global.RESET_MARKERS_KEY
+import com.sensoguard.detectsensor.global.SEISMIC_TYPE
+import com.sensoguard.detectsensor.global.SENSOR_TYPE_INDEX_KEY
+import com.sensoguard.detectsensor.global.SET_RF_ON_TIMER
+import com.sensoguard.detectsensor.global.SET_SENS_LEVEL
+import com.sensoguard.detectsensor.global.SET_TIME_SYSTEM
+import com.sensoguard.detectsensor.global.SIX_FOTMAT_BITS
+import com.sensoguard.detectsensor.global.STOP_GENERAL_TIMER
+import com.sensoguard.detectsensor.global.STOP_READ_DATA_KEY
+import com.sensoguard.detectsensor.global.STOP_TIMER
+import com.sensoguard.detectsensor.global.TEN_FOTMAT_BITS
+import com.sensoguard.detectsensor.global.USB_CACHE_RESPONSE_KEY
+import com.sensoguard.detectsensor.global.USB_DEVICES_EMPTY
+import com.sensoguard.detectsensor.global.USB_DEVICES_NOT_EMPTY
+import com.sensoguard.detectsensor.global.USB_DEVICE_CONNECT_STATUS
+import com.sensoguard.detectsensor.global.UserSession
+import com.sensoguard.detectsensor.global.VIBRATION_TYPE
+import com.sensoguard.detectsensor.global.convertJsonToAlarmList
+import com.sensoguard.detectsensor.global.convertJsonToSensorList
+import com.sensoguard.detectsensor.global.convertToAlarmsGson
+import com.sensoguard.detectsensor.global.getStringInPreference
+import com.sensoguard.detectsensor.global.setBooleanInPreference
+import com.sensoguard.detectsensor.global.setStringInPreference
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.system.exitProcess
 
 
@@ -808,7 +853,7 @@ class ServiceConnectSensor : ParentService() {
         }
 
     //general validate of the bits and get the format
-    private fun validateBitsAndGetFormat(bit: java.util.ArrayList<Int>): Int {
+    private fun validateBitsAndGetFormat(bit: ArrayList<Int>): Int {
 
         if (bit == null || bit.size < 4) {
             return NONE_VALIDATE_BITS
@@ -837,11 +882,11 @@ class ServiceConnectSensor : ParentService() {
 
     //get locally sensor that match to sensor of alarm
     fun getLocallySensorAlarm(alarmSensorId: String): Sensor? {
-        val sensors: java.util.ArrayList<Sensor>?
+        val sensors: ArrayList<Sensor>?
         val sensorsListStr = getStringInPreference(this, DETECTORS_LIST_KEY_PREF, ERROR_RESP)
 
         sensors = if (sensorsListStr.equals(ERROR_RESP)) {
-            java.util.ArrayList()
+            ArrayList()
         } else {
             sensorsListStr?.let { convertJsonToSensorList(it) }
         }
@@ -885,12 +930,12 @@ class ServiceConnectSensor : ParentService() {
     }
 
     //get the alarms from locally
-    private fun populateAlarmsFromLocally(): java.util.ArrayList<Alarm>? {
-        val alarms: java.util.ArrayList<Alarm>?
+    private fun populateAlarmsFromLocally(): ArrayList<Alarm>? {
+        val alarms: ArrayList<Alarm>?
         val alarmListStr = getStringInPreference(this, ALARM_LIST_KEY_PREF, ERROR_RESP)
 
         alarms = if (alarmListStr.equals(ERROR_RESP)) {
-            java.util.ArrayList()
+            ArrayList()
         } else {
             alarmListStr?.let { convertJsonToAlarmList(it) }
         }
@@ -898,9 +943,9 @@ class ServiceConnectSensor : ParentService() {
     }
 
     //store the detectors to locally
-    private fun storeAlarmsToLocally(alarms: java.util.ArrayList<Alarm>) {
+    private fun storeAlarmsToLocally(alarms: ArrayList<Alarm>) {
         // sort the list of events by date in descending
-        val alarms = java.util.ArrayList(alarms.sortedWith(compareByDescending { it.timeInMillis }))
+        val alarms = ArrayList(alarms.sortedWith(compareByDescending { it.timeInMillis }))
         if (alarms != null && alarms.size > 0) {
             val alarmsJsonStr = convertToAlarmsGson(alarms)
             setStringInPreference(this, ALARM_LIST_KEY_PREF, alarmsJsonStr)

@@ -18,8 +18,11 @@ import androidx.transition.AutoTransition
 import androidx.transition.TransitionManager
 import com.sensoguard.detectsensor.R
 import com.sensoguard.detectsensor.classes.Command
-import com.sensoguard.detectsensor.global.*
-import java.util.*
+import com.sensoguard.detectsensor.global.NORMAL_STATE
+import com.sensoguard.detectsensor.global.PROCESS_STATE
+import com.sensoguard.detectsensor.global.SUCCESS_STATE
+import com.sensoguard.detectsensor.global.TIMEOUT_STATE
+import com.sensoguard.detectsensor.global.showToast
 
 class CommandAdapter(
     private var commands: ArrayList<Command>,
@@ -72,8 +75,8 @@ class CommandAdapter(
                     commands[adapterPosition].isExpand = !commands[adapterPosition].isExpand
                     //Bug fixed:when expand the command ,zero the car and intruder selection (for update ses command)
                     if (commands[adapterPosition].isExpand) {
-                        commands[adapterPosition].sensCar = 0
-                        commands[adapterPosition].sensIntruder = 0
+                        commands[adapterPosition].sensCar = 4
+                        commands[adapterPosition].sensIntruder = 4
                     }
                     notifyDataSetChanged()
                 } else if (adapterPosition >= 0) {

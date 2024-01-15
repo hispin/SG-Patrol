@@ -17,6 +17,7 @@ import android.view.animation.AnimationUtils
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatSpinner
 import androidx.appcompat.widget.AppCompatTextView
@@ -183,10 +184,7 @@ class CommandsFragment : DialogFragment() {
         }
         btnDisconnect = view?.findViewById(R.id.btnDisconnect)
         btnDisconnect?.setOnClickListener {
-            statusAwake = NONE_AWAKE
-            btnDisconnect?.visibility = View.GONE
-            activity?.sendBroadcast(Intent(STOP_TIMER))
-            setConnect()
+            stopConnection()
         }
     }
 
@@ -217,13 +215,13 @@ class CommandsFragment : DialogFragment() {
 
                 if (statusAwake == WAIT_AWAKE) {
                     btnDisconnect?.visibility = View.VISIBLE
-                    setTryConnect()
+                    setUITryConnect()
                     showToast(requireActivity(), "start screen on")
                     keepScreenOn()
                     //requireActivity().window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
                 } else if (statusAwake == OK_AWAKE) {
-                    setConnected()
+                    setUIConnected()
 
                 }
 
@@ -239,7 +237,7 @@ class CommandsFragment : DialogFragment() {
     /**
      * set button as connect
      */
-    private fun setConnect() {
+    private fun setUIAsConnect() {
         btnConnect?.text = resources.getString(R.string.connect)
         if (activity != null) {
             btnConnect?.setTextColor(
@@ -257,7 +255,7 @@ class CommandsFragment : DialogFragment() {
     /**
      * set button as try to connecting
      */
-    private fun setTryConnect() {
+    private fun setUITryConnect() {
         //set try to connect
         if (activity != null) {
             btnConnect?.setTextColor(
@@ -274,13 +272,13 @@ class CommandsFragment : DialogFragment() {
     /**
      * set button as connected
      */
-    private fun setConnected() {
+    private fun setUIConnected() {
         btnConnect?.text = resources.getString(R.string.connected)
         if (activity != null) {
             btnConnect?.setTextColor(
                 ContextCompat.getColor(
                     requireActivity(),
-                    R.color.turquoise_blue
+                    R.color.green1
                 )
             )
         }
@@ -334,7 +332,7 @@ class CommandsFragment : DialogFragment() {
                     R.drawable.ic_parameters
                 )
             )
-
+            //set sens level
             val cmdSetSens: IntArray = intArrayOf(2, -1, 155, 7, -1, -1, 3)
 
             commands.add(
@@ -495,7 +493,11 @@ class CommandsFragment : DialogFragment() {
         filter.addAction("test.brod")
         filter.addAction(STOP_READ_DATA_KEY)
         filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED)
-        activity?.registerReceiver(usbReceiver, filter)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            activity?.registerReceiver(usbReceiver, filter, AppCompatActivity.RECEIVER_NOT_EXPORTED)
+        } else {
+            activity?.registerReceiver(usbReceiver, filter)
+        }
     }
 
     private val usbReceiver = object : BroadcastReceiver() {
@@ -527,11 +529,9 @@ class CommandsFragment : DialogFragment() {
                 ) {
                     statusAwake = OK_AWAKE
 
-                    setConnected()
-                    showToast(requireActivity(), "connect")
-                    clearScreenOn()
+                    setUIConnected()
 
-                    startTimerService(true, 20f, -1)
+                    startTimerService(true, 20f, 100)
 
                 } else if (arr != null && arr.size == 7 && arr[2].toUByte()
                         .toInt() == SET_TIME_SYSTEM
@@ -546,15 +546,6 @@ class CommandsFragment : DialogFragment() {
                 //time out (no max)
             } else if (inn.action == ACTION_INTERVAL) {
                 val commandType = inn.getStringExtra(COMMAND_TYPE)
-
-                //keep screen on during connecting
-                if (currentKeepScreenOn < timeoutKeepScreenOn) {
-                    currentKeepScreenOn++
-                    //showToast(requireActivity(),"tick")
-                } else {
-                    clearScreenOn()
-                }
-
 
                 //if the interval is belong to the command "set ref timer"
                 //do nothing ,ServiceConnectSensor also handle it
@@ -582,19 +573,12 @@ class CommandsFragment : DialogFragment() {
                     }
                 }
             } else if (inn.action == MAX_TIMER_RESPONSE) {
-                btnDisconnect?.visibility = View.GONE
-                btnConnect?.text = resources.getString(R.string.connect)
-                statusAwake = NONE_AWAKE
+                stopConnection()
             } else if (inn.action == STOP_READ_DATA_KEY) {
-                statusAwake = NONE_AWAKE
-                btnDisconnect?.visibility = View.GONE
-                activity?.sendBroadcast(Intent(STOP_TIMER))
-                setConnect()
+                stopConnection()
             } else if (inn.action == UsbManager.ACTION_USB_DEVICE_DETACHED) {
-                statusAwake = NONE_AWAKE
-                btnDisconnect?.visibility = View.GONE
-                activity?.sendBroadcast(Intent(STOP_TIMER))
-                setConnect()
+                stopConnection()
+
             }
 
 
@@ -607,19 +591,30 @@ class CommandsFragment : DialogFragment() {
 //                   showToast(activity, "size=$s appcode=$appcode")
 //            }
         }
-        }
+    }
 
-        //show dialog to show response
-        private fun showResponseInDialog(carV: Int, intruderV: Int) {
+    /**
+     * stop connection
+     */
+    private fun stopConnection() {
+        statusAwake = NONE_AWAKE
+        btnDisconnect?.visibility = View.GONE
+        activity?.sendBroadcast(Intent(STOP_TIMER))
+        setUIAsConnect()
+        clearScreenOn()
+    }
 
-            if (this@CommandsFragment.context != null) {
-                val dialog = Dialog(this@CommandsFragment.requireContext())
-                dialog.setContentView(R.layout.dialog_command_response)
+    //show dialog to show response
+    private fun showResponseInDialog(carV: Int, intruderV: Int) {
 
-                dialog.setCancelable(true)
+        if (this@CommandsFragment.context != null) {
+            val dialog = Dialog(this@CommandsFragment.requireContext())
+            dialog.setContentView(R.layout.dialog_command_response)
+
+            dialog.setCancelable(true)
 
 
-                val tvCarValue = dialog.findViewById<AppCompatTextView>(R.id.tvCarValue)
+            val tvCarValue = dialog.findViewById<AppCompatTextView>(R.id.tvCarValue)
                 val tvIntruderValue = dialog.findViewById<AppCompatTextView>(R.id.tvIntruderValue)
                 tvCarValue.text = carV.toString()
                 tvIntruderValue.text = intruderV.toString()
