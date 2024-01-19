@@ -17,6 +17,7 @@ import com.sensoguard.detectsensor.global.MAX_TIMEOUT
 import com.sensoguard.detectsensor.global.MAX_TIMER_RESPONSE
 import com.sensoguard.detectsensor.global.STOP_TIMER
 import com.sensoguard.detectsensor.global.TIMER_VALUE
+import com.sensoguard.detectsensor.global.showToast
 import java.util.*
 
 class TimerService : ParentService() {
@@ -50,14 +51,16 @@ class TimerService : ParentService() {
         timerValue = intent?.getFloatExtra(TIMER_VALUE, 1f)!!
         maxTimeout = intent.getIntExtra(MAX_TIMEOUT, -1)
 
+        //showToast(this,"maxTimeout="+maxTimeout+"timerValue="+timerValue)
 
         //if the timer is is already active
         try {
             notificationTimer?.cancel()
+            notificationTimer?.purge()
             notificationTimer = null
-            notificationTask?.cancel()
+            counter = 0f
         } catch (ex: Exception) {
-
+            showToast(this, "exception")
         }
 
         startNotifTask()

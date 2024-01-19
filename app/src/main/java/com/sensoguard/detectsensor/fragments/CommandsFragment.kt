@@ -47,6 +47,9 @@ private const val ARG_PARAM2 = "param2"
  */
 class CommandsFragment : DialogFragment() {
 
+    private val TRY_CONNECT_INTERVAL = 2.5f
+    private val TRY_CONNECT_MAX = 240
+
     //timer for screen on during connecting
     private var timeoutKeepScreenOn = 16
     private var currentKeepScreenOn = 0
@@ -176,7 +179,8 @@ class CommandsFragment : DialogFragment() {
                 if (isConnected) {
                     //max timer in seconds
                     count = 0
-                    sendSetRefTimer(2.5f, 240, WAIT_AWAKE)
+                    //start timer every 2.5 second and stop after 240 seconds
+                    sendSetRefTimer(TRY_CONNECT_INTERVAL, TRY_CONNECT_MAX, WAIT_AWAKE, true)
                 } else {
                     showToast(activity, resources.getString(R.string.usb_is_disconnect))
                 }
@@ -189,7 +193,12 @@ class CommandsFragment : DialogFragment() {
     }
 
     // send set ref timer command
-    private fun sendSetRefTimer(timerValue: Float, maxTimeout: Int, status: Int) {
+    private fun sendSetRefTimer(
+        timerValue: Float,
+        maxTimeout: Int,
+        status: Int,
+        isSendFirstCommand: Boolean
+    ) {
 
         if (spSensorsIds?.selectedItem.toString() == resources.getString(R.string.select_sensor)) {
             showToast(activity, resources.getString(R.string.no_selected_sensor))
@@ -204,11 +213,15 @@ class CommandsFragment : DialogFragment() {
                 )
                 UserSession.instance.myCommand?.maxTimeout = maxTimeout
 
-                //start timer every 3 second and stop after 30 seconds
+                //start timer
                 startTimerService(true, timerValue, maxTimeout)
 
-                if (UserSession.instance.myCommand != null) {
+                if (UserSession.instance.myCommand != null && isSendFirstCommand) {
                     sendCommand(UserSession.instance.myCommand!!)
+                    //after command do not need to send command immediately
+                } else if (UserSession.instance.myCommand != null && !isSendFirstCommand) {
+                    UserSession.instance.commandContent =
+                        UserSession.instance.myCommand?.commandContent!!
                 }
 
                 statusAwake = status
@@ -530,7 +543,6 @@ class CommandsFragment : DialogFragment() {
                     statusAwake = OK_AWAKE
 
                     setUIConnected()
-
                     startTimerService(true, 20f, 100)
 
                 } else if (arr != null && arr.size == 7 && arr[2].toUByte()
@@ -556,7 +568,7 @@ class CommandsFragment : DialogFragment() {
 
                     //accept interval after other commands (timeout, not repeated)
                 } else if (UserSession.instance.myCommand?.state == PROCESS_STATE) {
-
+                    //after command
                     //stop progress bar
                     UserSession.instance.myCommand?.state = TIMEOUT_STATE
                     commandsAdapter?.notifyDataSetChanged()
@@ -564,12 +576,12 @@ class CommandsFragment : DialogFragment() {
 
                     //if the sensor awake then renew the normal Timer RF commands timer
                     if (statusAwake == OK_AWAKE) {
-                        sendSetRefTimer(20f, -1, OK_AWAKE)
+                        sendSetRefTimer(20f, 100, OK_AWAKE, false)
                     }
                 } else {
                     //renew the normal Timer RF commands timer
                     if (statusAwake == OK_AWAKE) {
-                        sendSetRefTimer(20f, -1, OK_AWAKE)
+                        sendSetRefTimer(20f, 100, OK_AWAKE, false)
                     }
                 }
             } else if (inn.action == MAX_TIMER_RESPONSE) {
