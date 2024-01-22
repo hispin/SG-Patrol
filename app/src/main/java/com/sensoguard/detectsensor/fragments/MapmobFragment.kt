@@ -13,8 +13,16 @@ import android.location.Location
 import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
-import android.view.*
-import android.widget.*
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
+import android.widget.PopupWindow
+import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
@@ -39,8 +47,17 @@ import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions
 import com.mapbox.mapboxsdk.plugins.markerview.MarkerViewManager
 import com.mapbox.mapboxsdk.style.expressions.Expression
 import com.mapbox.mapboxsdk.style.expressions.Expression.get
-import com.mapbox.mapboxsdk.style.layers.Property.*
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory.*
+import com.mapbox.mapboxsdk.style.layers.Property.TEXT_ANCHOR_TOP
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconIgnorePlacement
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconImage
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory.textAllowOverlap
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory.textField
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory.textHaloColor
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory.textHaloWidth
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory.textIgnorePlacement
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory.textOffset
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory.textVariableAnchor
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import com.sensoguard.detectsensor.R
@@ -48,12 +65,46 @@ import com.sensoguard.detectsensor.adapters.SensorsDialogAdapter
 import com.sensoguard.detectsensor.classes.AlarmSensor
 import com.sensoguard.detectsensor.classes.Sensor
 import com.sensoguard.detectsensor.controler.ViewModelListener
-import com.sensoguard.detectsensor.global.*
+import com.sensoguard.detectsensor.global.ACTION_TOGGLE_TEST_MODE
+import com.sensoguard.detectsensor.global.ALARM_CAR
+import com.sensoguard.detectsensor.global.ALARM_FLICKERING_DURATION_DEFAULT_VALUE_SECONDS
+import com.sensoguard.detectsensor.global.ALARM_FLICKERING_DURATION_KEY
+import com.sensoguard.detectsensor.global.ALARM_INTRUDER
+import com.sensoguard.detectsensor.global.ALARM_SENSOR_OFF
+import com.sensoguard.detectsensor.global.CREATE_ALARM_ID_KEY
+import com.sensoguard.detectsensor.global.CREATE_ALARM_IS_ARMED
+import com.sensoguard.detectsensor.global.CREATE_ALARM_KEY
+import com.sensoguard.detectsensor.global.CREATE_ALARM_TYPE_INDEX_KEY
+import com.sensoguard.detectsensor.global.CREATE_ALARM_TYPE_KEY
+import com.sensoguard.detectsensor.global.CURRENT_LATITUDE_PREF
+import com.sensoguard.detectsensor.global.CURRENT_LOCATION
+import com.sensoguard.detectsensor.global.CURRENT_LONGTUDE_PREF
+import com.sensoguard.detectsensor.global.GET_CURRENT_LOCATION_KEY
+import com.sensoguard.detectsensor.global.GET_CURRENT_SINGLE_LOCATION_KEY
+import com.sensoguard.detectsensor.global.IS_SENSOR_NAME_ALWAYS_KEY
+import com.sensoguard.detectsensor.global.MAP_SHOW_NORMAL_VALUE
+import com.sensoguard.detectsensor.global.MAP_SHOW_SATELLITE_VALUE
+import com.sensoguard.detectsensor.global.MAP_SHOW_VIEW_TYPE_KEY
+import com.sensoguard.detectsensor.global.PIR_TYPE
+import com.sensoguard.detectsensor.global.RADAR_TYPE
+import com.sensoguard.detectsensor.global.READ_DATA_KEY_TEST
+import com.sensoguard.detectsensor.global.RESET_MARKERS_KEY
+import com.sensoguard.detectsensor.global.SEISMIC_TYPE
+import com.sensoguard.detectsensor.global.STOP_ALARM_SOUND
+import com.sensoguard.detectsensor.global.TABLAYOUT_HEIGHT_DEFAULT
+import com.sensoguard.detectsensor.global.UserSession
+import com.sensoguard.detectsensor.global.VIBRATION_TYPE
+import com.sensoguard.detectsensor.global.dpToPx
+import com.sensoguard.detectsensor.global.getBooleanInPreference
+import com.sensoguard.detectsensor.global.getIntInPreference
+import com.sensoguard.detectsensor.global.getLongInPreference
+import com.sensoguard.detectsensor.global.getSensorsFromLocally
+import com.sensoguard.detectsensor.global.getStringInPreference
+import com.sensoguard.detectsensor.global.setStringInPreference
+import com.sensoguard.detectsensor.global.storeSensorsToLocally
 import com.sensoguard.detectsensor.interfaces.OnAdapterListener
 import com.sensoguard.detectsensor.services.ServiceFindLocation
 import com.sensoguard.detectsensor.services.ServiceFindSingleLocation
-import kotlinx.android.synthetic.main.fragment_map_detects.*
-import kotlinx.android.synthetic.main.on_off_connect_device.*
 import java.util.*
 
 
@@ -363,7 +414,7 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, MapboxMap.OnMoveList
 
         if (editText.text.isNullOrBlank()) {
             editText.error =
-                resources.getString(com.sensoguard.detectsensor.R.string.empty_field_error)
+                resources.getString(R.string.empty_field_error)
             isValid = false
         }
 
@@ -410,7 +461,7 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, MapboxMap.OnMoveList
             return null
         }
 
-        val loc: LatLng? =
+        val loc: LatLng =
             LatLng(
                 sensorItem.getLatitude()!!,
                 sensorItem.getLongtitude()!!
@@ -627,7 +678,7 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, MapboxMap.OnMoveList
                         .withProperties(
                             iconImage(
                                 Expression.match(
-                                    Expression.get(ICON_PROPERTY),
+                                    get(ICON_PROPERTY),
                                     Expression.literal(GREEN_ICON_ID),
                                     Expression.stop(GRAY_ICON_ID, GRAY_ICON_ID),
                                     Expression.stop(BLUE_ICON_ID, BLUE_ICON_ID),
@@ -750,7 +801,7 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, MapboxMap.OnMoveList
                             .withProperties(
                                 iconImage(
                                     Expression.match(
-                                        Expression.get(ICON_PROPERTY),
+                                        get(ICON_PROPERTY),
                                         Expression.literal(GREEN_ICON_ID),
                                         Expression.stop(GRAY_ICON_ID, GRAY_ICON_ID),
                                         Expression.stop(BLUE_ICON_ID, BLUE_ICON_ID),
@@ -953,7 +1004,11 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, MapboxMap.OnMoveList
         filter.addAction(GET_CURRENT_SINGLE_LOCATION_KEY)
         filter.addAction(STOP_ALARM_SOUND)
         filter.addAction(ACTION_TOGGLE_TEST_MODE)
-        activity?.registerReceiver(usbReceiver, filter)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            activity?.registerReceiver(usbReceiver, filter, AppCompatActivity.RECEIVER_NOT_EXPORTED)
+        } else {
+            activity?.registerReceiver(usbReceiver, filter)
+        }
     }
 
     override fun onStart() {

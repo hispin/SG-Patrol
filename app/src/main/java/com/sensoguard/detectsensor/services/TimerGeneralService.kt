@@ -9,6 +9,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
 import android.os.IBinder
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import com.sensoguard.detectsensor.R
 import com.sensoguard.detectsensor.global.CHECK_USB_CONN_SW
@@ -81,7 +82,11 @@ class TimerGeneralService : ParentService() {
 
     private fun setFilter() {
         val filter = IntentFilter(STOP_GENERAL_TIMER)
-        registerReceiver(usbReceiver, filter)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(usbReceiver, filter, AppCompatActivity.RECEIVER_NOT_EXPORTED)
+        } else {
+            registerReceiver(usbReceiver, filter)
+        }
     }
 
     private val usbReceiver = object : BroadcastReceiver() {

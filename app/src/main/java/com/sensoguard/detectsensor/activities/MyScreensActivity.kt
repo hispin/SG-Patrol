@@ -317,7 +317,12 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, Observer {
         filter.addAction(STOP_ALARM_SOUND)
         filter.addAction("not_connection")
         filter.addAction("yes_connection")
-        registerReceiver(usbReceiver, filter)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(usbReceiver, filter, RECEIVER_NOT_EXPORTED)
+        } else {
+            registerReceiver(usbReceiver, filter)
+        }
+
     }
 
 

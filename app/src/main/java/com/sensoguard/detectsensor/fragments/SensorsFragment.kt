@@ -3,6 +3,7 @@ package com.sensoguard.detectsensor.fragments
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.*
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -10,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatSpinner
@@ -25,7 +27,6 @@ import com.sensoguard.detectsensor.global.*
 import com.sensoguard.detectsensor.interfaces.OnAdapterListener
 import com.sensoguard.detectsensor.interfaces.OnFragmentListener
 import java.util.*
-import kotlin.collections.ArrayList
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -398,7 +399,11 @@ class SensorsFragment : ParentFragment(), OnAdapterListener {
     private fun setFilter() {
         val filter = IntentFilter("handle.read.data")
         //filter.addAction(ACTION_USB_RESPONSE_CACHE)
-        activity?.registerReceiver(usbReceiver, filter)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            activity?.registerReceiver(usbReceiver, filter, AppCompatActivity.RECEIVER_NOT_EXPORTED)
+        } else {
+            activity?.registerReceiver(usbReceiver, filter)
+        }
     }
 
     private val usbReceiver = object : BroadcastReceiver() {

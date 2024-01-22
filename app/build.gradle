@@ -11,11 +11,11 @@ repositories {
 }
 
 android {
-    compileSdkVersion 33
+    compileSdkVersion 34
     defaultConfig {
         applicationId "com.sensoguard.detectsensor"
         minSdkVersion 26
-        targetSdkVersion 33
+        targetSdkVersion 34
         versionCode 117
         versionName "1.117"
         vectorDrawables.useSupportLibrary = true
@@ -64,12 +64,13 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = '11'
     }
+    namespace 'com.sensoguard.detectsensor'
 }
 
 configurations {
@@ -82,10 +83,10 @@ configurations {
 dependencies {
     //implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.6.10"
-    implementation 'com.android.support:appcompat-v7:33.1.1'
+    implementation 'com.android.support:appcompat-v7:34.1.1'
     //implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.android.support.constraint:constraint-layout:2.0.4'
-    implementation 'com.android.support:support-v4:33.0.0'
+    implementation 'com.android.support:support-v4:34.0.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.navigation:navigation-fragment-ktx:2.4.1'
     implementation 'androidx.navigation:navigation-ui-ktx:2.4.1'
@@ -95,7 +96,7 @@ dependencies {
     implementation 'com.google.android.things:androidthings:1.0'
     implementation 'com.google.android.gms:play-services-maps:18.0.2'
     implementation 'com.github.kai-morich:usb-serial-for-android:1.7.0'
-    implementation 'com.android.support:design:33.0.0'
+    implementation 'com.android.support:design:34.0.0'
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'com.google.android.gms:play-services-location:19.0.1'
     implementation 'com.google.android.material:material:1.6.0-alpha02'

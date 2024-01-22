@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        package="com.sensoguard.detectsensor">
+        xmlns:tools="http://schemas.android.com/tools">
 
-<!--    <uses-permission android:name="com.symbol.emdk.permission.EMDK" />-->
+    <!--    <uses-permission android:name="com.symbol.emdk.permission.EMDK" />-->
 
     <!--fixing to allow device-->
-    <uses-permission
-            android:name="android.permission.READ_PHONE_STATE"
-             /> <!-- <uses-permission android:name="android.permission.READ_PRIVILEGED_PHONE_STATE" /> -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" /> <!-- <uses-permission android:name="android.permission.READ_PRIVILEGED_PHONE_STATE" /> -->
     <uses-permission
             android:name="android.permission.READ_PRIVILEGED_PHONE_STATE"
             tools:ignore="ProtectedPermissions" />
@@ -74,7 +71,7 @@
         <!-- android:resource="@mipmap/ic_launcher" /> -->
         <activity
                 android:name=".activities.InitAppActivity"
-                android:screenOrientation="fullSensor"
+                android:screenOrientation="sensorPortrait"
                 android:theme="@style/Theme.AppCompat.NoActionBar"
                 android:exported="true">
             <intent-filter>
@@ -86,13 +83,13 @@
         </activity>
         <activity
                 android:name=".activities.ActivationActivity"
-                android:screenOrientation="fullSensor" />
+                android:screenOrientation="sensorPortrait" />
         <activity
                 android:name=".activities.MainActivity"
-                android:screenOrientation="fullSensor" />
+                android:screenOrientation="sensorPortrait" />
         <activity
                 android:name=".activities.MyScreensActivity"
-                android:screenOrientation="fullSensor"
+                android:screenOrientation="sensorPortrait"
                 android:windowSoftInputMode="adjustPan" /> <!-- prevent hiding the field by softkey -->
 <!--        <uses-library-->
 <!--                android:name="string"  />-->

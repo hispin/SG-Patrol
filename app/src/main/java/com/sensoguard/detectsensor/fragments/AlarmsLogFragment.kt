@@ -6,12 +6,14 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,9 +22,17 @@ import com.sensoguard.detectsensor.R
 import com.sensoguard.detectsensor.adapters.AlarmAdapter
 import com.sensoguard.detectsensor.classes.Alarm
 import com.sensoguard.detectsensor.classes.Sensor
-import com.sensoguard.detectsensor.global.*
+import com.sensoguard.detectsensor.global.ALARM_LIST_KEY_PREF
+import com.sensoguard.detectsensor.global.ERROR_RESP
+import com.sensoguard.detectsensor.global.HANDLE_ALARM_KEY
+import com.sensoguard.detectsensor.global.alarmsListToCsvFile
+import com.sensoguard.detectsensor.global.convertJsonToAlarmList
+import com.sensoguard.detectsensor.global.convertToAlarmsGson
+import com.sensoguard.detectsensor.global.getStringInPreference
+import com.sensoguard.detectsensor.global.setStringInPreference
+import com.sensoguard.detectsensor.global.shareCsv
+import com.sensoguard.detectsensor.global.writeCsvFile
 import com.sensoguard.detectsensor.interfaces.OnAdapterListener
-import java.util.*
 
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
@@ -198,7 +208,11 @@ class AlarmsLogFragment : ParentFragment(), OnAdapterListener {
 
     private fun setFilter() {
         val filter = IntentFilter(HANDLE_ALARM_KEY)
-        activity?.registerReceiver(usbReceiver, filter)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            activity?.registerReceiver(usbReceiver, filter, AppCompatActivity.RECEIVER_NOT_EXPORTED)
+        } else {
+            activity?.registerReceiver(usbReceiver, filter)
+        }
     }
 
     private val usbReceiver = object : BroadcastReceiver() {

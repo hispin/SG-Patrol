@@ -16,6 +16,7 @@ import android.os.Handler
 import android.os.IBinder
 import android.util.Log
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import com.felhr.usbserial.UsbSerialDevice
 import com.felhr.usbserial.UsbSerialInterface
@@ -338,11 +339,16 @@ class ServiceConnectSensor : ParentService() {
         filter.addAction(ACTION_INTERVAL)
         filter.addAction(CHECK_USB_CONN_SW)
 
-        registerReceiver(usbReceiver, filter)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(usbReceiver, filter, AppCompatActivity.RECEIVER_NOT_EXPORTED)
+        } else {
+            registerReceiver(usbReceiver, filter)
+        }
+
     }
 
     //try to find devices connection to usb
-    fun findUsbDevices(){
+    fun findUsbDevices() {
 
         // Find all available drivers from attached devices.
         manager = getSystemService(Context.USB_SERVICE) as UsbManager
