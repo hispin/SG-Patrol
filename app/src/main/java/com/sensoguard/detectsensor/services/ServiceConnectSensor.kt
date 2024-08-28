@@ -55,7 +55,7 @@ import com.sensoguard.detectsensor.global.SENSOR_TYPE_INDEX_KEY
 import com.sensoguard.detectsensor.global.SET_RF_ON_TIMER
 import com.sensoguard.detectsensor.global.SET_SENS_LEVEL
 import com.sensoguard.detectsensor.global.SET_TIME_SYSTEM
-import com.sensoguard.detectsensor.global.SIX_FOTMAT_BITS
+import com.sensoguard.detectsensor.global.SIX_SEVEN_FOTMAT_BITS
 import com.sensoguard.detectsensor.global.STOP_GENERAL_TIMER
 import com.sensoguard.detectsensor.global.STOP_READ_DATA_KEY
 import com.sensoguard.detectsensor.global.STOP_TIMER
@@ -605,7 +605,7 @@ class ServiceConnectSensor : ParentService() {
                     }
                     arr = ArrayList()
 
-                } else if (appCode == SIX_FOTMAT_BITS && arr.size % 6 == 0) {
+                } else if (appCode == SIX_SEVEN_FOTMAT_BITS && arr.size % 6 == 0) {
                     while (arr.size >= 6) {
                         val arrSix = ArrayList<Int>()
 
@@ -619,6 +619,23 @@ class ServiceConnectSensor : ParentService() {
                             iteratorList.remove()
                         }
                         parsingBits(arrSix)
+                    }
+                    arr = ArrayList()
+                } else if (appCode == SIX_SEVEN_FOTMAT_BITS && arr.size % 7 == 0) {
+                    //No different between seven or six just 001 in byte 5
+                    while (arr.size >= 7) {
+                        val arrSeven = ArrayList<Int>()
+
+                        //make queue for each seven bits
+                        var i = 0
+                        val iteratorList = arr.listIterator()
+                        while (iteratorList != null && iteratorList.hasNext() && i < 7) {
+                            i++
+                            val bitsItem = iteratorList.next()
+                            arrSeven.add(bitsItem)
+                            iteratorList.remove()
+                        }
+                        parsingBits(arrSeven)
                     }
                     arr = ArrayList()
                 } else if (appCode == SET_RF_ON_TIMER && arr.size % 7 == 0) {
@@ -729,7 +746,7 @@ class ServiceConnectSensor : ParentService() {
         }
 
         var typeIdx = -1
-        if (appCode == SIX_FOTMAT_BITS) {
+        if (appCode == SIX_SEVEN_FOTMAT_BITS) {
             typeIdx = 4
         } else if (appCode == TEN_FOTMAT_BITS) {
             typeIdx = 5

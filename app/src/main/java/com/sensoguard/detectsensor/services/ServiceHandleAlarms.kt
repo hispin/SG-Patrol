@@ -44,7 +44,7 @@ import com.sensoguard.detectsensor.global.RESET_MARKERS_KEY
 import com.sensoguard.detectsensor.global.SEISMIC_TYPE
 import com.sensoguard.detectsensor.global.SENSOR_TYPE_INDEX_KEY
 import com.sensoguard.detectsensor.global.SERVER_MAIL
-import com.sensoguard.detectsensor.global.SIX_FOTMAT_BITS
+import com.sensoguard.detectsensor.global.SIX_SEVEN_FOTMAT_BITS
 import com.sensoguard.detectsensor.global.STOP_ALARM_SOUND
 import com.sensoguard.detectsensor.global.TEN_FOTMAT_BITS
 import com.sensoguard.detectsensor.global.USER_NAME_MAIL
@@ -224,7 +224,7 @@ class ServiceHandleAlarms : ParentService() {
                     }
 
                     var typeIdx = -1
-                    if (appCode == SIX_FOTMAT_BITS) {
+                    if (appCode == SIX_SEVEN_FOTMAT_BITS) {
                         typeIdx = 4
                     } else if (appCode == TEN_FOTMAT_BITS) {
                         typeIdx = 5

@@ -81,7 +81,7 @@ const val ACTION_USB_RESPONSE_CACHE = "handle.USB_RESPONSE_CACHE"
 const val USB_CACHE_RESPONSE_KEY = "usb_cache_response_key"
 
 const val NONE_VALIDATE_BITS = -1
-const val SIX_FOTMAT_BITS = 203
+const val SIX_SEVEN_FOTMAT_BITS = 203
 const val TEN_FOTMAT_BITS = 202
 
 //commands
