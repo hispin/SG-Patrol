@@ -83,7 +83,7 @@ class TimerGeneralService : ParentService() {
     private fun setFilter() {
         val filter = IntentFilter(STOP_GENERAL_TIMER)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(usbReceiver, filter, AppCompatActivity.RECEIVER_NOT_EXPORTED)
+            registerReceiver(usbReceiver, filter, AppCompatActivity.RECEIVER_EXPORTED)
         } else {
             registerReceiver(usbReceiver, filter)
         }

@@ -32,6 +32,7 @@ import com.google.android.material.tabs.TabLayout
 import com.sensoguard.detectsensor.R
 import com.sensoguard.detectsensor.classes.AlarmSensor
 import com.sensoguard.detectsensor.classes.GeneralItemMenu
+import com.sensoguard.detectsensor.classes.NonSwipeAbleViewPager
 import com.sensoguard.detectsensor.controler.ViewModelListener
 import com.sensoguard.detectsensor.fragments.AlarmsLogFragment
 import com.sensoguard.detectsensor.fragments.ConfigurationFragment
@@ -66,12 +67,12 @@ import com.sensoguard.detectsensor.global.setStringInPreference
 import com.sensoguard.detectsensor.interfaces.OnFragmentListener
 import com.sensoguard.detectsensor.services.ServiceConnectSensor
 import com.sensoguard.detectsensor.services.ServiceHandleAlarms
-import kotlinx.android.synthetic.main.activity_my_screens.*
 import java.util.*
 
 
 class MyScreensActivity : ParentActivity(), OnFragmentListener, Observer {
 
+    var vPager: NonSwipeAbleViewPager? = null
 
     override fun onDestroy() {
         super.onDestroy()
@@ -106,6 +107,9 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, Observer {
         startTimerListener()
 
         setContentView(R.layout.activity_my_screens)
+
+        vPager = findViewById(R.id.vPager)
+
         Log.d("david", "hello")
         //store locally default values of configuration
         setConfigurationDefault()
@@ -318,7 +322,7 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, Observer {
         filter.addAction("not_connection")
         filter.addAction("yes_connection")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(usbReceiver, filter, RECEIVER_NOT_EXPORTED)
+            registerReceiver(usbReceiver, filter, RECEIVER_EXPORTED)
         } else {
             registerReceiver(usbReceiver, filter)
         }

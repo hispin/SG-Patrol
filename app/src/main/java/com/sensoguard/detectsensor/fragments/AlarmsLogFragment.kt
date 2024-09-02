@@ -209,7 +209,7 @@ class AlarmsLogFragment : ParentFragment(), OnAdapterListener {
     private fun setFilter() {
         val filter = IntentFilter(HANDLE_ALARM_KEY)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            activity?.registerReceiver(usbReceiver, filter, AppCompatActivity.RECEIVER_NOT_EXPORTED)
+            activity?.registerReceiver(usbReceiver, filter, AppCompatActivity.RECEIVER_EXPORTED)
         } else {
             activity?.registerReceiver(usbReceiver, filter)
         }

@@ -340,7 +340,7 @@ class ServiceConnectSensor : ParentService() {
         filter.addAction(CHECK_USB_CONN_SW)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(usbReceiver, filter, AppCompatActivity.RECEIVER_NOT_EXPORTED)
+            registerReceiver(usbReceiver, filter, AppCompatActivity.RECEIVER_EXPORTED)
         } else {
             registerReceiver(usbReceiver, filter)
         }

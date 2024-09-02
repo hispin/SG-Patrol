@@ -507,7 +507,7 @@ class CommandsFragment : DialogFragment() {
         filter.addAction(STOP_READ_DATA_KEY)
         filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            activity?.registerReceiver(usbReceiver, filter, AppCompatActivity.RECEIVER_NOT_EXPORTED)
+            activity?.registerReceiver(usbReceiver, filter, AppCompatActivity.RECEIVER_EXPORTED)
         } else {
             activity?.registerReceiver(usbReceiver, filter)
         }

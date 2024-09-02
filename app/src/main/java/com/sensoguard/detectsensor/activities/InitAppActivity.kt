@@ -13,8 +13,14 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.sensoguard.detectsensor.R
 import com.sensoguard.detectsensor.classes.CryptoHandler
-import com.sensoguard.detectsensor.global.*
-import kotlinx.android.synthetic.main.activity_activation.*
+import com.sensoguard.detectsensor.global.ACTIVATION_CODE_KEY
+import com.sensoguard.detectsensor.global.IMEI_KEY
+import com.sensoguard.detectsensor.global.NO_DATA
+import com.sensoguard.detectsensor.global.PERMISSIONS_REQUEST_READ_PHONE_STATE
+import com.sensoguard.detectsensor.global.STOP_READ_DATA_KEY
+import com.sensoguard.detectsensor.global.USB_DEVICE_CONNECT_STATUS
+import com.sensoguard.detectsensor.global.getStringInPreference
+import com.sensoguard.detectsensor.global.setBooleanInPreference
 
 class InitAppActivity : ParentActivity() {
 
@@ -42,7 +48,6 @@ class InitAppActivity : ParentActivity() {
     private fun configureActivation(){
 
         myImei=getDeviceIMEI()
-        tvImei?.text = myImei
 
         val localActivateCode= getStringInPreference(this, ACTIVATION_CODE_KEY, NO_DATA)
         if(!localActivateCode.equals(NO_DATA)){

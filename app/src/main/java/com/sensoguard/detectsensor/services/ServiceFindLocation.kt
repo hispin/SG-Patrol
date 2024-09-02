@@ -20,6 +20,8 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
 import com.sensoguard.detectsensor.R
 import com.sensoguard.detectsensor.global.CURRENT_LOCATION
 import com.sensoguard.detectsensor.global.GET_CURRENT_LOCATION_KEY
@@ -32,11 +34,13 @@ class ServiceFindLocation :Service(){
     private val locationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
             run {
+                if (locationResult.lastLocation != null) {
                 //Log.d(TAG,"get location")
-                location = locationResult.lastLocation
+                    location = locationResult.lastLocation!!
                 val inn = Intent(GET_CURRENT_LOCATION_KEY)
                 inn.putExtra(CURRENT_LOCATION,location)
                 sendBroadcast(inn)
+                }
             }
         }
     }
@@ -55,10 +59,11 @@ class ServiceFindLocation :Service(){
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         //FusedLocationProviderClient is for interacting with the location using fused location provider
-        fusedLocationProviderClient = FusedLocationProviderClient(this)
-        locationRequest =
-            LocationRequest().setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY).setInterval(10000)
-                .setFastestInterval(10000)//.setNumUpdates(1)
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+
+        locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 10000)
+            .build()
+
         startGetLocation()
 
         return START_NOT_STICKY

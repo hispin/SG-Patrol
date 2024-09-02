@@ -475,23 +475,23 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, MapboxMap.OnMoveList
             alarmTypeIcon =
                 when (typeIdx) {
                     ALARM_CAR -> {
-                        loc?.let { addMarker(it, CAR_ICON_ID, sensorItem.getName(), type) }
+                        loc.let { addMarker(it, CAR_ICON_ID, sensorItem.getName(), type) }
                     }
                     ALARM_INTRUDER -> {
-                        loc?.let { addMarker(it, INTRUDER_ICON_ID, sensorItem.getName(), type) }
+                        loc.let { addMarker(it, INTRUDER_ICON_ID, sensorItem.getName(), type) }
                     }
                     ALARM_SENSOR_OFF -> {
-                        loc?.let { addMarker(it, SENSOR_OFF_ICON_ID, sensorItem.getName(), type) }
+                        loc.let { addMarker(it, SENSOR_OFF_ICON_ID, sensorItem.getName(), type) }
                     }
                     //ALARM_LOW_BATTERY->context?.let { con -> convertBitmapToBitmapDiscriptor(con,R.drawable.ic_alarm_low_battery)}
                     else -> {
-                        loc?.let { addMarker(it, RED_ICON_ID, sensorItem.getName(), type) }
+                        loc.let { addMarker(it, RED_ICON_ID, sensorItem.getName(), type) }
                     }
                 }
         } else {
             alarmTypeIcon =
                 when (sensorItem.getTypeID()) {
-                    PIR_TYPE -> loc?.let {
+                    PIR_TYPE -> loc.let {
                         addMarker(
                             it,
                             PIR_ICON_ID,
@@ -499,7 +499,7 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, MapboxMap.OnMoveList
                             sensorItem.getType()
                         )
                     }
-                    RADAR_TYPE -> loc?.let {
+                    RADAR_TYPE -> loc.let {
                         addMarker(
                             it,
                             RADAR_ICON_ID,
@@ -507,7 +507,7 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, MapboxMap.OnMoveList
                             sensorItem.getType()
                         )
                     }
-                    VIBRATION_TYPE -> loc?.let {
+                    VIBRATION_TYPE -> loc.let {
                         addMarker(
                             it,
                             VIBRATION_ICON_ID,
@@ -516,7 +516,7 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, MapboxMap.OnMoveList
                         )
                     }
                     else -> {
-                        loc?.let {
+                        loc.let {
                             addMarker(
                                 it,
                                 RED_ICON_ID,
@@ -1005,7 +1005,7 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, MapboxMap.OnMoveList
         filter.addAction(STOP_ALARM_SOUND)
         filter.addAction(ACTION_TOGGLE_TEST_MODE)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            activity?.registerReceiver(usbReceiver, filter, AppCompatActivity.RECEIVER_NOT_EXPORTED)
+            activity?.registerReceiver(usbReceiver, filter, AppCompatActivity.RECEIVER_EXPORTED)
         } else {
             activity?.registerReceiver(usbReceiver, filter)
         }

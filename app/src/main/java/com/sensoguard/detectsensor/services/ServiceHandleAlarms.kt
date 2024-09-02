@@ -107,7 +107,7 @@ class ServiceHandleAlarms : ParentService() {
         filter.addAction(CREATE_ALARM_KEY)
         filter.addAction(CREATE_ALARM_NOT_DEFINED_KEY)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(usbReceiver, filter, AppCompatActivity.RECEIVER_NOT_EXPORTED)
+            registerReceiver(usbReceiver, filter, AppCompatActivity.RECEIVER_EXPORTED)
         } else {
             registerReceiver(usbReceiver, filter)
         }
