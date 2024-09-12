@@ -85,15 +85,11 @@ import com.sensoguard.detectsensor.global.IS_SENSOR_NAME_ALWAYS_KEY
 import com.sensoguard.detectsensor.global.MAP_SHOW_NORMAL_VALUE
 import com.sensoguard.detectsensor.global.MAP_SHOW_SATELLITE_VALUE
 import com.sensoguard.detectsensor.global.MAP_SHOW_VIEW_TYPE_KEY
-import com.sensoguard.detectsensor.global.PIR_TYPE
-import com.sensoguard.detectsensor.global.RADAR_TYPE
 import com.sensoguard.detectsensor.global.READ_DATA_KEY_TEST
 import com.sensoguard.detectsensor.global.RESET_MARKERS_KEY
-import com.sensoguard.detectsensor.global.SEISMIC_TYPE
 import com.sensoguard.detectsensor.global.STOP_ALARM_SOUND
 import com.sensoguard.detectsensor.global.TABLAYOUT_HEIGHT_DEFAULT
 import com.sensoguard.detectsensor.global.UserSession
-import com.sensoguard.detectsensor.global.VIBRATION_TYPE
 import com.sensoguard.detectsensor.global.dpToPx
 import com.sensoguard.detectsensor.global.getBooleanInPreference
 import com.sensoguard.detectsensor.global.getIntInPreference
@@ -470,7 +466,7 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, MapboxMap.OnMoveList
         var alarmTypeIcon: Feature? = null
 
         //car ,intruder and off are relevant when type = seismic
-        if (sensorItem.getTypeID() == SEISMIC_TYPE) {
+        //if (sensorItem.getTypeID() == SEISMIC_TYPE) {
             //set icon according to type alarm
             alarmTypeIcon =
                 when (typeIdx) {
@@ -488,45 +484,45 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, MapboxMap.OnMoveList
                         loc.let { addMarker(it, RED_ICON_ID, sensorItem.getName(), type) }
                     }
                 }
-        } else {
-            alarmTypeIcon =
-                when (sensorItem.getTypeID()) {
-                    PIR_TYPE -> loc.let {
-                        addMarker(
-                            it,
-                            PIR_ICON_ID,
-                            sensorItem.getName(),
-                            sensorItem.getType()
-                        )
-                    }
-                    RADAR_TYPE -> loc.let {
-                        addMarker(
-                            it,
-                            RADAR_ICON_ID,
-                            sensorItem.getName(),
-                            sensorItem.getType()
-                        )
-                    }
-                    VIBRATION_TYPE -> loc.let {
-                        addMarker(
-                            it,
-                            VIBRATION_ICON_ID,
-                            sensorItem.getName(),
-                            sensorItem.getType()
-                        )
-                    }
-                    else -> {
-                        loc.let {
-                            addMarker(
-                                it,
-                                RED_ICON_ID,
-                                sensorItem.getName(),
-                                sensorItem.getType()
-                            )
-                        }
-                    }
-                }
-        }
+//        } else {
+//            alarmTypeIcon =
+//                when (sensorItem.getTypeID()) {
+//                    PIR_TYPE -> loc.let {
+//                        addMarker(
+//                            it,
+//                            PIR_ICON_ID,
+//                            sensorItem.getName(),
+//                            sensorItem.getType()
+//                        )
+//                    }
+//                    RADAR_TYPE -> loc.let {
+//                        addMarker(
+//                            it,
+//                            RADAR_ICON_ID,
+//                            sensorItem.getName(),
+//                            sensorItem.getType()
+//                        )
+//                    }
+//                    VIBRATION_TYPE -> loc.let {
+//                        addMarker(
+//                            it,
+//                            VIBRATION_ICON_ID,
+//                            sensorItem.getName(),
+//                            sensorItem.getType()
+//                        )
+//                    }
+//                    else -> {
+//                        loc.let {
+//                            addMarker(
+//                                it,
+//                                RED_ICON_ID,
+//                                sensorItem.getName(),
+//                                sensorItem.getType()
+//                            )
+//                        }
+//                    }
+//                }
+//        }
 
 
         return alarmTypeIcon

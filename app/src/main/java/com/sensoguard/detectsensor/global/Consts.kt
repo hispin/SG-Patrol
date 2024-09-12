@@ -125,6 +125,7 @@ const val CHECK_USB_CONN_SW = "checkUsbConnSw"
 const val MAX_TIMER_RESPONSE = "max_timer_response"
 const val COMMAND_TYPE = "commandType"
 const val IS_REPEATED = "isRepeated"
+const val DISCONNECTED_INTERNET_SENSOR = "disconnected_internet_sensor"
 
 const val NONE_AWAKE = 0
 const val WAIT_AWAKE = 1

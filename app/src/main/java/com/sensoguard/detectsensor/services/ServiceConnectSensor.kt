@@ -41,6 +41,7 @@ import com.sensoguard.detectsensor.global.CREATE_ALARM_NOT_DEFINED_KEY
 import com.sensoguard.detectsensor.global.CREATE_ALARM_TYPE_INDEX_KEY
 import com.sensoguard.detectsensor.global.CREATE_ALARM_TYPE_KEY
 import com.sensoguard.detectsensor.global.DETECTORS_LIST_KEY_PREF
+import com.sensoguard.detectsensor.global.DISCONNECTED_INTERNET_SENSOR
 import com.sensoguard.detectsensor.global.DISCONNECT_USB_PROCESS_KEY
 import com.sensoguard.detectsensor.global.ERROR_RESP
 import com.sensoguard.detectsensor.global.GET_SENS_LEVEL
@@ -229,6 +230,11 @@ class ServiceConnectSensor : ParentService() {
                     setFilter()
                 }
 
+                inn.action == DISCONNECTED_INTERNET_SENSOR -> {
+                    stopConnectConfiguration()
+                }
+
+
                 inn.action == CHECK_USB_CONN_SW -> {
 
 
@@ -338,6 +344,7 @@ class ServiceConnectSensor : ParentService() {
         filter.addAction(ACTION_SEND_CMD)
         filter.addAction(ACTION_INTERVAL)
         filter.addAction(CHECK_USB_CONN_SW)
+        filter.addAction(DISCONNECTED_INTERNET_SENSOR)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             registerReceiver(usbReceiver, filter, AppCompatActivity.RECEIVER_EXPORTED)
@@ -779,7 +786,7 @@ class ServiceConnectSensor : ParentService() {
             || currentSensorLocally?.getTypeID() == RADAR_TYPE
             || currentSensorLocally?.getTypeID() == VIBRATION_TYPE
         ) {
-            type = currentSensorLocally.getType()
+            type = stateTypes?.get(typeIndex)//currentSensorLocally.getType()
         }
 
 

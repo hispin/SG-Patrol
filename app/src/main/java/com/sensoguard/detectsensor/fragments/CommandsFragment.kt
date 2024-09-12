@@ -346,7 +346,7 @@ class CommandsFragment : DialogFragment() {
                 )
             )
             //set sens level
-            val cmdSetSens: IntArray = intArrayOf(2, -1, 155, 7, -1, -1, 3)
+            val cmdSetSens: IntArray = intArrayOf(2, -1, 155, 8, -1, -1, 0, 3)
 
             commands.add(
                 Command(
@@ -462,7 +462,7 @@ class CommandsFragment : DialogFragment() {
             year,
             hour,
             minutes,
-            seconds,
+            0,//seconds,
             3
         )
     }
@@ -570,8 +570,7 @@ class CommandsFragment : DialogFragment() {
                 } else if (UserSession.instance.myCommand?.state == PROCESS_STATE) {
                     //after command
                     //stop progress bar
-                    UserSession.instance.myCommand?.state = TIMEOUT_STATE
-                    commandsAdapter?.notifyDataSetChanged()
+                    stopProgressBar()
                     //showToast(activity, "timeout")
 
                     //if the sensor awake then renew the normal Timer RF commands timer
@@ -614,6 +613,17 @@ class CommandsFragment : DialogFragment() {
         activity?.sendBroadcast(Intent(STOP_TIMER))
         setUIAsConnect()
         clearScreenOn()
+        //stop progress bar of command
+        stopProgressBar()
+        //stop read data for command
+        //activity?.sendBroadcast(Intent(DISCONNECTED_INTERNET_SENSOR))
+
+    }
+
+    //stop progress bar of command
+    private fun stopProgressBar() {
+        UserSession.instance.myCommand?.state = TIMEOUT_STATE
+        commandsAdapter?.notifyDataSetChanged()
     }
 
     //show dialog to show response
