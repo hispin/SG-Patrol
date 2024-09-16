@@ -70,6 +70,8 @@ import com.sensoguard.detectsensor.global.ALARM_CAR
 import com.sensoguard.detectsensor.global.ALARM_FLICKERING_DURATION_DEFAULT_VALUE_SECONDS
 import com.sensoguard.detectsensor.global.ALARM_FLICKERING_DURATION_KEY
 import com.sensoguard.detectsensor.global.ALARM_INTRUDER
+import com.sensoguard.detectsensor.global.ALARM_KEEP_ALIVE
+import com.sensoguard.detectsensor.global.ALARM_LOW_BATTERY
 import com.sensoguard.detectsensor.global.ALARM_SENSOR_OFF
 import com.sensoguard.detectsensor.global.CREATE_ALARM_ID_KEY
 import com.sensoguard.detectsensor.global.CREATE_ALARM_IS_ARMED
@@ -85,11 +87,15 @@ import com.sensoguard.detectsensor.global.IS_SENSOR_NAME_ALWAYS_KEY
 import com.sensoguard.detectsensor.global.MAP_SHOW_NORMAL_VALUE
 import com.sensoguard.detectsensor.global.MAP_SHOW_SATELLITE_VALUE
 import com.sensoguard.detectsensor.global.MAP_SHOW_VIEW_TYPE_KEY
+import com.sensoguard.detectsensor.global.PIR_TYPE
+import com.sensoguard.detectsensor.global.RADAR_TYPE
 import com.sensoguard.detectsensor.global.READ_DATA_KEY_TEST
 import com.sensoguard.detectsensor.global.RESET_MARKERS_KEY
+import com.sensoguard.detectsensor.global.SEISMIC_TYPE
 import com.sensoguard.detectsensor.global.STOP_ALARM_SOUND
 import com.sensoguard.detectsensor.global.TABLAYOUT_HEIGHT_DEFAULT
 import com.sensoguard.detectsensor.global.UserSession
+import com.sensoguard.detectsensor.global.VIBRATION_TYPE
 import com.sensoguard.detectsensor.global.dpToPx
 import com.sensoguard.detectsensor.global.getBooleanInPreference
 import com.sensoguard.detectsensor.global.getIntInPreference
@@ -162,6 +168,7 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, MapboxMap.OnMoveList
     private val PIR_ICON_ID = "PIR_ICON_ID"
     private val RADAR_ICON_ID = "RADAR_ICON_ID"
     private val VIBRATION_ICON_ID = "VIBRATION_ICON_ID"
+    private val LOW_BATTERY_ICON_ID = "LOW_BATTERY_ID"
 
     private var locationManager: LocationManager? = null
 
@@ -466,7 +473,7 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, MapboxMap.OnMoveList
         var alarmTypeIcon: Feature? = null
 
         //car ,intruder and off are relevant when type = seismic
-        //if (sensorItem.getTypeID() == SEISMIC_TYPE) {
+        if (sensorItem.getTypeID() == SEISMIC_TYPE) {
             //set icon according to type alarm
             alarmTypeIcon =
                 when (typeIdx) {
@@ -479,50 +486,88 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, MapboxMap.OnMoveList
                     ALARM_SENSOR_OFF -> {
                         loc.let { addMarker(it, SENSOR_OFF_ICON_ID, sensorItem.getName(), type) }
                     }
-                    //ALARM_LOW_BATTERY->context?.let { con -> convertBitmapToBitmapDiscriptor(con,R.drawable.ic_alarm_low_battery)}
+                    ALARM_LOW_BATTERY -> {
+                        loc.let { addMarker(it, LOW_BATTERY_ICON_ID, sensorItem.getName(), type) }
+                    }
                     else -> {
                         loc.let { addMarker(it, RED_ICON_ID, sensorItem.getName(), type) }
                     }
                 }
-//        } else {
-//            alarmTypeIcon =
-//                when (sensorItem.getTypeID()) {
-//                    PIR_TYPE -> loc.let {
-//                        addMarker(
-//                            it,
-//                            PIR_ICON_ID,
-//                            sensorItem.getName(),
-//                            sensorItem.getType()
-//                        )
-//                    }
-//                    RADAR_TYPE -> loc.let {
-//                        addMarker(
-//                            it,
-//                            RADAR_ICON_ID,
-//                            sensorItem.getName(),
-//                            sensorItem.getType()
-//                        )
-//                    }
-//                    VIBRATION_TYPE -> loc.let {
-//                        addMarker(
-//                            it,
-//                            VIBRATION_ICON_ID,
-//                            sensorItem.getName(),
-//                            sensorItem.getType()
-//                        )
-//                    }
-//                    else -> {
-//                        loc.let {
-//                            addMarker(
-//                                it,
-//                                RED_ICON_ID,
-//                                sensorItem.getName(),
-//                                sensorItem.getType()
-//                            )
-//                        }
-//                    }
-//                }
-//        }
+        }// RADAR,PIR,VIBRATION
+        else if (typeIdx == ALARM_CAR
+            || typeIdx == ALARM_INTRUDER
+            || typeIdx == ALARM_SENSOR_OFF
+        ) {
+
+            alarmTypeIcon =
+                when (sensorItem.getTypeID()) {
+                    PIR_TYPE -> loc.let {
+                        addMarker(
+                            it,
+                            PIR_ICON_ID,
+                            sensorItem.getName(),
+                            sensorItem.getType()
+                        )
+                    }
+
+                    RADAR_TYPE -> loc.let {
+                        addMarker(
+                            it,
+                            RADAR_ICON_ID,
+                            sensorItem.getName(),
+                            sensorItem.getType()
+                        )
+                    }
+
+                    VIBRATION_TYPE -> loc.let {
+                        addMarker(
+                            it,
+                            VIBRATION_ICON_ID,
+                            sensorItem.getName(),
+                            sensorItem.getType()
+                        )
+                    }
+
+                    else -> {
+                        loc.let {
+                            addMarker(
+                                it,
+                                RED_ICON_ID,
+                                sensorItem.getName(),
+                                sensorItem.getType()
+                            )
+                        }
+                    }
+                }
+        }// RADAR,PIR,VIBRATION
+        else if (typeIdx == ALARM_LOW_BATTERY
+            || typeIdx == ALARM_KEEP_ALIVE
+        ) {
+
+            when (typeIdx) {
+                ALARM_LOW_BATTERY -> loc.let {
+                    addMarker(
+                        it,
+                        LOW_BATTERY_ICON_ID,
+                        sensorItem.getName(),
+                        sensorItem.getType()
+                    )
+                }
+
+                else -> {
+                    loc.let {
+                        addMarker(
+                            it,
+                            RED_ICON_ID,
+                            sensorItem.getName(),
+                            sensorItem.getType()
+                        )
+                    }
+                }
+            }
+
+        }
+
 
 
         return alarmTypeIcon
@@ -651,6 +696,13 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, MapboxMap.OnMoveList
                         requireActivity().resources, R.drawable.ic_vibration
                     )
                 )
+
+                .withImage(
+                    LOW_BATTERY_ICON_ID, BitmapFactory.decodeResource(
+                        requireActivity().resources, R.drawable.ic_alarm_low_battery
+                    )
+                )
+
                 .withImage(
                     RED_ICON_ID, BitmapFactory.decodeResource(
                         requireActivity().resources, R.drawable.ic_sensor_alarm
@@ -685,7 +737,9 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, MapboxMap.OnMoveList
                                     Expression.stop(PIR_ICON_ID, PIR_ICON_ID),
                                     Expression.stop(RADAR_ICON_ID, RADAR_ICON_ID),
                                     Expression.stop(VIBRATION_ICON_ID, VIBRATION_ICON_ID),
-                                    Expression.stop(RED_ICON_ID, RED_ICON_ID)
+                                    Expression.stop(RED_ICON_ID, RED_ICON_ID),
+                                    Expression.stop(LOW_BATTERY_ICON_ID, LOW_BATTERY_ICON_ID)
+
                                 )
                             ),
                             iconAllowOverlap(true),
@@ -779,6 +833,11 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, MapboxMap.OnMoveList
                             requireActivity().resources, R.drawable.ic_sensor_alarm
                         )
                     )
+                    .withImage(
+                        LOW_BATTERY_ICON_ID, BitmapFactory.decodeResource(
+                            requireActivity().resources, R.drawable.ic_alarm_low_battery
+                        )
+                    )
 
                     // Adding a GeoJson source for the SymbolLayer icons.
                     .withSource(
@@ -808,7 +867,8 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, MapboxMap.OnMoveList
                                         Expression.stop(PIR_ICON_ID, PIR_ICON_ID),
                                         Expression.stop(RADAR_ICON_ID, RADAR_ICON_ID),
                                         Expression.stop(VIBRATION_ICON_ID, VIBRATION_ICON_ID),
-                                        Expression.stop(RED_ICON_ID, RED_ICON_ID)
+                                        Expression.stop(RED_ICON_ID, RED_ICON_ID),
+                                        Expression.stop(LOW_BATTERY_ICON_ID, LOW_BATTERY_ICON_ID)
                                     )
                                 ),
                                 iconAllowOverlap(true),

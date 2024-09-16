@@ -73,7 +73,8 @@ const val MAIN_MENU_NUM_ITEM = 4
 const val ALARM_CAR = 0//"car"
 const val ALARM_INTRUDER = 1//"intruder"
 const val ALARM_SENSOR_OFF = 3//"sensor disconnected"
-const val ALARM_LOW_BATTERY = "motion"
+const val ALARM_KEEP_ALIVE = 4
+const val ALARM_LOW_BATTERY = 5
 
 const val USB_DEVICE_CONNECT_STATUS = "usbDeviceConnect"
 

@@ -230,9 +230,9 @@ class ServiceConnectSensor : ParentService() {
                     setFilter()
                 }
 
-                inn.action == DISCONNECTED_INTERNET_SENSOR -> {
-                    stopConnectConfiguration()
-                }
+//                inn.action == DISCONNECTED_INTERNET_SENSOR -> {
+//                    stopConnectConfiguration()
+//                }
 
 
                 inn.action == CHECK_USB_CONN_SW -> {
