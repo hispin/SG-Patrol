@@ -29,7 +29,10 @@ import com.sensoguard.detectsensor.global.ACTION_INTERVAL
 import com.sensoguard.detectsensor.global.ACTION_SEND_CMD
 import com.sensoguard.detectsensor.global.ACTION_USB_PERMISSION
 import com.sensoguard.detectsensor.global.ACTION_USB_RESPONSE_CACHE
+import com.sensoguard.detectsensor.global.ALARM_CAR
+import com.sensoguard.detectsensor.global.ALARM_INTRUDER
 import com.sensoguard.detectsensor.global.ALARM_LIST_KEY_PREF
+import com.sensoguard.detectsensor.global.ALARM_MOTION
 import com.sensoguard.detectsensor.global.CHECK_AVAILABLE_KEY
 import com.sensoguard.detectsensor.global.CHECK_USB_CONN_SW
 import com.sensoguard.detectsensor.global.COMMAND_TYPE
@@ -786,7 +789,15 @@ class ServiceConnectSensor : ParentService() {
             || currentSensorLocally?.getTypeID() == RADAR_TYPE
             || currentSensorLocally?.getTypeID() == VIBRATION_TYPE
         ) {
-            type = stateTypes?.get(typeIndex)//currentSensorLocally.getType()
+            if (typeIndex == ALARM_CAR
+                || typeIndex == ALARM_INTRUDER
+                || typeIndex == ALARM_MOTION
+            ) {
+                type =
+                    currentSensorLocally.getType()//stateTypes?.get(typeIndex)//currentSensorLocally.getType()
+            } else {
+                type = stateTypes?.get(typeIndex)
+            }
         }
 
 
@@ -939,6 +950,13 @@ class ServiceConnectSensor : ParentService() {
         alarmSensorId: String,
         type: String?
     ) {
+//        Handler(Looper.getMainLooper()).post {
+//            Toast.makeText(
+//                applicationContext,
+//                type,
+//                Toast.LENGTH_LONG
+//            ).show()
+//        }
         val tmp = Calendar.getInstance()
         val resources = this.resources
         val locale =
@@ -986,6 +1004,15 @@ class ServiceConnectSensor : ParentService() {
     private fun addAlarmToHistory(currentSensorLocally: Sensor, type: String) {
         val tmp = Calendar.getInstance()
         val resources = this.resources
+
+//        Handler(Looper.getMainLooper()).post {
+//            Toast.makeText(
+//                applicationContext,
+//                type,
+//                Toast.LENGTH_LONG
+//            ).show()
+//        }
+
         val locale =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) resources.configuration.locales.getFirstMatch(
                 resources.assets.locales

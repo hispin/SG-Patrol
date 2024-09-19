@@ -67,11 +67,13 @@ import com.sensoguard.detectsensor.classes.Sensor
 import com.sensoguard.detectsensor.controler.ViewModelListener
 import com.sensoguard.detectsensor.global.ACTION_TOGGLE_TEST_MODE
 import com.sensoguard.detectsensor.global.ALARM_CAR
+import com.sensoguard.detectsensor.global.ALARM_DUAL_TECH
 import com.sensoguard.detectsensor.global.ALARM_FLICKERING_DURATION_DEFAULT_VALUE_SECONDS
 import com.sensoguard.detectsensor.global.ALARM_FLICKERING_DURATION_KEY
 import com.sensoguard.detectsensor.global.ALARM_INTRUDER
 import com.sensoguard.detectsensor.global.ALARM_KEEP_ALIVE
 import com.sensoguard.detectsensor.global.ALARM_LOW_BATTERY
+import com.sensoguard.detectsensor.global.ALARM_MOTION
 import com.sensoguard.detectsensor.global.ALARM_SENSOR_OFF
 import com.sensoguard.detectsensor.global.CREATE_ALARM_ID_KEY
 import com.sensoguard.detectsensor.global.CREATE_ALARM_IS_ARMED
@@ -496,6 +498,7 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, MapboxMap.OnMoveList
         }// RADAR,PIR,VIBRATION
         else if (typeIdx == ALARM_CAR
             || typeIdx == ALARM_INTRUDER
+            || typeIdx == ALARM_MOTION
             || typeIdx == ALARM_SENSOR_OFF
         ) {
 
@@ -542,19 +545,9 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, MapboxMap.OnMoveList
         }// RADAR,PIR,VIBRATION
         else if (typeIdx == ALARM_LOW_BATTERY
             || typeIdx == ALARM_KEEP_ALIVE
+            || typeIdx == ALARM_DUAL_TECH
         ) {
 
-            when (typeIdx) {
-                ALARM_LOW_BATTERY -> loc.let {
-                    addMarker(
-                        it,
-                        LOW_BATTERY_ICON_ID,
-                        sensorItem.getName(),
-                        sensorItem.getType()
-                    )
-                }
-
-                else -> {
                     loc.let {
                         addMarker(
                             it,
@@ -564,9 +557,6 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, MapboxMap.OnMoveList
                         )
                     }
                 }
-            }
-
-        }
 
 
 
