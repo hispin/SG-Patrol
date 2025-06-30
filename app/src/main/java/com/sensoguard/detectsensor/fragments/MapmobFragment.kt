@@ -25,7 +25,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -187,7 +187,7 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, MapboxMap.OnMoveList
     //start listener to timer
     private fun startTimerListener() {
         activity?.let {
-            ViewModelProviders.of(it).get(ViewModelListener::class.java)
+            ViewModelProvider(it)[ViewModelListener::class.java]
                 .startCurrentCalendarListener()?.observe(
                     this,
                     { calendar ->
@@ -196,7 +196,7 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, MapboxMap.OnMoveList
                         //if there is no alarm in process then shut down the timer
                         if (UserSession.instance.alarmSensors == null || UserSession.instance.alarmSensors?.isEmpty()!!) {
                             activity?.let { act ->
-                                ViewModelProviders.of(act).get(ViewModelListener::class.java)
+                                ViewModelProvider(act)[ViewModelListener::class.java]
                                     .shutDownTimer()
                             }
                             //showMarkers()

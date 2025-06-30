@@ -26,7 +26,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
 import com.sensoguard.detectsensor.R
@@ -128,12 +128,12 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, Observer {
     //start listener to timer
     private fun startTimerListener() {
         //this?.let {
-        ViewModelProviders.of(this).get(ViewModelListener::class.java)
+        ViewModelProvider(this)[ViewModelListener::class.java]
             .startCurrentCalendarListener()?.observe(this, androidx.lifecycle.Observer { calendar ->
 
                 //if there is no alarm in process then shut down the timer
                 if (UserSession.instance.alarmSensors == null || UserSession.instance.alarmSensors?.isEmpty()!!) {
-                    ViewModelProviders.of(this).get(ViewModelListener::class.java).shutDownTimer()
+                    ViewModelProvider(this)[ViewModelListener::class.java].shutDownTimer()
                     sendBroadcast(Intent(STOP_ALARM_SOUND))
                 }
 
@@ -153,7 +153,7 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, Observer {
     private fun startTimer() {
 
         Log.d("testTimer", "start timer")
-        ViewModelProviders.of(this).get(ViewModelListener::class.java).startTimer()
+        ViewModelProvider(this)[ViewModelListener::class.java].startTimer()
 
 
     }
