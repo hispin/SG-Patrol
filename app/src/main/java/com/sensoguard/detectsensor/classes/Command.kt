@@ -11,4 +11,6 @@ class Command(val commandName: String, val commandContent: IntArray?, val icId: 
     var maxTimeout = 60
     var sensCar = 0
     var sensIntruder = 0
+    var snrCar = 0
+    var snrIntruder: Float = 0f
 }

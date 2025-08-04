@@ -4,6 +4,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/gray1"
-        tools:context=".activities.InitAppActivity">
+        tools:context=".activities.InitAppActivity"
+        android:fitsSystemWindows="true">
 
 </androidx.constraintlayout.widget.ConstraintLayout>

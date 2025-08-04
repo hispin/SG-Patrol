@@ -126,11 +126,19 @@
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintVertical_bias="0.2" />
 
-                <androidx.appcompat.widget.AppCompatSpinner
-                        android:id="@+id/spCarSens"
+                <FrameLayout
+                        android:id="@+id/frCarSens"
                         android:layout_width="70dp"
                         android:layout_height="30dp"
-                        android:layout_centerVertical="true"
+                        app:layout_constraintEnd_toEndOf="@+id/tvSelectCar"
+                        app:layout_constraintStart_toStartOf="@+id/tvSelectCar"
+                        app:layout_constraintTop_toBottomOf="@+id/tvSelectCar"
+                        android:layout_centerVertical="true">
+
+                <androidx.appcompat.widget.AppCompatSpinner
+                        android:id="@+id/spCarSens"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
                         android:layout_gravity="center"
                         android:background="@drawable/shape_bg_subjects_spinner"
                         android:entries="@array/car_ids"
@@ -143,6 +151,20 @@
                         tools:listitem="@layout/support_simple_spinner_dropdown_item" />
 
 
+                    <androidx.appcompat.widget.AppCompatEditText
+                            android:id="@+id/etCarSnr"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="center"
+                            android:background="@drawable/shape_bg_subjects_spinner"
+                            android:gravity="center"
+                            android:visibility="gone"
+                            android:inputType="number"
+                            app:layout_constraintEnd_toEndOf="@+id/tvSelectCar"
+                            app:layout_constraintStart_toStartOf="@+id/tvSelectCar"
+                            app:layout_constraintTop_toBottomOf="@+id/tvSelectCar" />
+                </FrameLayout>
+
                 <TextView
                         android:id="@+id/tvSelectIntruder"
                         android:layout_width="wrap_content"
@@ -150,23 +172,44 @@
                         android:layout_marginTop="16dp"
                         android:text="@string/select_intruder_sens"
                         app:layout_constraintStart_toStartOf="@+id/tvSelectCar"
-                        app:layout_constraintTop_toBottomOf="@+id/spCarSens" />
+                        app:layout_constraintTop_toBottomOf="@+id/frCarSens" />
+
+                <FrameLayout
+                        android:id="@+id/frIntruderSens"
+                        android:layout_width="70dp"
+                        android:layout_height="30dp"
+                        app:layout_constraintEnd_toEndOf="@+id/frCarSens"
+                        app:layout_constraintStart_toStartOf="@+id/frCarSens"
+                        app:layout_constraintTop_toBottomOf="@+id/tvSelectIntruder"
+                        android:layout_centerVertical="true">
 
                 <androidx.appcompat.widget.AppCompatSpinner
                         android:id="@+id/spIntruderSens"
                         android:layout_width="70dp"
                         android:layout_height="30dp"
-                        android:layout_centerVertical="true"
                         android:layout_gravity="center"
                         android:background="@drawable/shape_bg_subjects_spinner"
                         android:entries="@array/car_ids"
                         android:gravity="center"
+
                         android:popupBackground="@drawable/shape_bg_subjects_spinner"
                         android:spinnerMode="dropdown"
-                        app:layout_constraintEnd_toEndOf="@+id/spCarSens"
-                        app:layout_constraintStart_toStartOf="@+id/spCarSens"
-                        app:layout_constraintTop_toBottomOf="@+id/tvSelectIntruder"
                         tools:listitem="@layout/support_simple_spinner_dropdown_item" />
+
+                    <androidx.appcompat.widget.AppCompatEditText
+                            android:id="@+id/etIntruderSnr"
+                            android:layout_width="70dp"
+                            android:layout_height="30dp"
+                            android:background="@drawable/shape_bg_subjects_spinner"
+                            android:visibility="gone"
+                            android:inputType="numberDecimal"
+                            android:gravity="center"
+                            app:layout_constraintEnd_toEndOf="@+id/spCarSens"
+                            app:layout_constraintStart_toStartOf="@+id/spCarSens"
+                            app:layout_constraintTop_toBottomOf="@+id/tvSelectIntruder"
+                            tools:listitem="@layout/support_simple_spinner_dropdown_item" />
+
+                </FrameLayout>
 
                 <androidx.appcompat.widget.AppCompatButton
                         android:id="@+id/btnSendCmd"

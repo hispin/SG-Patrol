@@ -8,6 +8,7 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatButton
+import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatSpinner
 import androidx.cardview.widget.CardView
@@ -64,17 +65,25 @@ class CommandAdapter(
         private var ivTimeout: ImageView? = null
         private var conExpand: ConstraintLayout? = null
         private var myCardView: CardView? = null
+        private var tvSelectCar: TextView? = null
         private var spCarSens: AppCompatSpinner? = null
+        private var etCarSnr: AppCompatEditText? = null
+        private var tvSelectIntruder: TextView? = null
         private var spIntruderSens: AppCompatSpinner? = null
+        private var etIntruderSnr: AppCompatEditText? = null
         private var btnSendCmd: AppCompatButton? = null
 
         init {
             itemView.setOnClickListener {
 
-                if (commands[adapterPosition].commandName == context.resources.getString(R.string.set_sens_level)) {
+                if (commands[adapterPosition].commandName == context.resources.getString(R.string.set_sens_level)
+                    || commands[adapterPosition].commandName == context.resources.getString(R.string.set_snr)
+                ) {
                     commands[adapterPosition].isExpand = !commands[adapterPosition].isExpand
                     //Bug fixed:when expand the command ,zero the car and intruder selection (for update ses command)
-                    if (commands[adapterPosition].isExpand) {
+                    if (commands[adapterPosition].isExpand
+                        && commands[adapterPosition].commandName == context.resources.getString(R.string.set_sens_level)
+                    ) {
                         commands[adapterPosition].sensCar = 4
                         commands[adapterPosition].sensIntruder = 4
                     }
@@ -95,12 +104,22 @@ class CommandAdapter(
             ivTimeout = _itemView.findViewById(R.id.ivTimeout)
             conExpand = _itemView.findViewById(R.id.conExpand)
             myCardView = _itemView.findViewById(R.id.myCardView)
+
+            tvSelectCar = _itemView.findViewById(R.id.tvSelectCar)
             spCarSens = _itemView.findViewById(R.id.spCarSens)
+            etCarSnr = _itemView.findViewById(R.id.etCarSnr)
             //Bug fixed:set the last selection as long as the command of update sens is open
-            spCarSens?.setSelection(commands[adapterPosition].sensCar)
+
+            tvSelectIntruder = _itemView.findViewById(R.id.tvSelectIntruder)
             spIntruderSens = _itemView.findViewById(R.id.spIntruderSens)
+            etIntruderSnr = _itemView.findViewById(R.id.etIntruderSnr)
             //set the last selection as long as the command of update sens is open
-            spIntruderSens?.setSelection(commands[adapterPosition].sensIntruder)
+
+            if (commands[adapterPosition].commandName == context.resources.getString(R.string.set_sens_level)) {
+                spCarSens?.setSelection(commands[adapterPosition].sensCar)
+                spIntruderSens?.setSelection(commands[adapterPosition].sensIntruder)
+            }
+
             btnSendCmd = _itemView.findViewById(R.id.btnSendCmd)
 
 
@@ -133,31 +152,83 @@ class CommandAdapter(
             if (command.isExpand) {
                 TransitionManager.beginDelayedTransition(myCardView!!, AutoTransition())
                 conExpand?.visibility = View.VISIBLE
+                when (command.commandName) {
+                    context.resources.getString(R.string.set_sens_level) -> {
+                        spCarSens?.visibility = View.VISIBLE
+                        etCarSnr?.visibility = View.GONE
+                        spIntruderSens?.visibility = View.VISIBLE
+                        etIntruderSnr?.visibility = View.GONE
+                        tvSelectCar?.text = context.resources.getString(R.string.select_car_sens)
+                        tvSelectIntruder?.text =
+                            context.resources.getString(R.string.select_intruder_sens)
+                    }
+
+                    context.resources.getString(R.string.set_snr) -> {
+                        spCarSens?.visibility = View.GONE
+                        etCarSnr?.visibility = View.VISIBLE
+                        spIntruderSens?.visibility = View.GONE
+                        etIntruderSnr?.visibility = View.VISIBLE
+                        tvSelectCar?.text = context.resources.getString(R.string.select_car_snr)
+                        tvSelectIntruder?.text =
+                            context.resources.getString(R.string.select_intruder_snr)
+
+                    }
+                }
             } else {
                 TransitionManager.beginDelayedTransition(myCardView!!, AutoTransition())
                 conExpand?.visibility = View.GONE
             }
 
             btnSendCmd?.setOnClickListener {
-                if (spCarSens?.selectedItem.toString() == "0"
+                if (command.commandName == context.resources.getString(R.string.set_sens_level)
+                    && spCarSens?.selectedItem.toString() == "0"
                     && spIntruderSens?.selectedItem.toString() == "0"
                 ) {
                     showToast(context, context.getString(R.string.error_zero_sens))
+                } else if (command.commandName == context.resources.getString(R.string.set_snr)
+                    && etCarSnr?.text.toString() == "0"
+                    && etIntruderSnr?.text.toString() == "0"
+                ) {
+
                 } else {
-                    if (commands[adapterPosition].commandName == context.resources.getString(R.string.set_sens_level)) {
-                        commands[adapterPosition].sensCar =
-                            spCarSens?.selectedItem.toString().toInt()
-                        commands[adapterPosition].sensIntruder =
-                            spIntruderSens?.selectedItem.toString().toInt()
-                        commands[adapterPosition].commandContent?.set(
-                            4,
-                            spCarSens?.selectedItem.toString().toInt()
-                        )
-                        commands[adapterPosition].commandContent?.set(
-                            5,
-                            spIntruderSens?.selectedItem.toString().toInt()
-                        )
-                        itemClick.invoke(commands[adapterPosition])
+                    when (commands[adapterPosition].commandName) {
+                        context.resources.getString(R.string.set_sens_level) -> {
+                            commands[adapterPosition].sensCar =
+                                spCarSens?.selectedItem.toString().toInt()
+                            commands[adapterPosition].sensIntruder =
+                                spIntruderSens?.selectedItem.toString().toInt()
+                            commands[adapterPosition].commandContent?.set(
+                                4,
+                                spCarSens?.selectedItem.toString().toInt()
+                            )
+                            commands[adapterPosition].commandContent?.set(
+                                5,
+                                spIntruderSens?.selectedItem.toString().toInt()
+                            )
+                            itemClick.invoke(commands[adapterPosition])
+                        }
+
+                        context.resources.getString(R.string.set_snr) -> {
+                            var carSrn = etCarSnr?.text.toString().toInt()
+                            var intruderSrn: Float = etIntruderSnr?.text.toString().toFloat()
+                            var intruderFirst: Int = intruderSrn.toInt()
+                            var intruderSecond: Float = 10 * (intruderSrn - intruderFirst)
+                            commands[adapterPosition].snrCar = carSrn
+                            commands[adapterPosition].snrIntruder = intruderSrn
+                            commands[adapterPosition].commandContent?.set(
+                                4,
+                                intruderFirst
+                            )
+                            commands[adapterPosition].commandContent?.set(
+                                5,
+                                intruderSecond.toInt()
+                            )
+                            commands[adapterPosition].commandContent?.set(
+                                6,
+                                carSrn
+                            )
+                            itemClick.invoke(commands[adapterPosition])
+                        }
                     }
                 }
 

@@ -125,7 +125,9 @@
     <string name="close">Close</string>
     <string name="set_sens_level">Set Sens Level</string>
     <string name="select_car_sens">Select sens for alarm car</string>
+    <string name="select_car_snr" translatable="false">Select snr for alarm car</string>
     <string name="select_intruder_sens">Select sens for intruder</string>
+    <string name="select_intruder_snr" translatable="false">Select snr for intruder</string>
     <string name="error_zero_sens">Zero can not be sent both for alert and for car and intruder</string>
     <string name="connect">Connect</string>
     <string name="disconnect">disconnect</string>
@@ -142,6 +144,7 @@
     <string name="vibration">Vibration</string>
     <string name="connected">connected</string>
     <string name="set_system_time">Set System Time</string>
+    <string name="set_snr" translatable="false">Set SNR</string>
 
     <string-array name="car_ids">
         <item>0</item>

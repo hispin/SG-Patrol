@@ -58,6 +58,7 @@ import com.sensoguard.detectsensor.global.SEISMIC_TYPE
 import com.sensoguard.detectsensor.global.SENSOR_TYPE_INDEX_KEY
 import com.sensoguard.detectsensor.global.SET_RF_ON_TIMER
 import com.sensoguard.detectsensor.global.SET_SENS_LEVEL
+import com.sensoguard.detectsensor.global.SET_SNR_SYSTEM
 import com.sensoguard.detectsensor.global.SET_TIME_SYSTEM
 import com.sensoguard.detectsensor.global.SIX_SEVEN_FOTMAT_BITS
 import com.sensoguard.detectsensor.global.STOP_GENERAL_TIMER
@@ -715,6 +716,25 @@ class ServiceConnectSensor : ParentService() {
                     }
                     arr = ArrayList()
                 } else if (appCode == SET_TIME_SYSTEM && arr.size % 7 == 0) {
+                    while (arr.size >= 7) {
+                        val arrSeven = ArrayList<Int>()
+
+                        var i = 0
+                        val iteratorList = arr.listIterator()
+                        while (iteratorList != null && iteratorList.hasNext() && i < 7) {
+                            i++
+                            val bitsItem = iteratorList.next()
+                            arrSeven.add(bitsItem)
+                            iteratorList.remove()
+                        }
+
+                        //send the response
+                        val inn = Intent(ACTION_USB_RESPONSE_CACHE)
+                        inn.putExtra(USB_CACHE_RESPONSE_KEY, arrSeven)
+                        sendBroadcast(inn)
+                    }
+                    arr = ArrayList()
+                } else if (appCode == SET_SNR_SYSTEM && arr.size % 7 == 0) {
                     while (arr.size >= 7) {
                         val arrSeven = ArrayList<Int>()
 

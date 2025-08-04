@@ -365,6 +365,20 @@ class CommandsFragment : DialogFragment() {
                     R.drawable.ic_parameters
                 )
             )
+
+
+            //set sens level
+            val cmdSetSnr: IntArray = intArrayOf(2, -1, 153, 9, -1, -1, -1, 0, 3)
+
+            commands.add(
+                Command(
+                    resources.getString(R.string.set_snr),
+                    cmdSetSnr,
+                    R.drawable.ic_parameters
+                )
+            )
+
+
         }
         commandsAdapter = CommandAdapter(commands, requireContext()) { command: Command ->
 
@@ -529,6 +543,15 @@ class CommandsFragment : DialogFragment() {
                     //response of set sens command
                 } else if (arr != null && arr.size == 7 && arr[2].toUByte()
                         .toInt() == SET_SENS_LEVEL
+                ) {
+                    if (UserSession.instance.myCommand?.state == PROCESS_STATE) {
+                        //stop progress bar
+                        UserSession.instance.myCommand?.state = SUCCESS_STATE
+                        commandsAdapter?.notifyDataSetChanged()
+                    }
+                    //response of set snr command
+                } else if (arr != null && arr.size == 7 && arr[2].toUByte()
+                        .toInt() == SET_SNR_SYSTEM
                 ) {
                     if (UserSession.instance.myCommand?.state == PROCESS_STATE) {
                         //stop progress bar
