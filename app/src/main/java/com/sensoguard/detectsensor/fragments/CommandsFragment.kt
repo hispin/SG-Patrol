@@ -367,13 +367,24 @@ class CommandsFragment : DialogFragment() {
             )
 
 
-            //set sens level
+            //set snr level
             val cmdSetSnr: IntArray = intArrayOf(2, -1, 153, 9, -1, -1, -1, 0, 3)
 
             commands.add(
                 Command(
                     resources.getString(R.string.set_snr),
                     cmdSetSnr,
+                    R.drawable.ic_parameters
+                )
+            )
+
+            //get snr level
+            val cmdGetSnr: IntArray = intArrayOf(2, -1, 153, 7, 1, 1, 3)
+
+            commands.add(
+                Command(
+                    resources.getString(R.string.get_snr),
+                    cmdGetSnr,
                     R.drawable.ic_parameters
                 )
             )
@@ -576,7 +587,23 @@ class CommandsFragment : DialogFragment() {
                         UserSession.instance.myCommand?.state = SUCCESS_STATE
                         commandsAdapter?.notifyDataSetChanged()
                     }
-                    //accept response from command of RF timer
+                    //response of get snr command
+                } else if (arr != null && arr.size == 9 && arr[2].toUByte()
+                        .toInt() == GET_SNR_SYSTEM
+                ) {
+                    if (UserSession.instance.myCommand?.state == PROCESS_STATE) {
+                        //stop progress bar
+                        UserSession.instance.myCommand?.state = SUCCESS_STATE
+                        commandsAdapter?.notifyDataSetChanged()
+
+                        val five: Float = arr[5].toFloat()
+                        var temp: Float = five / 10f
+
+                        val intruder: Float = arr[4].toFloat() + temp
+
+                        showResponseInDialog(arr[6], intruder)
+                    }
+
                 }
                 //time out (no max)
             } else if (inn.action == ACTION_INTERVAL) {
@@ -672,6 +699,32 @@ class CommandsFragment : DialogFragment() {
                 dialog.show()
             }
         }
+
+    //show dialog to show snr response
+    private fun showResponseInDialog(carV: Int, intruderV: Float) {
+
+        if (this@CommandsFragment.context != null) {
+            val dialog = Dialog(this@CommandsFragment.requireContext())
+            dialog.setContentView(R.layout.dialog_command_response)
+
+            dialog.setCancelable(true)
+
+
+            val tvCommandTitle = dialog.findViewById<AppCompatTextView>(R.id.tvCommandTitle)
+            tvCommandTitle.text = resources.getString(R.string.get_snr_level_rsp)
+            val tvCarValue = dialog.findViewById<AppCompatTextView>(R.id.tvCarValue)
+            val tvIntruderValue = dialog.findViewById<AppCompatTextView>(R.id.tvIntruderValue)
+            tvCarValue.text = carV.toString()
+            tvIntruderValue.text = intruderV.toString()
+
+            val btnClose = dialog.findViewById<AppCompatButton>(R.id.btnClose)
+            btnClose.setOnClickListener {
+                dialog.dismiss()
+            }
+
+            dialog.show()
+        }
+    }
 
     fun keepScreenOn(rootView: View? = null) {
         requireActivity().window.addFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)

@@ -48,6 +48,7 @@ import com.sensoguard.detectsensor.global.DISCONNECTED_INTERNET_SENSOR
 import com.sensoguard.detectsensor.global.DISCONNECT_USB_PROCESS_KEY
 import com.sensoguard.detectsensor.global.ERROR_RESP
 import com.sensoguard.detectsensor.global.GET_SENS_LEVEL
+import com.sensoguard.detectsensor.global.GET_SNR_SYSTEM
 import com.sensoguard.detectsensor.global.HANDLE_ALARM_KEY
 import com.sensoguard.detectsensor.global.HANDLE_READ_DATA_EXCEPTION
 import com.sensoguard.detectsensor.global.NONE_VALIDATE_BITS
@@ -751,6 +752,28 @@ class ServiceConnectSensor : ParentService() {
                         val inn = Intent(ACTION_USB_RESPONSE_CACHE)
                         inn.putExtra(USB_CACHE_RESPONSE_KEY, arrSeven)
                         sendBroadcast(inn)
+                    }
+                    arr = ArrayList()
+                } else if (appCode == GET_SNR_SYSTEM && arr.size % 9 == 0) {
+                    while (arr.size >= 9) {
+                        val arrNine = ArrayList<Int>()
+
+                        var i = 0
+                        val iteratorList = arr.listIterator()
+                        while (iteratorList != null && iteratorList.hasNext() && i < 9) {
+                            i++
+                            val bitsItem = iteratorList.next()
+                            arrNine.add(bitsItem)
+                            iteratorList.remove()
+                        }
+
+                        //send the response
+                        val inn = Intent(ACTION_USB_RESPONSE_CACHE)
+                        //inn.putIntegerArrayListExtra("myImage",myBytesInt)
+                        inn.putExtra(USB_CACHE_RESPONSE_KEY, arrNine)
+                        sendBroadcast(inn)
+//                        //TODO :test if success or failed
+//                        //parsingBits(arrSeven)
                     }
                     arr = ArrayList()
                 }
