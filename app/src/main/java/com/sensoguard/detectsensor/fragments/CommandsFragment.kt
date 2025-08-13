@@ -389,6 +389,17 @@ class CommandsFragment : DialogFragment() {
                 )
             )
 
+            //set logic param level
+            val cmdSetLogicParam: IntArray = intArrayOf(2, -1, 151, 12, -1, -1, -1, -1, -1, 0, 0, 3)
+
+            commands.add(
+                Command(
+                    resources.getString(R.string.set_logic_param),
+                    cmdSetLogicParam,
+                    R.drawable.ic_parameters
+                )
+            )
+
 
         }
         commandsAdapter = CommandAdapter(commands, requireContext()) { command: Command ->

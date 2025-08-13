@@ -147,6 +147,12 @@
     <string name="set_system_time">Set System Time</string>
     <string name="set_snr" translatable="false">Set SNR</string>
     <string name="get_snr" translatable="false">Get SNR</string>
+    <string name="set_logic_param" translatable="false">Set Logic Param</string>
+    <string name="select_car_logic_param" translatable="false">Select car for logic param</string>
+    <string name="select_intruder_logic_param" translatable="false">Select intruder for logic param</string>
+    <string name="count" translatable="false">count</string>
+    <string name="duration" translatable="false">duration</string>
+    <string name="seconds" translatable="false">seconds</string>
 
     <string-array name="car_ids">
         <item>0</item>

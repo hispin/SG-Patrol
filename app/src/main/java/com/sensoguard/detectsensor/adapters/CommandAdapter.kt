@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatButton
@@ -31,10 +32,19 @@ class CommandAdapter(
     var itemClick: (Command) -> Unit
 ) : RecyclerView.Adapter<CommandAdapter.ViewHolder>() {
 
+    var myRv: RecyclerView? = null
+    var myPos: Int? = null
+
+
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        super.onAttachedToRecyclerView(recyclerView)
+        myRv = recyclerView
+    }
 
     override fun onBindViewHolder(holder: CommandAdapter.ViewHolder, position: Int) {
         holder.bindReservation((commands[position]))
         holder.setIsRecyclable(false)
+        myPos = position
     }
 
     override fun getItemCount(): Int {
@@ -72,12 +82,16 @@ class CommandAdapter(
         private var spIntruderSens: AppCompatSpinner? = null
         private var etIntruderSnr: AppCompatEditText? = null
         private var btnSendCmd: AppCompatButton? = null
+        private var llCarLogicParam: LinearLayout? = null
+        private var llIntruderLogicParam: LinearLayout? = null
+        private var etSeconds: AppCompatEditText? = null
 
         init {
             itemView.setOnClickListener {
 
                 if (commands[adapterPosition].commandName == context.resources.getString(R.string.set_sens_level)
                     || commands[adapterPosition].commandName == context.resources.getString(R.string.set_snr)
+                    || commands[adapterPosition].commandName == context.resources.getString(R.string.set_logic_param)
                 ) {
                     commands[adapterPosition].isExpand = !commands[adapterPosition].isExpand
                     //Bug fixed:when expand the command ,zero the car and intruder selection (for update ses command)
@@ -113,6 +127,11 @@ class CommandAdapter(
             tvSelectIntruder = _itemView.findViewById(R.id.tvSelectIntruder)
             spIntruderSens = _itemView.findViewById(R.id.spIntruderSens)
             etIntruderSnr = _itemView.findViewById(R.id.etIntruderSnr)
+
+            llCarLogicParam = _itemView.findViewById(R.id.llCarLogicParam)
+            llIntruderLogicParam = _itemView.findViewById(R.id.llIntruderLogicParam)
+            etSeconds = _itemView.findViewById(R.id.etSeconds)
+
             //set the last selection as long as the command of update sens is open
 
             if (commands[adapterPosition].commandName == context.resources.getString(R.string.set_sens_level)) {
@@ -158,6 +177,9 @@ class CommandAdapter(
                         etCarSnr?.visibility = View.GONE
                         spIntruderSens?.visibility = View.VISIBLE
                         etIntruderSnr?.visibility = View.GONE
+                        llCarLogicParam?.visibility = View.GONE
+                        llIntruderLogicParam?.visibility = View.GONE
+                        etSeconds?.visibility = View.GONE
                         tvSelectCar?.text = context.resources.getString(R.string.select_car_sens)
                         tvSelectIntruder?.text =
                             context.resources.getString(R.string.select_intruder_sens)
@@ -168,10 +190,27 @@ class CommandAdapter(
                         etCarSnr?.visibility = View.VISIBLE
                         spIntruderSens?.visibility = View.GONE
                         etIntruderSnr?.visibility = View.VISIBLE
+                        llCarLogicParam?.visibility = View.GONE
+                        llIntruderLogicParam?.visibility = View.GONE
+                        etSeconds?.visibility = View.GONE
                         tvSelectCar?.text = context.resources.getString(R.string.select_car_snr)
                         tvSelectIntruder?.text =
                             context.resources.getString(R.string.select_intruder_snr)
 
+                    }
+
+                    context.resources.getString(R.string.set_logic_param) -> {
+                        spCarSens?.visibility = View.GONE
+                        etCarSnr?.visibility = View.GONE
+                        spIntruderSens?.visibility = View.GONE
+                        etIntruderSnr?.visibility = View.GONE
+                        llCarLogicParam?.visibility = View.VISIBLE
+                        llIntruderLogicParam?.visibility = View.VISIBLE
+                        etSeconds?.visibility = View.VISIBLE
+                        tvSelectCar?.text =
+                            context.resources.getString(R.string.select_car_logic_param)
+                        tvSelectIntruder?.text =
+                            context.resources.getString(R.string.select_intruder_logic_param)
                     }
                 }
             } else {
@@ -180,6 +219,12 @@ class CommandAdapter(
             }
 
             btnSendCmd?.setOnClickListener {
+
+                if (myPos != null) {
+                    myRv?.post(Runnable { myRv?.smoothScrollToPosition(myPos!! + 1) })
+                    //myRv?.scrollToPosition(myPos!! + 1)
+                }
+
                 if (command.commandName == context.resources.getString(R.string.set_sens_level)
                     && spCarSens?.selectedItem.toString() == "0"
                     && spIntruderSens?.selectedItem.toString() == "0"
