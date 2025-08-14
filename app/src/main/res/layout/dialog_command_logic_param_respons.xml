@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="300dp"
+        android:layout_height="370dp"
+        android:orientation="vertical">
+
+
+    <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvCommandTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center_horizontal"
+            android:lineSpacingExtra="5.6sp"
+            android:text="@string/get_logic_param_level_rsp"
+            android:textColor="@color/medium_green"
+            android:textSize="15.3sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+    <ImageView
+            android:id="@+id/ivCar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:contentDescription="@string/des"
+            android:lineSpacingExtra="-9.9sp"
+            android:src="@drawable/ic_alarm_car"
+            android:textColor="@color/black"
+            android:textSize="14.7sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvCommandTitle" />
+
+    <LinearLayout
+            android:id="@+id/llCarValue"
+            android:layout_width="170dp"
+            android:layout_height="30dp"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="@+id/ivCar"
+            app:layout_constraintStart_toStartOf="@+id/ivCar"
+            app:layout_constraintTop_toBottomOf="@+id/ivCar">
+
+        <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvCarCountTitle"
+                android:layout_width="50dp"
+                android:layout_height="30dp"
+                android:text="@string/count"
+                android:gravity="center"
+                android:textSize="14.7sp" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvCarCount"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@drawable/edit_text_border"
+                android:gravity="center"
+                android:textSize="14.7sp" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvCarDurationTitle"
+                android:layout_width="60dp"
+                android:layout_height="30dp"
+                android:text="@string/duration"
+                android:gravity="center"
+                android:textSize="14.7sp" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvCarDuration"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@drawable/edit_text_border"
+                android:gravity="center"
+                android:textSize="14.7sp" />
+    </LinearLayout>
+
+    <ImageView
+            android:id="@+id/ivIntruder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:contentDescription="@string/des"
+            android:src="@drawable/ic_alarm_intruder"
+            app:layout_constraintEnd_toEndOf="@+id/ivCar"
+            app:layout_constraintStart_toStartOf="@+id/ivCar"
+            app:layout_constraintTop_toBottomOf="@+id/llCarValue" />
+
+    <LinearLayout
+            android:id="@+id/llIntruderValue"
+            android:layout_width="170dp"
+            android:layout_height="30dp"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="@+id/ivIntruder"
+            app:layout_constraintStart_toStartOf="@+id/ivIntruder"
+            app:layout_constraintTop_toBottomOf="@+id/ivIntruder">
+
+        <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvIntruderCountTitle"
+                android:layout_width="50dp"
+                android:layout_height="30dp"
+                android:text="@string/count"
+                android:gravity="center"
+                android:textSize="14.7sp" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvIntruderCount"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@drawable/edit_text_border"
+                android:gravity="center"
+                android:textSize="14.7sp" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvIntruderDurationTitle"
+                android:layout_width="60dp"
+                android:layout_height="30dp"
+                android:text="@string/duration"
+                android:gravity="center"
+                android:textSize="14.7sp" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvIntruderDuration"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@drawable/edit_text_border"
+                android:gravity="center"
+                android:textSize="14.7sp" />
+    </LinearLayout>
+
+    <LinearLayout
+            android:id="@+id/llSecond"
+            android:layout_width="170dp"
+            android:layout_height="30dp"
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/llIntruderValue">
+
+        <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvSecondsTitle"
+                android:layout_width="60dp"
+                android:layout_height="30dp"
+                android:text="@string/seconds"
+                android:gravity="center"
+                android:textSize="14.7sp" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvSeconds"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@drawable/edit_text_border"
+                android:gravity="center"
+                android:textSize="14.7sp" />
+
+    </LinearLayout>
+
+    <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnClose"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:background="@color/green1"
+            android:lineSpacingExtra="-9.9sp"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:text="@string/close"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="14.7sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/llSecond" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

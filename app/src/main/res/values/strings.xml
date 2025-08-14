@@ -123,6 +123,7 @@
     <string name="no_selected_sensor">"You did not select a sensor"</string>
     <string name="get_sens_level_rsp">Get Sens Level Response</string>
     <string name="get_snr_level_rsp" translatable="false">Get Snr Level Response</string>
+    <string name="get_logic_param_level_rsp" translatable="false">Get Logic Param Level Response</string>
     <string name="close">Close</string>
     <string name="set_sens_level">Set Sens Level</string>
     <string name="select_car_sens">Select sens for alarm car</string>

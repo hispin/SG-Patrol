@@ -636,6 +636,30 @@ class CommandsFragment : DialogFragment() {
                         commandsAdapter?.notifyDataSetChanged()
                     }
 
+                } else if (arr != null && arr.size == 12 && arr[2].toUByte()
+                        .toInt() == GET_LOGIC_PARAM
+                ) {
+                    if (UserSession.instance.myCommand?.state == PROCESS_STATE) {
+                        //stop progress bar
+                        UserSession.instance.myCommand?.state = SUCCESS_STATE
+                        commandsAdapter?.notifyDataSetChanged()
+
+
+                        val countCar = arr[4]
+                        val durationCar = arr[5]
+                        val countIntruder = arr[6]
+                        val durationIntruder = arr[7]
+                        val seconds = arr[8]
+
+
+                        showResponseInDialog(
+                            countCar,
+                            durationCar,
+                            countIntruder,
+                            durationIntruder,
+                            seconds
+                        )
+                    }
                 }
                 //time out (no max)
             } else if (inn.action == ACTION_INTERVAL) {
@@ -708,20 +732,34 @@ class CommandsFragment : DialogFragment() {
         commandsAdapter?.notifyDataSetChanged()
     }
 
-    //show dialog to show response
-    private fun showResponseInDialog(carV: Int, intruderV: Int) {
+    //show dialog to show response of logic param
+    private fun showResponseInDialog(
+        countCar: Int,
+        durationCar: Int,
+        countIntruder: Int,
+        durationIntruder: Int,
+        seconds: Int
+    ) {
 
         if (this@CommandsFragment.context != null) {
             val dialog = Dialog(this@CommandsFragment.requireContext())
-            dialog.setContentView(R.layout.dialog_command_response)
+            dialog.setContentView(R.layout.dialog_command_logic_param_respons)
 
             dialog.setCancelable(true)
 
 
-            val tvCarValue = dialog.findViewById<AppCompatTextView>(R.id.tvCarValue)
-                val tvIntruderValue = dialog.findViewById<AppCompatTextView>(R.id.tvIntruderValue)
-                tvCarValue.text = carV.toString()
-                tvIntruderValue.text = intruderV.toString()
+            val tvCommandTitle = dialog.findViewById<AppCompatTextView>(R.id.tvCommandTitle)
+            tvCommandTitle.text = resources.getString(R.string.get_snr_level_rsp)
+            val tvCarCount = dialog.findViewById<AppCompatTextView>(R.id.tvCarCount)
+            val tvCarDuration = dialog.findViewById<AppCompatTextView>(R.id.tvCarDuration)
+            val tvIntruderCount = dialog.findViewById<AppCompatTextView>(R.id.tvIntruderCount)
+            val tvIntruderDuration = dialog.findViewById<AppCompatTextView>(R.id.tvIntruderDuration)
+            val tvSeconds = dialog.findViewById<AppCompatTextView>(R.id.tvSeconds)
+            tvCarCount.text = countCar.toString()
+            tvCarDuration.text = durationCar.toString()
+            tvIntruderCount.text = countIntruder.toString()
+            tvIntruderDuration.text = durationIntruder.toString()
+            tvSeconds.text = seconds.toString()
 
                 val btnClose = dialog.findViewById<AppCompatButton>(R.id.btnClose)
                 btnClose.setOnClickListener {
@@ -744,6 +782,30 @@ class CommandsFragment : DialogFragment() {
 
             val tvCommandTitle = dialog.findViewById<AppCompatTextView>(R.id.tvCommandTitle)
             tvCommandTitle.text = resources.getString(R.string.get_snr_level_rsp)
+            val tvCarValue = dialog.findViewById<AppCompatTextView>(R.id.tvCarValue)
+            val tvIntruderValue = dialog.findViewById<AppCompatTextView>(R.id.tvIntruderValue)
+            tvCarValue.text = carV.toString()
+            tvIntruderValue.text = intruderV.toString()
+
+            val btnClose = dialog.findViewById<AppCompatButton>(R.id.btnClose)
+            btnClose.setOnClickListener {
+                dialog.dismiss()
+            }
+
+            dialog.show()
+        }
+    }
+
+    //show dialog to show response
+    private fun showResponseInDialog(carV: Int, intruderV: Int) {
+
+        if (this@CommandsFragment.context != null) {
+            val dialog = Dialog(this@CommandsFragment.requireContext())
+            dialog.setContentView(R.layout.dialog_command_response)
+
+            dialog.setCancelable(true)
+
+
             val tvCarValue = dialog.findViewById<AppCompatTextView>(R.id.tvCarValue)
             val tvIntruderValue = dialog.findViewById<AppCompatTextView>(R.id.tvIntruderValue)
             tvCarValue.text = carV.toString()
