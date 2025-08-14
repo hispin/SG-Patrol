@@ -85,6 +85,11 @@ class CommandAdapter(
         private var llCarLogicParam: LinearLayout? = null
         private var llIntruderLogicParam: LinearLayout? = null
         private var etSeconds: AppCompatEditText? = null
+        private var etCarCount: AppCompatEditText? = null
+        private var etCarDuration: AppCompatEditText? = null
+        private var etIntruderCount: AppCompatEditText? = null
+        private var etIntruderDuration: AppCompatEditText? = null
+
 
         init {
             itemView.setOnClickListener {
@@ -131,6 +136,10 @@ class CommandAdapter(
             llCarLogicParam = _itemView.findViewById(R.id.llCarLogicParam)
             llIntruderLogicParam = _itemView.findViewById(R.id.llIntruderLogicParam)
             etSeconds = _itemView.findViewById(R.id.etSeconds)
+            etCarCount = _itemView.findViewById(R.id.etCarCount)
+            etCarDuration = _itemView.findViewById(R.id.etCarDuration)
+            etIntruderCount = _itemView.findViewById(R.id.etIntruderCount)
+            etIntruderDuration = _itemView.findViewById(R.id.etIntruderDuration)
 
             //set the last selection as long as the command of update sens is open
 
@@ -271,6 +280,41 @@ class CommandAdapter(
                             commands[adapterPosition].commandContent?.set(
                                 6,
                                 carSrn
+                            )
+                            itemClick.invoke(commands[adapterPosition])
+                        }
+                        context.resources.getString(R.string.set_logic_param) -> {
+                            var countCar = etCarCount?.text.toString().toInt()
+                            var countIntruder = etIntruderCount?.text.toString().toInt()
+                            var durationCar = etCarDuration?.text.toString().toInt()
+                            var durationIntruder = etIntruderDuration?.text.toString().toInt()
+                            var seconds = etSeconds?.text.toString().toInt()
+                            commands[adapterPosition].logicCountCar = countCar
+                            commands[adapterPosition].logicdurationCar = durationCar
+                            commands[adapterPosition].logicCountIntruder = countIntruder
+                            commands[adapterPosition].logicdurationIntruder = durationIntruder
+                            commands[adapterPosition].logicSecomds = seconds
+
+
+                            commands[adapterPosition].commandContent?.set(
+                                4,
+                                countCar
+                            )
+                            commands[adapterPosition].commandContent?.set(
+                                5,
+                                durationCar
+                            )
+                            commands[adapterPosition].commandContent?.set(
+                                6,
+                                countIntruder
+                            )
+                            commands[adapterPosition].commandContent?.set(
+                                7,
+                                durationIntruder
+                            )
+                            commands[adapterPosition].commandContent?.set(
+                                8,
+                                seconds
                             )
                             itemClick.invoke(commands[adapterPosition])
                         }

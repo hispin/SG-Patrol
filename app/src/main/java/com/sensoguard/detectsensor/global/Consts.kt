@@ -94,6 +94,7 @@ const val SET_SENS_LEVEL = 155
 const val SET_TIME_SYSTEM = 103
 const val SET_SNR_SYSTEM = 153
 const val GET_SNR_SYSTEM = 53
+const val SET_LOGIC_PARAM = 151
 
 const val GET_SENS_LEVEL_RESPONSE = "getSensLevelResponse"
 

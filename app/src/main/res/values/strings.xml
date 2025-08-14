@@ -153,6 +153,7 @@
     <string name="count" translatable="false">count</string>
     <string name="duration" translatable="false">duration</string>
     <string name="seconds" translatable="false">seconds</string>
+    <string name="get_logic_param" translatable="false">Get Logic Param</string>
 
     <string-array name="car_ids">
         <item>0</item>

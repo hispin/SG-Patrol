@@ -13,4 +13,9 @@ class Command(val commandName: String, val commandContent: IntArray?, val icId: 
     var sensIntruder = 0
     var snrCar = 0
     var snrIntruder: Float = 0f
+    var logicCountCar = 0
+    var logicdurationCar = 0
+    var logicCountIntruder = 0
+    var logicdurationIntruder = 0
+    var logicSecomds = 0
 }

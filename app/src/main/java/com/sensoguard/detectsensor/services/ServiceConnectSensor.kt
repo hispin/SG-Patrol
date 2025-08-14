@@ -57,6 +57,7 @@ import com.sensoguard.detectsensor.global.RADAR_TYPE
 import com.sensoguard.detectsensor.global.RESET_MARKERS_KEY
 import com.sensoguard.detectsensor.global.SEISMIC_TYPE
 import com.sensoguard.detectsensor.global.SENSOR_TYPE_INDEX_KEY
+import com.sensoguard.detectsensor.global.SET_LOGIC_PARAM
 import com.sensoguard.detectsensor.global.SET_RF_ON_TIMER
 import com.sensoguard.detectsensor.global.SET_SENS_LEVEL
 import com.sensoguard.detectsensor.global.SET_SNR_SYSTEM
@@ -771,6 +772,28 @@ class ServiceConnectSensor : ParentService() {
                         val inn = Intent(ACTION_USB_RESPONSE_CACHE)
                         //inn.putIntegerArrayListExtra("myImage",myBytesInt)
                         inn.putExtra(USB_CACHE_RESPONSE_KEY, arrNine)
+                        sendBroadcast(inn)
+//                        //TODO :test if success or failed
+//                        //parsingBits(arrSeven)
+                    }
+                    arr = ArrayList()
+                } else if (appCode == SET_LOGIC_PARAM && arr.size % 7 == 0) {
+                    while (arr.size >= 7) {
+                        val arrSeven = ArrayList<Int>()
+
+                        var i = 0
+                        val iteratorList = arr.listIterator()
+                        while (iteratorList != null && iteratorList.hasNext() && i < 7) {
+                            i++
+                            val bitsItem = iteratorList.next()
+                            arrSeven.add(bitsItem)
+                            iteratorList.remove()
+                        }
+
+                        //send the response
+                        val inn = Intent(ACTION_USB_RESPONSE_CACHE)
+                        //inn.putIntegerArrayListExtra("myImage",myBytesInt)
+                        inn.putExtra(USB_CACHE_RESPONSE_KEY, arrSeven)
                         sendBroadcast(inn)
 //                        //TODO :test if success or failed
 //                        //parsingBits(arrSeven)

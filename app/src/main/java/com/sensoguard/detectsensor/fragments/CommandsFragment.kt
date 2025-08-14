@@ -400,6 +400,17 @@ class CommandsFragment : DialogFragment() {
                 )
             )
 
+            //get logic param level
+            val cmdGetLogicParam: IntArray = intArrayOf(2, 10, 51, 6, 0, 3)
+
+            commands.add(
+                Command(
+                    resources.getString(R.string.get_logic_param),
+                    cmdGetLogicParam,
+                    R.drawable.ic_parameters
+                )
+            )
+
 
         }
         commandsAdapter = CommandAdapter(commands, requireContext()) { command: Command ->
@@ -613,6 +624,16 @@ class CommandsFragment : DialogFragment() {
                         val intruder: Float = arr[4].toFloat() + temp
 
                         showResponseInDialog(arr[6], intruder)
+                    }
+
+                } else if (arr != null && arr.size == 7 && arr[2].toUByte()
+                        .toInt() == SET_LOGIC_PARAM
+                //&& arr[4].toUByte().toInt() == 1
+                ) {
+                    if (UserSession.instance.myCommand?.state == PROCESS_STATE) {
+                        //stop progress bar
+                        UserSession.instance.myCommand?.state = SUCCESS_STATE
+                        commandsAdapter?.notifyDataSetChanged()
                     }
 
                 }
