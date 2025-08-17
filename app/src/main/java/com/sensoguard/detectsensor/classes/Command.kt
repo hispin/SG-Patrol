@@ -18,4 +18,5 @@ class Command(val commandName: String, val commandContent: IntArray?, val icId: 
     var logicCountIntruder = 0
     var logicdurationIntruder = 0
     var logicSecomds = 0
+    var minPower = 0
 }

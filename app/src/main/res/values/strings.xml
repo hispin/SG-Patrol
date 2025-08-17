@@ -127,9 +127,9 @@
     <string name="close">Close</string>
     <string name="set_sens_level">Set Sens Level</string>
     <string name="select_car_sens">Select sens for alarm car</string>
-    <string name="select_car_snr" translatable="false">Select snr for alarm car</string>
+    <string name="select_car_snr" translatable="false">Set SNR Car</string>
     <string name="select_intruder_sens">Select sens for intruder</string>
-    <string name="select_intruder_snr" translatable="false">Select snr for intruder</string>
+    <string name="select_intruder_snr" translatable="false">Set SNR Intruder</string>
     <string name="error_zero_sens">Zero can not be sent both for alert and for car and intruder</string>
     <string name="connect">Connect</string>
     <string name="disconnect">disconnect</string>
@@ -149,12 +149,14 @@
     <string name="set_snr" translatable="false">Set SNR</string>
     <string name="get_snr" translatable="false">Get SNR</string>
     <string name="set_logic_param" translatable="false">Set Logic Param</string>
-    <string name="select_car_logic_param" translatable="false">Select car for logic param</string>
-    <string name="select_intruder_logic_param" translatable="false">Select intruder for logic param</string>
+    <string name="select_car_logic_param" translatable="false">Logic param Car</string>
+    <string name="select_intruder_logic_param" translatable="false">Logic param Intruder</string>
     <string name="count" translatable="false">count</string>
     <string name="duration" translatable="false">duration</string>
-    <string name="seconds" translatable="false">seconds</string>
+    <string name="seconds" translatable="false">Suspend</string>
     <string name="get_logic_param" translatable="false">Get Logic Param</string>
+    <string name="set_min_power" translatable="false">Set Min Power</string>
+    <string name="min_power" translatable="false">Min Power</string>
 
     <string-array name="car_ids">
         <item>0</item>

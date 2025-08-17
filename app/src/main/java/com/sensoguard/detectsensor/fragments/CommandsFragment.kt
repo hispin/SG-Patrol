@@ -379,7 +379,7 @@ class CommandsFragment : DialogFragment() {
             )
 
             //get snr level
-            val cmdGetSnr: IntArray = intArrayOf(2, -1, 153, 7, 1, 1, 3)
+            val cmdGetSnr: IntArray = intArrayOf(2, -1, 53, 6, 0, 3)
 
             commands.add(
                 Command(
@@ -401,12 +401,23 @@ class CommandsFragment : DialogFragment() {
             )
 
             //get logic param level
-            val cmdGetLogicParam: IntArray = intArrayOf(2, 10, 51, 6, 0, 3)
+            val cmdGetLogicParam: IntArray = intArrayOf(2, -1, 51, 6, 0, 3)
 
             commands.add(
                 Command(
                     resources.getString(R.string.get_logic_param),
                     cmdGetLogicParam,
+                    R.drawable.ic_parameters
+                )
+            )
+
+            //set min power
+            val cmdSetMinPower: IntArray = intArrayOf(2, -1, 156, 10, -1, -1, 0, 3, 0, 3)
+
+            commands.add(
+                Command(
+                    resources.getString(R.string.set_min_power),
+                    cmdSetMinPower,
                     R.drawable.ic_parameters
                 )
             )
@@ -660,6 +671,17 @@ class CommandsFragment : DialogFragment() {
                             seconds
                         )
                     }
+                    //set min power reponse
+                } else if (arr != null && arr.size == 7 && arr[2].toUByte()
+                        .toInt() == SET_MIN_POWER
+                //&& arr[4].toUByte().toInt() == 1
+                ) {
+                    if (UserSession.instance.myCommand?.state == PROCESS_STATE) {
+                        //stop progress bar
+                        UserSession.instance.myCommand?.state = SUCCESS_STATE
+                        commandsAdapter?.notifyDataSetChanged()
+                    }
+
                 }
                 //time out (no max)
             } else if (inn.action == ACTION_INTERVAL) {

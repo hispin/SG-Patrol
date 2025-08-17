@@ -97,6 +97,7 @@ class CommandAdapter(
                 if (commands[adapterPosition].commandName == context.resources.getString(R.string.set_sens_level)
                     || commands[adapterPosition].commandName == context.resources.getString(R.string.set_snr)
                     || commands[adapterPosition].commandName == context.resources.getString(R.string.set_logic_param)
+                    || commands[adapterPosition].commandName == context.resources.getString(R.string.set_min_power)
                 ) {
                     commands[adapterPosition].isExpand = !commands[adapterPosition].isExpand
                     //Bug fixed:when expand the command ,zero the car and intruder selection (for update ses command)
@@ -221,6 +222,18 @@ class CommandAdapter(
                         tvSelectIntruder?.text =
                             context.resources.getString(R.string.select_intruder_logic_param)
                     }
+                    context.resources.getString(R.string.set_min_power) -> {
+                        spCarSens?.visibility = View.GONE
+                        etCarSnr?.visibility = View.VISIBLE
+                        spIntruderSens?.visibility = View.GONE
+                        etIntruderSnr?.visibility = View.GONE
+                        llCarLogicParam?.visibility = View.GONE
+                        llIntruderLogicParam?.visibility = View.GONE
+                        etSeconds?.visibility = View.GONE
+                        tvSelectCar?.text =
+                            context.resources.getString(R.string.min_power)
+                        tvSelectIntruder?.visibility = View.GONE
+                    }
                 }
             } else {
                 TransitionManager.beginDelayedTransition(myCardView!!, AutoTransition())
@@ -316,6 +329,34 @@ class CommandAdapter(
                                 8,
                                 seconds
                             )
+                            itemClick.invoke(commands[adapterPosition])
+                        }
+                        //set min power
+                        context.resources.getString(R.string.set_min_power) -> {
+
+                            var minPower = etCarSnr?.text.toString().toInt()
+                            if (minPower <= 256) {
+                                commands[adapterPosition].minPower = minPower
+                                commands[adapterPosition].commandContent?.set(
+                                    4,
+                                    minPower
+                                )
+                                commands[adapterPosition].commandContent?.set(
+                                    5,
+                                    0
+                                )
+                            } else {
+                                val promote = minPower / 256
+                                val reminder = minPower % 256
+                                commands[adapterPosition].commandContent?.set(
+                                    4,
+                                    reminder
+                                )
+                                commands[adapterPosition].commandContent?.set(
+                                    5,
+                                    promote
+                                )
+                            }
                             itemClick.invoke(commands[adapterPosition])
                         }
                     }
