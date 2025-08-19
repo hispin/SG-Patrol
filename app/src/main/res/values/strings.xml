@@ -122,6 +122,7 @@
     <string name="get_sens_level">"Get Sens Level"</string>
     <string name="no_selected_sensor">"You did not select a sensor"</string>
     <string name="get_sens_level_rsp">Get Sens Level Response</string>
+    <string name="get_min_power_rsp" translatable="false">Get Min Power Response</string>
     <string name="get_snr_level_rsp" translatable="false">Get Snr Level Response</string>
     <string name="get_logic_param_level_rsp" translatable="false">Get Logic Param Level Response</string>
     <string name="close">Close</string>
@@ -156,6 +157,7 @@
     <string name="seconds" translatable="false">Suspend</string>
     <string name="get_logic_param" translatable="false">Get Logic Param</string>
     <string name="set_min_power" translatable="false">Set Min Power</string>
+    <string name="get_min_power" translatable="false">Get Min Power</string>
     <string name="min_power" translatable="false">Min Power</string>
 
     <string-array name="car_ids">

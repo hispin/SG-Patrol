@@ -97,6 +97,7 @@ const val GET_SNR_SYSTEM = 53
 const val SET_LOGIC_PARAM = 151
 const val GET_LOGIC_PARAM = 51
 const val SET_MIN_POWER = 156
+const val GET_MIN_POWER = 56
 
 const val GET_SENS_LEVEL_RESPONSE = "getSensLevelResponse"
 

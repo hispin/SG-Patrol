@@ -422,6 +422,17 @@ class CommandsFragment : DialogFragment() {
                 )
             )
 
+            //get min power
+            val cmdGetMinPower: IntArray = intArrayOf(2, -1, 56, 6, 0, 3)
+
+            commands.add(
+                Command(
+                    resources.getString(R.string.get_min_power),
+                    cmdGetMinPower,
+                    R.drawable.ic_parameters
+                )
+            )
+
 
         }
         commandsAdapter = CommandAdapter(commands, requireContext()) { command: Command ->
@@ -682,6 +693,21 @@ class CommandsFragment : DialogFragment() {
                         commandsAdapter?.notifyDataSetChanged()
                     }
 
+                } else if (arr != null && arr.size == 8 && arr[2].toUByte()
+                        .toInt() == GET_MIN_POWER
+                ) {
+                    if (UserSession.instance.myCommand?.state == PROCESS_STATE) {
+                        //stop progress bar
+                        UserSession.instance.myCommand?.state = SUCCESS_STATE
+                        commandsAdapter?.notifyDataSetChanged()
+
+                        val reminder = arr[4]
+                        val promote = arr[5]
+
+                        showResponseInDialog(promote * 256 + reminder)
+
+                    }
+                    //set min power reponse
                 }
                 //time out (no max)
             } else if (inn.action == ACTION_INTERVAL) {
@@ -791,6 +817,31 @@ class CommandsFragment : DialogFragment() {
                 dialog.show()
             }
         }
+
+
+    //show dialog to show min power response
+    private fun showResponseInDialog(minPower: Int) {
+
+        if (this@CommandsFragment.context != null) {
+            val dialog = Dialog(this@CommandsFragment.requireContext())
+            dialog.setContentView(R.layout.dialog_command_min_power_response)
+
+            dialog.setCancelable(true)
+
+            val tvCommandTitle = dialog.findViewById<AppCompatTextView>(R.id.tvCommandTitle)
+            tvCommandTitle.text = resources.getString(R.string.get_min_power_rsp)
+            val tvMinPowerValue = dialog.findViewById<AppCompatTextView>(R.id.tvMinPowerValue)
+            tvMinPowerValue.text = minPower.toString()
+
+            val btnClose = dialog.findViewById<AppCompatButton>(R.id.btnClose)
+            btnClose.setOnClickListener {
+                dialog.dismiss()
+            }
+
+            dialog.show()
+        }
+    }
+
 
     //show dialog to show snr response
     private fun showResponseInDialog(carV: Int, intruderV: Float) {
