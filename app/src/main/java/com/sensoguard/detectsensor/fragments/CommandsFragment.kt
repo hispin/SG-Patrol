@@ -703,6 +703,7 @@ class CommandsFragment : DialogFragment() {
 
                         val reminder = arr[4]
                         val promote = arr[5]
+                        //showToast(requireActivity(),reminder.toString()+":"+promote.toString())
 
                         showResponseInDialog(promote * 256 + reminder)
 

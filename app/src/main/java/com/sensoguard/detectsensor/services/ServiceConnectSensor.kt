@@ -848,6 +848,8 @@ class ServiceConnectSensor : ParentService() {
                     arr = ArrayList()
                     //get min power
                 } else if (appCode == GET_MIN_POWER && arr.size % 8 == 0) {
+                    //if the number is bigger then 127
+                    arr[4] = arr[4].toUByte().toInt()
                     while (arr.size >= 8) {
                         val arrEight = ArrayList<Int>()
 
