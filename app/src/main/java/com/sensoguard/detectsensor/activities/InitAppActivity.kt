@@ -13,6 +13,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.sensoguard.detectsensor.R
 import com.sensoguard.detectsensor.classes.CryptoHandler
+import com.sensoguard.detectsensor.classes.Sensor
 import com.sensoguard.detectsensor.global.ACTIVATION_CODE_KEY
 import com.sensoguard.detectsensor.global.IMEI_KEY
 import com.sensoguard.detectsensor.global.NO_DATA
@@ -21,6 +22,7 @@ import com.sensoguard.detectsensor.global.STOP_READ_DATA_KEY
 import com.sensoguard.detectsensor.global.USB_DEVICE_CONNECT_STATUS
 import com.sensoguard.detectsensor.global.getStringInPreference
 import com.sensoguard.detectsensor.global.setBooleanInPreference
+import com.sensoguard.detectsensor.global.storeSensorsToLocally
 
 class InitAppActivity : ParentActivity() {
 
@@ -61,8 +63,22 @@ class InitAppActivity : ParentActivity() {
                 openActivation()
             }
         }else{
+            setDefaultNumberOfSensors()
             openActivation()
         }
+    }
+
+    /**
+     * set the default number of sensors
+     */
+    private fun setDefaultNumberOfSensors() {
+        val sensors = ArrayList<Sensor>()
+        //add numSensors sensors
+        for (sensorId in 1 until 5 + 1) {
+            //add it just if not exist
+            sensors.add(Sensor(sensorId.toString()))
+        }
+        storeSensorsToLocally(sensors, this)
     }
 
     //open activation screen

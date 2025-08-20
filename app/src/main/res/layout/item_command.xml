@@ -162,7 +162,8 @@
                             android:inputType="number"
                             app:layout_constraintEnd_toEndOf="@+id/tvSelectCar"
                             app:layout_constraintStart_toStartOf="@+id/tvSelectCar"
-                            app:layout_constraintTop_toBottomOf="@+id/tvSelectCar" />
+                            app:layout_constraintTop_toBottomOf="@+id/tvSelectCar"
+                            android:imeOptions="actionDone" />
 
                     <!--                    car logic param-->
                     <LinearLayout
@@ -183,7 +184,8 @@
                                 android:background="@drawable/shape_bg_subjects_spinner"
                                 android:inputType="number"
                                 android:hint="@string/count"
-                                android:layout_weight="0.5" />
+                                android:layout_weight="0.5"
+                                android:imeOptions="actionDone" />
 
                         <androidx.appcompat.widget.AppCompatEditText
                                 android:id="@+id/etCarDuration"
@@ -194,7 +196,8 @@
                                 android:inputType="number"
                                 android:hint="@string/duration"
                                 android:layout_marginStart="5dp"
-                                android:layout_weight="0.5" />
+                                android:layout_weight="0.5"
+                                android:imeOptions="actionDone" />
                     </LinearLayout>
                 </FrameLayout>
 
@@ -241,7 +244,8 @@
                             app:layout_constraintEnd_toEndOf="@+id/spCarSens"
                             app:layout_constraintStart_toStartOf="@+id/spCarSens"
                             app:layout_constraintTop_toBottomOf="@+id/tvSelectIntruder"
-                            tools:listitem="@layout/support_simple_spinner_dropdown_item" />
+                            tools:listitem="@layout/support_simple_spinner_dropdown_item"
+                            android:imeOptions="actionDone" />
 
                     <!--                    intruder logic param-->
                     <LinearLayout
@@ -264,7 +268,8 @@
                                 android:background="@drawable/shape_bg_subjects_spinner"
                                 android:inputType="number"
                                 android:hint="@string/count"
-                                android:layout_weight="0.5" />
+                                android:layout_weight="0.5"
+                                android:imeOptions="actionDone" />
 
                         <androidx.appcompat.widget.AppCompatEditText
                                 android:id="@+id/etIntruderDuration"
@@ -275,7 +280,8 @@
                                 android:inputType="number"
                                 android:hint="@string/duration"
                                 android:layout_marginStart="5dp"
-                                android:layout_weight="0.5" />
+                                android:layout_weight="0.5"
+                                android:imeOptions="actionDone" />
 
                     </LinearLayout>
 
@@ -292,7 +298,8 @@
                         android:hint="@string/seconds"
                         app:layout_constraintTop_toTopOf="@+id/frCarSens"
                         app:layout_constraintBottom_toBottomOf="@+id/frCarSens"
-                        app:layout_constraintStart_toStartOf="@+id/btnSendCmd" />
+                        app:layout_constraintStart_toStartOf="@+id/btnSendCmd"
+                        android:imeOptions="actionDone" />
 
                 <androidx.appcompat.widget.AppCompatButton
                         android:id="@+id/btnSendCmd"

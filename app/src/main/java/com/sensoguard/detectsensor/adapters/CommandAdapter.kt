@@ -185,11 +185,17 @@ class CommandAdapter(
                     context.resources.getString(R.string.set_sens_level) -> {
                         spCarSens?.visibility = View.VISIBLE
                         etCarSnr?.visibility = View.GONE
+                        etCarSnr?.focusable = View.NOT_FOCUSABLE
+                        etCarSnr?.isFocusableInTouchMode = false
                         spIntruderSens?.visibility = View.VISIBLE
                         etIntruderSnr?.visibility = View.GONE
+                        etIntruderSnr?.focusable = View.NOT_FOCUSABLE
+                        etIntruderSnr?.isFocusableInTouchMode = false
                         llCarLogicParam?.visibility = View.GONE
                         llIntruderLogicParam?.visibility = View.GONE
                         etSeconds?.visibility = View.GONE
+                        etSeconds?.focusable = View.NOT_FOCUSABLE
+                        etSeconds?.isFocusableInTouchMode = false
                         tvSelectCar?.text = context.resources.getString(R.string.select_car_sens)
                         tvSelectIntruder?.text =
                             context.resources.getString(R.string.select_intruder_sens)
@@ -198,11 +204,17 @@ class CommandAdapter(
                     context.resources.getString(R.string.set_snr) -> {
                         spCarSens?.visibility = View.GONE
                         etCarSnr?.visibility = View.VISIBLE
+                        etCarSnr?.focusable = View.FOCUSABLE
+                        etCarSnr?.isFocusableInTouchMode = true
                         spIntruderSens?.visibility = View.GONE
                         etIntruderSnr?.visibility = View.VISIBLE
+                        etIntruderSnr?.focusable = View.FOCUSABLE
+                        etIntruderSnr?.isFocusableInTouchMode = true
                         llCarLogicParam?.visibility = View.GONE
                         llIntruderLogicParam?.visibility = View.GONE
                         etSeconds?.visibility = View.GONE
+                        etSeconds?.focusable = View.NOT_FOCUSABLE
+                        etSeconds?.isFocusableInTouchMode = false
                         tvSelectCar?.text = context.resources.getString(R.string.select_car_snr)
                         tvSelectIntruder?.text =
                             context.resources.getString(R.string.select_intruder_snr)
@@ -212,11 +224,17 @@ class CommandAdapter(
                     context.resources.getString(R.string.set_logic_param) -> {
                         spCarSens?.visibility = View.GONE
                         etCarSnr?.visibility = View.GONE
+                        etCarSnr?.focusable = View.NOT_FOCUSABLE
+                        etCarSnr?.isFocusableInTouchMode = false
                         spIntruderSens?.visibility = View.GONE
                         etIntruderSnr?.visibility = View.GONE
+                        etIntruderSnr?.focusable = View.NOT_FOCUSABLE
+                        etIntruderSnr?.isFocusableInTouchMode = false
                         llCarLogicParam?.visibility = View.VISIBLE
                         llIntruderLogicParam?.visibility = View.VISIBLE
                         etSeconds?.visibility = View.VISIBLE
+                        etSeconds?.focusable = View.FOCUSABLE
+                        etSeconds?.isFocusableInTouchMode = true
                         tvSelectCar?.text =
                             context.resources.getString(R.string.select_car_logic_param)
                         tvSelectIntruder?.text =
@@ -225,11 +243,17 @@ class CommandAdapter(
                     context.resources.getString(R.string.set_min_power) -> {
                         spCarSens?.visibility = View.GONE
                         etCarSnr?.visibility = View.VISIBLE
+                        etCarSnr?.focusable = View.FOCUSABLE
+                        etCarSnr?.isFocusableInTouchMode = true
                         spIntruderSens?.visibility = View.GONE
                         etIntruderSnr?.visibility = View.GONE
+                        etIntruderSnr?.focusable = View.NOT_FOCUSABLE
+                        etIntruderSnr?.isFocusableInTouchMode = false
                         llCarLogicParam?.visibility = View.GONE
                         llIntruderLogicParam?.visibility = View.GONE
                         etSeconds?.visibility = View.GONE
+                        etSeconds?.focusable = View.NOT_FOCUSABLE
+                        etSeconds?.isFocusableInTouchMode = false
                         tvSelectCar?.text =
                             context.resources.getString(R.string.min_power)
                         tvSelectIntruder?.visibility = View.GONE

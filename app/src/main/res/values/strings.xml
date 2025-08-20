@@ -27,7 +27,7 @@
     <string name="csv_longitude_title">longitude</string>
     <string name="sensor_table_title">Sensors Table</string>
     <string name="map_title">Map</string>
-    <string name="config_title">Configuration</string>
+    <string name="config_title">Settings</string>
     <string name="alarm_log_title">Alarm Log</string>
     <string name="not_located">Not Located</string>
     <string name="located">Located</string>
