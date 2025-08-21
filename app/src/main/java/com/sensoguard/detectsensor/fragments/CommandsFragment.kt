@@ -17,6 +17,7 @@ import android.view.animation.AnimationUtils
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatSpinner
@@ -729,21 +730,34 @@ class CommandsFragment : DialogFragment() {
                         UserSession.instance.myCommand?.state = SUCCESS_STATE
                         commandsAdapter?.notifyDataSetChanged()
 
+                        if (UserSession.instance.myCommand?.sensorType == SEISMIC_TYPE) {
 
-                        val countCar = arr[4]
-                        val durationCar = arr[5]
-                        val countIntruder = arr[6]
-                        val durationIntruder = arr[7]
-                        val seconds = arr[8]
+                            val countCar = arr[4]
+                            val durationCar = arr[5]
+                            val countIntruder = arr[6]
+                            val durationIntruder = arr[7]
+                            val seconds = arr[8]
 
 
-                        showResponseInDialog(
-                            countCar,
-                            durationCar,
-                            countIntruder,
-                            durationIntruder,
-                            seconds
-                        )
+                            showResponseInDialog(
+                                countCar,
+                                durationCar,
+                                countIntruder,
+                                durationIntruder,
+                                seconds
+                            )
+                        } else if (UserSession.instance.myCommand?.sensorType == RADAR_TYPE
+                            || UserSession.instance.myCommand?.sensorType == PIR_TYPE
+                        ) {
+                            val countIntruder = arr[6]
+                            val durationIntruder = arr[7]
+                            val seconds = arr[8]
+                            showResponseInDialog(
+                                countIntruder,
+                                durationIntruder,
+                                seconds
+                            )
+                        }
                     }
                     //set min power reponse
                 } else if (arr != null && arr.size == 7 && arr[2].toUByte()
@@ -849,6 +863,51 @@ class CommandsFragment : DialogFragment() {
         UserSession.instance.myCommand?.state = TIMEOUT_STATE
         commandsAdapter?.notifyDataSetChanged()
     }
+
+    //show dialog to show response of logic param
+    private fun showResponseInDialog(
+        countIntruder: Int,
+        durationIntruder: Int,
+        seconds: Int
+    ) {
+
+        if (this@CommandsFragment.context != null) {
+            val dialog = Dialog(this@CommandsFragment.requireContext())
+            dialog.setContentView(R.layout.dialog_command_logic_param_respons)
+
+            dialog.setCancelable(true)
+
+
+            val tvCommandTitle = dialog.findViewById<AppCompatTextView>(R.id.tvCommandTitle)
+            val ivCar = dialog.findViewById<ImageView>(R.id.ivCar)
+            ivCar.visibility = View.GONE
+            val tvCarCountTitle = dialog.findViewById<AppCompatTextView>(R.id.tvCarCountTitle)
+            tvCarCountTitle.visibility = View.GONE
+            val tvCarDurationTitle = dialog.findViewById<AppCompatTextView>(R.id.tvCarDurationTitle)
+            tvCarDurationTitle.visibility = View.GONE
+            val ivIntruder = dialog.findViewById<ImageView>(R.id.ivIntruder)
+            ivIntruder.visibility = View.GONE
+            tvCommandTitle.text = resources.getString(R.string.get_logic_param_level_rsp)
+            val tvCarCount = dialog.findViewById<AppCompatTextView>(R.id.tvCarCount)
+            tvCarCount.visibility = View.GONE
+            val tvCarDuration = dialog.findViewById<AppCompatTextView>(R.id.tvCarDuration)
+            tvCarDuration.visibility = View.GONE
+            val tvIntruderCount = dialog.findViewById<AppCompatTextView>(R.id.tvIntruderCount)
+            val tvIntruderDuration = dialog.findViewById<AppCompatTextView>(R.id.tvIntruderDuration)
+            val tvSeconds = dialog.findViewById<AppCompatTextView>(R.id.tvSeconds)
+            tvIntruderCount.text = countIntruder.toString()
+            tvIntruderDuration.text = durationIntruder.toString()
+            tvSeconds.text = seconds.toString()
+
+            val btnClose = dialog.findViewById<AppCompatButton>(R.id.btnClose)
+            btnClose.setOnClickListener {
+                dialog.dismiss()
+            }
+
+            dialog.show()
+        }
+    }
+
 
     //show dialog to show response of logic param
     private fun showResponseInDialog(
