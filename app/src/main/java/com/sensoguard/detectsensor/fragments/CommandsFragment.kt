@@ -209,7 +209,8 @@ class CommandsFragment : DialogFragment() {
                 UserSession.instance.myCommand = Command(
                     resources.getString(R.string.set_ref_timer),
                     cmdSetRefTimer,
-                    R.drawable.ic_parameters
+                    R.drawable.ic_parameters,
+                    selectedSensor?.getTypeID()
                 )
                 UserSession.instance.myCommand?.maxTimeout = maxTimeout
 
@@ -342,7 +343,8 @@ class CommandsFragment : DialogFragment() {
                 Command(
                     resources.getString(R.string.get_sens_level),
                     cmdGetSens,
-                    R.drawable.ic_parameters
+                    R.drawable.ic_parameters,
+                    selectedSensor?.getTypeID()
                 )
             )
             //set sens level
@@ -352,7 +354,8 @@ class CommandsFragment : DialogFragment() {
                 Command(
                     resources.getString(R.string.set_sens_level),
                     cmdSetSens,
-                    R.drawable.ic_parameters
+                    R.drawable.ic_parameters,
+                    selectedSensor?.getTypeID()
                 )
             )
 
@@ -362,7 +365,8 @@ class CommandsFragment : DialogFragment() {
                 Command(
                     resources.getString(R.string.set_system_time),
                     cmdSetSystemTime,
-                    R.drawable.ic_parameters
+                    R.drawable.ic_parameters,
+                    selectedSensor?.getTypeID()
                 )
             )
 
@@ -374,7 +378,8 @@ class CommandsFragment : DialogFragment() {
                 Command(
                     resources.getString(R.string.set_snr),
                     cmdSetSnr,
-                    R.drawable.ic_parameters
+                    R.drawable.ic_parameters,
+                    selectedSensor?.getTypeID()
                 )
             )
 
@@ -385,7 +390,8 @@ class CommandsFragment : DialogFragment() {
                 Command(
                     resources.getString(R.string.get_snr),
                     cmdGetSnr,
-                    R.drawable.ic_parameters
+                    R.drawable.ic_parameters,
+                    selectedSensor?.getTypeID()
                 )
             )
 
@@ -396,7 +402,8 @@ class CommandsFragment : DialogFragment() {
                 Command(
                     resources.getString(R.string.set_logic_param),
                     cmdSetLogicParam,
-                    R.drawable.ic_parameters
+                    R.drawable.ic_parameters,
+                    selectedSensor?.getTypeID()
                 )
             )
 
@@ -407,7 +414,8 @@ class CommandsFragment : DialogFragment() {
                 Command(
                     resources.getString(R.string.get_logic_param),
                     cmdGetLogicParam,
-                    R.drawable.ic_parameters
+                    R.drawable.ic_parameters,
+                    selectedSensor?.getTypeID()
                 )
             )
 
@@ -418,7 +426,8 @@ class CommandsFragment : DialogFragment() {
                 Command(
                     resources.getString(R.string.set_min_power),
                     cmdSetMinPower,
-                    R.drawable.ic_parameters
+                    R.drawable.ic_parameters,
+                    selectedSensor?.getTypeID()
                 )
             )
 
@@ -429,10 +438,63 @@ class CommandsFragment : DialogFragment() {
                 Command(
                     resources.getString(R.string.get_min_power),
                     cmdGetMinPower,
-                    R.drawable.ic_parameters
+                    R.drawable.ic_parameters,
+                    selectedSensor?.getTypeID()
                 )
             )
 
+
+        } else if (selectedSensor?.getTypeID() == RADAR_TYPE
+            || selectedSensor?.getTypeID() == PIR_TYPE
+        ) {
+
+            //set min power
+            val cmdSetMinPower: IntArray = intArrayOf(2, -1, 156, 10, -1, 0, 0, 3, 0, 3)
+
+            commands.add(
+                Command(
+                    resources.getString(R.string.set_min_power),
+                    cmdSetMinPower,
+                    R.drawable.ic_parameters,
+                    selectedSensor?.getTypeID()
+                )
+            )
+
+            //get min power
+            val cmdGetMinPower: IntArray = intArrayOf(2, -1, 56, 6, 0, 3)
+
+            commands.add(
+                Command(
+                    resources.getString(R.string.get_min_power),
+                    cmdGetMinPower,
+                    R.drawable.ic_parameters,
+                    selectedSensor?.getTypeID()
+                )
+            )
+
+            //set logic param level
+            val cmdSetLogicParam: IntArray = intArrayOf(2, -1, 151, 12, 2, 6, -1, -1, -1, 0, 0, 3)
+
+            commands.add(
+                Command(
+                    resources.getString(R.string.set_logic_param),
+                    cmdSetLogicParam,
+                    R.drawable.ic_parameters,
+                    selectedSensor?.getTypeID()
+                )
+            )
+
+            //get logic param level
+            val cmdGetLogicParam: IntArray = intArrayOf(2, -1, 51, 6, 0, 3)
+
+            commands.add(
+                Command(
+                    resources.getString(R.string.get_logic_param),
+                    cmdGetLogicParam,
+                    R.drawable.ic_parameters,
+                    selectedSensor?.getTypeID()
+                )
+            )
 
         }
         commandsAdapter = CommandAdapter(commands, requireContext()) { command: Command ->
@@ -543,7 +605,8 @@ class CommandsFragment : DialogFragment() {
         val command = Command(
             resources.getString(R.string.set_ref_timer),
             cmdSetRefTimer,
-            R.drawable.ic_parameters
+            R.drawable.ic_parameters,
+            selectedSensor?.getTypeID()
         )
         sendCommand(command)
     }
@@ -701,12 +764,18 @@ class CommandsFragment : DialogFragment() {
                         UserSession.instance.myCommand?.state = SUCCESS_STATE
                         commandsAdapter?.notifyDataSetChanged()
 
-                        val reminder = arr[4]
-                        val promote = arr[5]
-                        //showToast(requireActivity(),reminder.toString()+":"+promote.toString())
-
-                        showResponseInDialog(promote * 256 + reminder)
-
+                        if (UserSession.instance.myCommand?.sensorType == SEISMIC_TYPE) {
+                            val reminder = arr[4]
+                            val promote = arr[5]
+                            //showToast(requireActivity(),"seismic")
+                            showResponseInDialog(promote * 256 + reminder)
+                        } else if (UserSession.instance.myCommand?.sensorType == RADAR_TYPE
+                            || UserSession.instance.myCommand?.sensorType == PIR_TYPE
+                        ) {
+                            val reminder = arr[4]
+                            //showToast(requireActivity(),"radar")
+                            showResponseInDialog(reminder)
+                        }
                     }
                     //set min power reponse
                 }

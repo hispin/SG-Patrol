@@ -2,7 +2,12 @@ package com.sensoguard.detectsensor.classes
 
 import com.sensoguard.detectsensor.global.NORMAL_STATE
 
-class Command(val commandName: String, val commandContent: IntArray?, val icId: Int) {
+class Command(
+    val commandName: String,
+    val commandContent: IntArray?,
+    val icId: Int,
+    val sensorType: Long?
+) {
     var selectionsTitles = ArrayList<String>()
     var selectionsCommands = ArrayList<String>()
     var defaultSelected: Int = 1

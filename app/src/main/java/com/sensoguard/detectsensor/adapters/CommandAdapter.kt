@@ -21,7 +21,10 @@ import androidx.transition.TransitionManager
 import com.sensoguard.detectsensor.R
 import com.sensoguard.detectsensor.classes.Command
 import com.sensoguard.detectsensor.global.NORMAL_STATE
+import com.sensoguard.detectsensor.global.PIR_TYPE
 import com.sensoguard.detectsensor.global.PROCESS_STATE
+import com.sensoguard.detectsensor.global.RADAR_TYPE
+import com.sensoguard.detectsensor.global.SEISMIC_TYPE
 import com.sensoguard.detectsensor.global.SUCCESS_STATE
 import com.sensoguard.detectsensor.global.TIMEOUT_STATE
 import com.sensoguard.detectsensor.global.showToast
@@ -230,15 +233,33 @@ class CommandAdapter(
                         etIntruderSnr?.visibility = View.GONE
                         etIntruderSnr?.focusable = View.NOT_FOCUSABLE
                         etIntruderSnr?.isFocusableInTouchMode = false
-                        llCarLogicParam?.visibility = View.VISIBLE
+                        if (command.sensorType == SEISMIC_TYPE) {
+                            llCarLogicParam?.visibility = View.VISIBLE
+                        } else if (command.sensorType == RADAR_TYPE
+                            || command.sensorType == PIR_TYPE
+                        ) {
+                            llCarLogicParam?.visibility = View.GONE
+                        }
                         llIntruderLogicParam?.visibility = View.VISIBLE
                         etSeconds?.visibility = View.VISIBLE
                         etSeconds?.focusable = View.FOCUSABLE
                         etSeconds?.isFocusableInTouchMode = true
-                        tvSelectCar?.text =
-                            context.resources.getString(R.string.select_car_logic_param)
-                        tvSelectIntruder?.text =
-                            context.resources.getString(R.string.select_intruder_logic_param)
+
+                        if (command.sensorType == SEISMIC_TYPE) {
+                            tvSelectCar?.text =
+                                context.resources.getString(R.string.select_car_logic_param)
+                            tvSelectIntruder?.text =
+                                context.resources.getString(R.string.select_intruder_logic_param)
+                        } else if (command.sensorType == RADAR_TYPE
+                            || command.sensorType == PIR_TYPE
+                        ) {
+                            llCarLogicParam?.visibility = View.GONE
+                            tvSelectCar?.text =
+                                context.resources.getString(R.string.select_logic_param)
+                            tvSelectIntruder?.text = ""
+                        }
+
+
                     }
                     context.resources.getString(R.string.set_min_power) -> {
                         spCarSens?.visibility = View.GONE
@@ -321,67 +342,119 @@ class CommandAdapter(
                             itemClick.invoke(commands[adapterPosition])
                         }
                         context.resources.getString(R.string.set_logic_param) -> {
-                            var countCar = etCarCount?.text.toString().toInt()
-                            var countIntruder = etIntruderCount?.text.toString().toInt()
-                            var durationCar = etCarDuration?.text.toString().toInt()
-                            var durationIntruder = etIntruderDuration?.text.toString().toInt()
-                            var seconds = etSeconds?.text.toString().toInt()
-                            commands[adapterPosition].logicCountCar = countCar
-                            commands[adapterPosition].logicdurationCar = durationCar
-                            commands[adapterPosition].logicCountIntruder = countIntruder
-                            commands[adapterPosition].logicdurationIntruder = durationIntruder
-                            commands[adapterPosition].logicSecomds = seconds
+                            if (command.sensorType == SEISMIC_TYPE) {
+                                var countCar = etCarCount?.text.toString().toInt()
+                                var countIntruder = etIntruderCount?.text.toString().toInt()
+                                var durationCar = etCarDuration?.text.toString().toInt()
+                                var durationIntruder = etIntruderDuration?.text.toString().toInt()
+                                var seconds = etSeconds?.text.toString().toInt()
+                                commands[adapterPosition].logicCountCar = countCar
+                                commands[adapterPosition].logicdurationCar = durationCar
+                                commands[adapterPosition].logicCountIntruder = countIntruder
+                                commands[adapterPosition].logicdurationIntruder = durationIntruder
+                                commands[adapterPosition].logicSecomds = seconds
 
 
-                            commands[adapterPosition].commandContent?.set(
-                                4,
-                                countCar
-                            )
-                            commands[adapterPosition].commandContent?.set(
-                                5,
-                                durationCar
-                            )
-                            commands[adapterPosition].commandContent?.set(
-                                6,
-                                countIntruder
-                            )
-                            commands[adapterPosition].commandContent?.set(
-                                7,
-                                durationIntruder
-                            )
-                            commands[adapterPosition].commandContent?.set(
-                                8,
-                                seconds
-                            )
-                            itemClick.invoke(commands[adapterPosition])
+                                commands[adapterPosition].commandContent?.set(
+                                    4,
+                                    countCar
+                                )
+                                commands[adapterPosition].commandContent?.set(
+                                    5,
+                                    durationCar
+                                )
+                                commands[adapterPosition].commandContent?.set(
+                                    6,
+                                    countIntruder
+                                )
+                                commands[adapterPosition].commandContent?.set(
+                                    7,
+                                    durationIntruder
+                                )
+                                commands[adapterPosition].commandContent?.set(
+                                    8,
+                                    seconds
+                                )
+                                itemClick.invoke(commands[adapterPosition])
+                            } else if (command.sensorType == RADAR_TYPE
+                                || command.sensorType == PIR_TYPE
+                            ) {
+                                var seconds = etSeconds?.text.toString().toInt()
+                                if (seconds < 256 && seconds < 15) {
+                                    etSeconds?.error =
+                                        context.getString(R.string.value_out_of_range_15_256)
+                                } else {
+                                    var countIntruder = etIntruderCount?.text.toString().toInt()
+                                    var durationIntruder =
+                                        etIntruderDuration?.text.toString().toInt()
+
+                                    commands[adapterPosition].logicCountIntruder = countIntruder
+                                    commands[adapterPosition].logicdurationIntruder =
+                                        durationIntruder
+                                    commands[adapterPosition].logicSecomds = seconds
+
+
+                                    commands[adapterPosition].commandContent?.set(
+                                        6,
+                                        countIntruder
+                                    )
+                                    commands[adapterPosition].commandContent?.set(
+                                        7,
+                                        durationIntruder
+                                    )
+                                    commands[adapterPosition].commandContent?.set(
+                                        8,
+                                        seconds
+                                    )
+                                    itemClick.invoke(commands[adapterPosition])
+                                }
+                            }
                         }
                         //set min power
                         context.resources.getString(R.string.set_min_power) -> {
 
-                            var minPower = etCarSnr?.text.toString().toInt()
-                            if (minPower <= 256) {
-                                commands[adapterPosition].minPower = minPower
-                                commands[adapterPosition].commandContent?.set(
-                                    4,
-                                    minPower
-                                )
-                                commands[adapterPosition].commandContent?.set(
-                                    5,
-                                    0
-                                )
-                            } else {
-                                val promote = minPower / 256
-                                val reminder = minPower % 256
-                                commands[adapterPosition].commandContent?.set(
-                                    4,
-                                    reminder
-                                )
-                                commands[adapterPosition].commandContent?.set(
-                                    5,
-                                    promote
-                                )
+
+                            if (command.sensorType == SEISMIC_TYPE) {
+
+                                var minPower = etCarSnr?.text.toString().toInt()
+                                if (minPower <= 256) {
+                                    commands[adapterPosition].minPower = minPower
+                                    commands[adapterPosition].commandContent?.set(
+                                        4,
+                                        minPower
+                                    )
+                                    commands[adapterPosition].commandContent?.set(
+                                        5,
+                                        0
+                                    )
+                                } else {
+                                    val promote = minPower / 256
+                                    val reminder = minPower % 256
+                                    commands[adapterPosition].commandContent?.set(
+                                        4,
+                                        reminder
+                                    )
+                                    commands[adapterPosition].commandContent?.set(
+                                        5,
+                                        promote
+                                    )
+                                }
+                                itemClick.invoke(commands[adapterPosition])
+                            } else if (command.sensorType == RADAR_TYPE
+                                || command.sensorType == PIR_TYPE
+                            ) {
+                                var minPower = etCarSnr?.text.toString().toInt()
+                                if (minPower in 0..7) {
+                                    commands[adapterPosition].minPower = minPower
+                                    commands[adapterPosition].commandContent?.set(
+                                        4,
+                                        minPower
+                                    )
+                                    itemClick.invoke(commands[adapterPosition])
+                                } else {
+                                    etCarSnr?.error = context.getString(R.string.value_out_of_range)
+                                }
                             }
-                            itemClick.invoke(commands[adapterPosition])
                         }
                     }
                 }
