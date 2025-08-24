@@ -496,7 +496,56 @@ class CommandsFragment : DialogFragment() {
                     selectedSensor?.getTypeID()
                 )
             )
+            //vibration
+        } else if (selectedSensor?.getTypeID() == VIBRATION_TYPE
+        ) {
+            //set min power
+            val cmdSetMinPower: IntArray = intArrayOf(2, -1, 156, 10, -1, -1, 0, 3, 0, 3)
 
+            commands.add(
+                Command(
+                    resources.getString(R.string.set_min_power),
+                    cmdSetMinPower,
+                    R.drawable.ic_parameters,
+                    selectedSensor?.getTypeID()
+                )
+            )
+
+            //get min power
+            val cmdGetMinPower: IntArray = intArrayOf(2, -1, 56, 6, 0, 3)
+
+            commands.add(
+                Command(
+                    resources.getString(R.string.get_min_power),
+                    cmdGetMinPower,
+                    R.drawable.ic_parameters,
+                    selectedSensor?.getTypeID()
+                )
+            )
+
+            //set logic param level
+            val cmdSetLogicParam: IntArray = intArrayOf(2, -1, 151, 12, -1, -1, 2, 5, -1, 0, 0, 3)
+
+            commands.add(
+                Command(
+                    resources.getString(R.string.set_logic_param),
+                    cmdSetLogicParam,
+                    R.drawable.ic_parameters,
+                    selectedSensor?.getTypeID()
+                )
+            )
+
+            //get logic param level
+            val cmdGetLogicParam: IntArray = intArrayOf(2, -1, 51, 6, 0, 3)
+
+            commands.add(
+                Command(
+                    resources.getString(R.string.get_logic_param),
+                    cmdGetLogicParam,
+                    R.drawable.ic_parameters,
+                    selectedSensor?.getTypeID()
+                )
+            )
         }
         commandsAdapter = CommandAdapter(commands, requireContext()) { command: Command ->
 
@@ -751,6 +800,16 @@ class CommandsFragment : DialogFragment() {
                         ) {
                             val countIntruder = arr[6]
                             val durationIntruder = arr[7]
+                            val seconds = arr[8]
+                            showResponseInDialog(
+                                countIntruder,
+                                durationIntruder,
+                                seconds
+                            )
+                        } else if (UserSession.instance.myCommand?.sensorType == VIBRATION_TYPE
+                        ) {
+                            val countIntruder = arr[4]
+                            val durationIntruder = arr[5]
                             val seconds = arr[8]
                             showResponseInDialog(
                                 countIntruder,

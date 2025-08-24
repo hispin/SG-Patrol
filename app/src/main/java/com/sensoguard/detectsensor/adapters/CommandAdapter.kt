@@ -27,6 +27,7 @@ import com.sensoguard.detectsensor.global.RADAR_TYPE
 import com.sensoguard.detectsensor.global.SEISMIC_TYPE
 import com.sensoguard.detectsensor.global.SUCCESS_STATE
 import com.sensoguard.detectsensor.global.TIMEOUT_STATE
+import com.sensoguard.detectsensor.global.VIBRATION_TYPE
 import com.sensoguard.detectsensor.global.showToast
 
 class CommandAdapter(
@@ -408,13 +409,44 @@ class CommandAdapter(
                                     )
                                     itemClick.invoke(commands[adapterPosition])
                                 }
+                                //vibration
+                            } else if (command.sensorType == VIBRATION_TYPE
+                            ) {
+                                var seconds = etSeconds?.text.toString().toInt()
+
+                                var countIntruder = etIntruderCount?.text.toString().toInt()
+                                var durationIntruder =
+                                    etIntruderDuration?.text.toString().toInt()
+
+                                commands[adapterPosition].logicCountIntruder = countIntruder
+                                commands[adapterPosition].logicdurationIntruder =
+                                    durationIntruder
+                                commands[adapterPosition].logicSecomds = seconds
+
+
+                                commands[adapterPosition].commandContent?.set(
+                                    4,
+                                    countIntruder
+                                )
+                                commands[adapterPosition].commandContent?.set(
+                                    5,
+                                    durationIntruder
+                                )
+                                commands[adapterPosition].commandContent?.set(
+                                    8,
+                                    seconds
+                                )
+                                itemClick.invoke(commands[adapterPosition])
+
                             }
                         }
                         //set min power
                         context.resources.getString(R.string.set_min_power) -> {
 
 
-                            if (command.sensorType == SEISMIC_TYPE) {
+                            if (command.sensorType == SEISMIC_TYPE
+                                || command.sensorType == VIBRATION_TYPE
+                            ) {
 
                                 var minPower = etCarSnr?.text.toString().toInt()
                                 if (minPower <= 256) {
