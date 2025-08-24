@@ -109,8 +109,8 @@
     <string name="get_sens_level_rsp">תגובה לקבלת רמת רגישות</string>
     <string name="close">סגור</string>
     <string name="set_sens_level">עידכון רמת רגישות</string>
-    <string name="select_car_sens">בחר רגישות להתראת מכונית</string>
-    <string name="select_intruder_sens">בחר רגישות להולך רגל</string>
+    <string name="car">בחר רגישות להתראת מכונית</string>
+    <string name="intruder">בחר רגישות להולך רגל</string>
     <string name="error_zero_sens">לא ניתן לשלוח אפס גם להתראה וגם של מכונית והולך רגל</string>
     <string name="connect">התחבר</string>
     <string name="disconnect">התנתק</string>

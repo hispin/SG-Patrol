@@ -119,18 +119,16 @@
     <string name="usb_is_disconnect">The usb is disconnected</string>
     <string name="commands_title">Commands</string>
     <string name="select_sensor">Select a sensor</string>
-    <string name="get_sens_level">"Get Sens Level"</string>
+    <string name="get_sens_level">"Get Sens"</string>
     <string name="no_selected_sensor">"You did not select a sensor"</string>
-    <string name="get_sens_level_rsp">Get Sens Level Response</string>
-    <string name="get_min_power_rsp" translatable="false">Get Min Power Response</string>
-    <string name="get_snr_level_rsp" translatable="false">Get Snr Level Response</string>
-    <string name="get_logic_param_level_rsp" translatable="false">Get Logic Param Level Response</string>
+    <string name="get_sens_level_rsp">Get Sens</string>
+    <string name="get_min_power_rsp" translatable="false">Get Min Power</string>
+    <string name="get_snr_level_rsp" translatable="false">Get Snr</string>
+    <string name="get_logic_param_level_rsp" translatable="false">Get Logic Param</string>
     <string name="close">Close</string>
-    <string name="set_sens_level">Set Sens Level</string>
-    <string name="select_car_sens">Select sens for alarm car</string>
-    <string name="select_car_snr" translatable="false">Set SNR Car</string>
-    <string name="select_intruder_sens">Select sens for intruder</string>
-    <string name="select_intruder_snr" translatable="false">Set SNR Intruder</string>
+    <string name="set_sens_level">Set Sens</string>
+    <string name="car">Car</string>
+    <string name="intruder">Intruder</string>
     <string name="error_zero_sens">Zero can not be sent both for alert and for car and intruder</string>
     <string name="connect">Connect</string>
     <string name="disconnect">disconnect</string>
@@ -150,11 +148,9 @@
     <string name="set_snr" translatable="false">Set SNR</string>
     <string name="get_snr" translatable="false">Get SNR</string>
     <string name="set_logic_param" translatable="false">Set Logic Param</string>
-    <string name="select_car_logic_param" translatable="false">Logic param Car</string>
-    <string name="select_intruder_logic_param" translatable="false">Logic param Intruder</string>
     <string name="select_logic_param" translatable="false">Logic param</string>
-    <string name="count" translatable="false">count</string>
-    <string name="duration" translatable="false">duration</string>
+    <string name="count" translatable="false">Count</string>
+    <string name="duration" translatable="false">Duration</string>
     <string name="seconds" translatable="false">Suspend</string>
     <string name="get_logic_param" translatable="false">Get Logic Param</string>
     <string name="set_min_power" translatable="false">Set Min Power</string>

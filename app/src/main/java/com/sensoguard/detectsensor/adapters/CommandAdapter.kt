@@ -200,9 +200,9 @@ class CommandAdapter(
                         etSeconds?.visibility = View.GONE
                         etSeconds?.focusable = View.NOT_FOCUSABLE
                         etSeconds?.isFocusableInTouchMode = false
-                        tvSelectCar?.text = context.resources.getString(R.string.select_car_sens)
+                        tvSelectCar?.text = context.resources.getString(R.string.car)
                         tvSelectIntruder?.text =
-                            context.resources.getString(R.string.select_intruder_sens)
+                            context.resources.getString(R.string.intruder)
                     }
 
                     context.resources.getString(R.string.set_snr) -> {
@@ -219,9 +219,9 @@ class CommandAdapter(
                         etSeconds?.visibility = View.GONE
                         etSeconds?.focusable = View.NOT_FOCUSABLE
                         etSeconds?.isFocusableInTouchMode = false
-                        tvSelectCar?.text = context.resources.getString(R.string.select_car_snr)
+                        tvSelectCar?.text = context.resources.getString(R.string.car)
                         tvSelectIntruder?.text =
-                            context.resources.getString(R.string.select_intruder_snr)
+                            context.resources.getString(R.string.intruder)
 
                     }
 
@@ -248,9 +248,9 @@ class CommandAdapter(
 
                         if (command.sensorType == SEISMIC_TYPE) {
                             tvSelectCar?.text =
-                                context.resources.getString(R.string.select_car_logic_param)
+                                context.resources.getString(R.string.car)
                             tvSelectIntruder?.text =
-                                context.resources.getString(R.string.select_intruder_logic_param)
+                                context.resources.getString(R.string.intruder)
                         } else if (command.sensorType == RADAR_TYPE
                             || command.sensorType == PIR_TYPE
                         ) {

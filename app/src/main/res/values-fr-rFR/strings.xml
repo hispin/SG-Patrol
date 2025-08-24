@@ -110,8 +110,8 @@
     <string name="get_sens_level_rsp">Get Sens Level Response</string>
     <string name="close">Close</string>
     <string name="set_sens_level">Définir le niveau de détection</string>
-    <string name="select_car_sens">Select sens for alarm car</string>
-    <string name="select_intruder_sens">Select sens for intruder</string>
+    <string name="car">Select sens for alarm car</string>
+    <string name="intruder">Select sens for intruder</string>
     <string name="error_zero_sens">Zero can not be sent both for alert and for car and intruder</string>
     <string name="connect">RELIER</string>
     <string name="disconnect">disconnect</string>

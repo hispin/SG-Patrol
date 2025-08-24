@@ -118,13 +118,14 @@
                         android:id="@+id/tvSelectCar"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/select_car_sens"
+                        android:text="@string/car"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.3"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintVertical_bias="0.2" />
+                        app:layout_constraintVertical_bias="0.2"
+                        android:textSize="14sp" />
 
                 <FrameLayout
                         android:id="@+id/frCarSens"
@@ -158,6 +159,7 @@
                             android:layout_gravity="center"
                             android:background="@drawable/shape_bg_subjects_spinner"
                             android:gravity="center"
+                            android:textSize="14sp"
                             android:visibility="gone"
                             android:inputType="number"
                             app:layout_constraintEnd_toEndOf="@+id/tvSelectCar"
@@ -185,7 +187,8 @@
                                 android:inputType="number"
                                 android:hint="@string/count"
                                 android:layout_weight="0.5"
-                                android:imeOptions="actionDone" />
+                                android:imeOptions="actionDone"
+                                android:textSize="14sp" />
 
                         <androidx.appcompat.widget.AppCompatEditText
                                 android:id="@+id/etCarDuration"
@@ -197,7 +200,8 @@
                                 android:hint="@string/duration"
                                 android:layout_marginStart="5dp"
                                 android:layout_weight="0.5"
-                                android:imeOptions="actionDone" />
+                                android:imeOptions="actionDone"
+                                android:textSize="14sp" />
                     </LinearLayout>
                 </FrameLayout>
 
@@ -206,9 +210,10 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
-                        android:text="@string/select_intruder_sens"
+                        android:text="@string/intruder"
                         app:layout_constraintStart_toStartOf="@+id/tvSelectCar"
-                        app:layout_constraintTop_toBottomOf="@+id/frCarSens" />
+                        app:layout_constraintTop_toBottomOf="@+id/frCarSens"
+                        android:textSize="14sp" />
 
                 <FrameLayout
                         android:id="@+id/frIntruderSens"
@@ -245,7 +250,8 @@
                             app:layout_constraintStart_toStartOf="@+id/spCarSens"
                             app:layout_constraintTop_toBottomOf="@+id/tvSelectIntruder"
                             tools:listitem="@layout/support_simple_spinner_dropdown_item"
-                            android:imeOptions="actionDone" />
+                            android:imeOptions="actionDone"
+                            android:textSize="14sp" />
 
                     <!--                    intruder logic param-->
                     <LinearLayout
@@ -269,7 +275,8 @@
                                 android:inputType="number"
                                 android:hint="@string/count"
                                 android:layout_weight="0.5"
-                                android:imeOptions="actionDone" />
+                                android:imeOptions="actionDone"
+                                android:textSize="14sp" />
 
                         <androidx.appcompat.widget.AppCompatEditText
                                 android:id="@+id/etIntruderDuration"
@@ -281,7 +288,8 @@
                                 android:hint="@string/duration"
                                 android:layout_marginStart="5dp"
                                 android:layout_weight="0.5"
-                                android:imeOptions="actionDone" />
+                                android:imeOptions="actionDone"
+                                android:textSize="14sp" />
 
                     </LinearLayout>
 
@@ -299,7 +307,8 @@
                         app:layout_constraintTop_toTopOf="@+id/frCarSens"
                         app:layout_constraintBottom_toBottomOf="@+id/frCarSens"
                         app:layout_constraintStart_toStartOf="@+id/btnSendCmd"
-                        android:imeOptions="actionDone" />
+                        android:imeOptions="actionDone"
+                        android:textSize="14sp" />
 
                 <androidx.appcompat.widget.AppCompatButton
                         android:id="@+id/btnSendCmd"

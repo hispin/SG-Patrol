@@ -449,6 +449,16 @@ class CommandsFragment : DialogFragment() {
             || selectedSensor?.getTypeID() == PIR_TYPE
         ) {
 
+            val cmdSetSystemTime: IntArray = configureSystemTimeCmd()
+            commands.add(
+                Command(
+                    resources.getString(R.string.set_system_time),
+                    cmdSetSystemTime,
+                    R.drawable.ic_parameters,
+                    selectedSensor?.getTypeID()
+                )
+            )
+
             //set min power
             val cmdSetMinPower: IntArray = intArrayOf(2, -1, 156, 10, -1, 0, 0, 3, 0, 3)
 
@@ -499,6 +509,17 @@ class CommandsFragment : DialogFragment() {
             //vibration
         } else if (selectedSensor?.getTypeID() == VIBRATION_TYPE
         ) {
+
+            val cmdSetSystemTime: IntArray = configureSystemTimeCmd()
+            commands.add(
+                Command(
+                    resources.getString(R.string.set_system_time),
+                    cmdSetSystemTime,
+                    R.drawable.ic_parameters,
+                    selectedSensor?.getTypeID()
+                )
+            )
+
             //set min power
             val cmdSetMinPower: IntArray = intArrayOf(2, -1, 156, 10, -1, -1, 0, 3, 0, 3)
 
@@ -837,7 +858,9 @@ class CommandsFragment : DialogFragment() {
                         UserSession.instance.myCommand?.state = SUCCESS_STATE
                         commandsAdapter?.notifyDataSetChanged()
 
-                        if (UserSession.instance.myCommand?.sensorType == SEISMIC_TYPE) {
+                        if (UserSession.instance.myCommand?.sensorType == SEISMIC_TYPE
+                            || UserSession.instance.myCommand?.sensorType == VIBRATION_TYPE
+                        ) {
                             val reminder = arr[4]
                             val promote = arr[5]
                             //showToast(requireActivity(),"seismic")
