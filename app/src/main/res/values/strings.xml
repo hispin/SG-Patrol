@@ -1,7 +1,6 @@
 <resources>
     <string name="app_name" translatable="false">SG-Patrol</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="empty_field_error">This field cannot be blank</string>
     <string name="rename">rename</string>
     <string name="csv">csv</string>
@@ -29,8 +28,6 @@
     <string name="map_title">Map</string>
     <string name="config_title">Settings</string>
     <string name="alarm_log_title">Alarm Log</string>
-    <string name="not_located">Not Located</string>
-    <string name="located">Located</string>
     <string name="date_title">DATE</string>
     <string name="save">save</string>
     <string name="define_sensor_amount">Number of sensors</string>
@@ -45,11 +42,10 @@
         <item>Intruder</item>
         <item>Motion</item>
         <item>Sensor disconnected</item>
-        <item>System ok</item>
+        <item>System OK</item>
         <item>Low battery</item>
         <item>Dual tech alarm</item>
     </string-array>
-    <string name="load_settings_export_settings">Load settings / export settings</string>
     <string name="map_view">Map view</string>
     <string name="language">Language</string>
     <string name="satellite">satellite</string>
@@ -63,7 +59,6 @@
     <string name="share">share</string>
     <string name="enter_code">enter activation code</string>
     <string name="wrong_activate_code">wrong activate code</string>
-    <string name="sign_in">sign in</string>
     <string name="activate">Activate</string>
     <string name="error">Error</string>
     <string name="general_desc">description</string>
@@ -72,11 +67,9 @@
     <string name="do_you_really_want_delete_all_alarm">Do you really want to delete all alarms</string>
     <string name="receiver_disconnected">Receiver Disconnected</string>
     <string name="OK">OK</string>
-    <!--  haggay account  <string name="mapbox_access_token" translatable="false">pk.eyJ1IjoiaGFnc3dlYWQiLCJhIjoiY2tob3JhdTllMDh4dDJ5bWp2cHA5cWJyeCJ9.T_XNJsVjZrcNE27n9Ieb8g</string>-->
     <string name="mapbox_access_token" translatable="false">pk.eyJ1IjoidG9tZXJjaG9lbiIsImEiOiJja2psYWJ0M201N3ZuMnJucW4zNWZqYzNvIn0.fZ3nmtGLC2X-PKfuNY5wfQ</string>
 
     <string name="simple_offline_end_progress_success">simple offline end progress success</string>
-    <string name="basic_offline_deleted_toast">basic offline deleted toast</string>
     <string name="no_selected_location">No places selected</string>
     <string name="sensor_details">Sensor details</string>
     <string name="save_offline_map">Save offline map</string>
@@ -86,7 +79,6 @@
     <string name="disconnect_usb">Disconnect the usb</string>
     <string name="this_will_disconnect_the_usb">This will disconnect the usb</string>
     <string name="always_show_sensor_name">Always show the sensor name</string>
-    <string name="title_activity_parent" translatable="false">ParentActivity</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label" translatable="false">First Fragment</string>
     <string name="second_fragment_label" translatable="false">Second Fragment</string>
@@ -94,21 +86,14 @@
     <string name="previous">Previous</string>
 
     <string name="hello_first_fragment" translatable="false">Hello first fragment</string>
-    <string name="hello_second_fragment" translatable="false">Hello second fragment. Arg: %1$s</string>
-    <!-- TODO: Remove or change this placeholder text -->
+
     <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>
     <string name="forward_email">Forward email</string>
-    <string name="mail_address_title">Email Address:</string>
-    <string name="password_title">Password:</string>
-    <string name="incoming_email_server_title">Incoming Email server:</string>
-    <string name="incoming_email_server_port_title">Incoming Email Port:</string>
-    <string name="use_ssl_title">Using SSL:</string>
     <string name="cancel">Cancel</string>
     <string name="email_setting">Email Settings</string>
     <string name="an_alert_was_received">An alert was received</string>
     <string name="email_content">Accept %1$s alarm from unit %2$s in %3$s</string>
     <string name="outgoing_mail_server_title">Outgoing  Server</string>
-    <string name="user_name">User name</string>
     <string name="outgoing_mail_port_title">Outgoing  Port</string>
     <string name="recipient">Recipient</string>
     <string name="no_fill_account">You have not filled in email account information</string>
@@ -132,17 +117,12 @@
     <string name="error_zero_sens">Zero can not be sent both for alert and for car and intruder</string>
     <string name="connect">Connect</string>
     <string name="disconnect">disconnect</string>
-    <string name="timer_off">timer off</string>
-    <string name="timer_on">timer on</string>
     <string name="set_ref_timer">"Set RF On Timer"</string>
     <string name="try_connect">Connecting…</string>
     <string name="no_response_sensor">"No response from the sensor"</string>
     <string name="another_process">There is another process</string>
     <string name="seismic">Seismic</string>
     <string name="edit_sensor">Edit Sensor</string>
-    <string name="pir">PIR</string>
-    <string name="radar">Radar</string>
-    <string name="vibration">Vibration</string>
     <string name="connected">connected</string>
     <string name="set_system_time">Set System Time</string>
     <string name="set_snr" translatable="false">Set SNR</string>

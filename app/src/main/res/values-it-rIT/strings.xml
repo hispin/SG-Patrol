@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="empty_field_error">Questo campo non può essere vuoto</string>
     <string name="rename">rinominare</string>
     <string name="csv">csv</string>
@@ -27,8 +26,6 @@
     <string name="map_title">Carta geografica</string>
     <string name="config_title">Configurazione</string>
     <string name="alarm_log_title">Registro degli allarmi</string>
-    <string name="not_located">Non situato</string>
-    <string name="located">collocato</string>
     <string name="date_title">DATA</string>
     <string name="save">SALVA</string>
     <string name="define_sensor_amount">Definire la quantità del sensore</string>
@@ -47,7 +44,6 @@
         <item>batteria scarica</item>
         <item>allarme dual tech</item>
     </string-array>
-    <string name="load_settings_export_settings">Carica impostazioni / esporta impostazioni</string>
     <string name="map_view">Vista mappa</string>
     <string name="language">linguaggio</string>
     <string name="satellite">satellitare</string>
@@ -61,7 +57,6 @@
     <string name="share">Condividere</string>
     <string name="enter_code">inserire il codice di attivazione</string>
     <string name="wrong_activate_code">codice di attivazione errato</string>
-    <string name="sign_in">registrati</string>
     <string name="activate">Attivare</string>
     <string name="error">Errore</string>
     <string name="general_desc">descrizione</string>
@@ -71,7 +66,6 @@
     <string name="receiver_disconnected">Ricevitore disconnesso</string>
     <string name="OK">OK</string>
     <string name="simple_offline_end_progress_success">simple offline end progress success</string>
-    <string name="basic_offline_deleted_toast">basic offline deleted toast</string>
     <string name="no_selected_location">No places selected</string>
     <string name="sensor_details">Sensor details</string>
     <string name="save_offline_map">SALVA LINEA OFFLINE</string>
@@ -84,17 +78,11 @@
     <string name="next">Next</string>
     <string name="previous">Previous</string>
     <string name="forward_email">Inoltra email</string>
-    <string name="password_title">Password:</string>
-    <string name="incoming_email_server_title">Incoming Email server:</string>
-    <string name="incoming_email_server_port_title">Incoming Email Port:</string>
-    <string name="use_ssl_title">Using SSL:</string>
     <string name="cancel">ANNULLA</string>
     <string name="email_setting">Impostazioni e-mail</string>
     <string name="an_alert_was_received">È stato ricevuto un avviso</string>
     <string name="email_content">Accetta %1$s Allarme vibrazione dall\'unità %2$s  in %3$s</string>
-    <string name="mail_address_title">Email Address:</string>
     <string name="outgoing_mail_server_title">Server in uscita</string>
-    <string name="user_name">User name</string>
     <string name="outgoing_mail_port_title">Porta in uscita</string>
     <string name="recipient">Destinatario</string>
     <string name="no_fill_account">You have not filled in email account information</string>
@@ -115,18 +103,12 @@
     <string name="error_zero_sens">Zero can not be sent both for alert and for car and intruder</string>
     <string name="connect">COLLEGARE</string>
     <string name="disconnect">disconnect</string>
-    <string name="timer_off">timer off</string>
-    <string name="timer_on">timer on</string>
     <string name="set_ref_timer">"Set RF On Timer"</string>
     <string name="try_connect">Connecting…</string>
-    <!--    <string name="try_connect">PROVA A CONNETTERTI</string>-->
     <string name="no_response_sensor">"No response from the sensor"</string>
     <string name="another_process">There is another process</string>
     <string name="seismic">Sismico</string>
     <string name="edit_sensor">Edit Sensor</string>
-    <string name="pir">Volume</string>
-    <string name="radar">Radar</string>
-    <string name="vibration">Vibrazione</string>
     <string name="connected">COLLEGATO</string>
     <string name="set_system_time">impostare l\'ora di sistema</string>
 

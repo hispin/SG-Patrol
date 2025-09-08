@@ -26,8 +26,6 @@
     <string name="map_title">מפה</string>
     <string name="config_title">הגדרות</string>
     <string name="alarm_log_title">יומן אירועים</string>
-    <string name="not_located">לא הוגדר</string>
-    <string name="located">מוגדר</string>
     <string name="date_title">תאריך</string>
     <string name="save">שמור</string>
     <string name="define_sensor_amount">הגדר כמות חיישנים</string>
@@ -46,7 +44,6 @@
         <item>סוללה חלשה</item>
         <item>גילוי משולב</item>
     </string-array>
-    <string name="load_settings_export_settings">טען הגדרות / ייצוא הגדרות </string>
     <string name="map_view">תצוגת מפה</string>
     <string name="language">שפה</string>
     <string name="satellite">לווין</string>
@@ -60,7 +57,6 @@
     <string name="share">שתף</string>
     <string name="enter_code">הכנס קוד אקטיבציה</string>
     <string name="wrong_activate_code">קוד לא תקין</string>
-    <string name="sign_in">הירשם</string>
     <string name="activate">הפעל</string>
     <string name="error">שגיאה</string>
     <string name="general_desc">description</string>
@@ -69,7 +65,6 @@
     <string name="do_you_really_want_delete_all_alarm">Do you realy want to delete all alarms</string>
     <string name="receiver_disconnected">המקלט מנותק</string>
     <string name="OK">אישור</string>
-    <string name="basic_offline_deleted_toast">basic offline deleted toast</string>
     <string name="no_selected_location">לא נבחרו מקומות</string>
     <string name="sensor_details">פרטי החיישן</string>
     <string name="save_offline_map">שמור מפה לא מקוונת</string>
@@ -83,17 +78,11 @@
     <string name="next">Next</string>
     <string name="previous">Previous</string>
     <string name="forward_email">העברת דוא\"ל</string>
-    <string name="mail_address_title">כתובת אימייל:</string>
-    <string name="password_title">סיסמה:</string>
-    <string name="incoming_email_server_title">שרת אימייל נכנס:</string>
-    <string name="incoming_email_server_port_title">פורט אימייל נכנס:</string>
-    <string name="use_ssl_title">שימוש ב SSL:</string>
     <string name="cancel">ביטול</string>
     <string name="email_setting">הגדרות אימייל</string>
     <string name="an_alert_was_received">התקבלה התראה</string>
     <string name="email_content">"התקבלה התראה מחיישן %1$s מיחידה %2$s ב %3$s"</string>
     <string name="outgoing_mail_server_title">שרת דואר יוצא</string>
-    <string name="user_name">שם משתמש</string>
     <string name="outgoing_mail_port_title">פורט דואר יוצא</string>
     <string name="recipient">נמען</string>
     <string name="no_fill_account">לא מילאת פרטי חשבון מייל</string>
@@ -114,17 +103,12 @@
     <string name="error_zero_sens">לא ניתן לשלוח אפס גם להתראה וגם של מכונית והולך רגל</string>
     <string name="connect">התחבר</string>
     <string name="disconnect">התנתק</string>
-    <string name="timer_off">טיימר כבוי</string>
-    <string name="timer_on">טיימר דלוק</string>
     <string name="set_ref_timer">Set RF On Timer</string>
     <string name="try_connect">התחברות…</string>
     <string name="no_response_sensor">אין תגובה מהחיישן</string>
     <string name="another_process">יש תהליך אחר</string>
     <string name="seismic">סיסמי</string>
     <string name="edit_sensor">Edit Sensor</string>
-    <string name="pir">נפח</string>
-    <string name="radar">רדאר</string>
-    <string name="vibration">רעידות</string>
     <string name="connected">מחובר</string>
     <string name="set_system_time">הגדר זמן מערכת</string>
 
