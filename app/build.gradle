@@ -20,8 +20,8 @@ android {
         applicationId "com.sensoguard.detectsensor"
         minSdkVersion 26
         targetSdkVersion 36
-        versionCode 136
-        versionName "1.136"
+        versionCode 137
+        versionName "1.137"
         vectorDrawables.useSupportLibrary = true
         //testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -89,6 +89,7 @@ android {
 configurations {
     all {
         exclude module: 'commons-logging'
+        exclude group: 'com.mapbox.common', module: 'common'
     }
 }
 
@@ -120,6 +121,10 @@ dependencies {
     implementation 'com.github.delight-im:Android-Languages:v1.0.1'
 
     //map box
+    //implementation 'com.mapbox.maps:android-ndk27:11.14.4'
+    //implementation 'com.mapbox.maps:android:11.14.4'
+
+
     implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:9.5.0'
     implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-offline-v9:0.7.0'
     implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-building-v9:0.7.0'

@@ -25,9 +25,35 @@ import com.sensoguard.detectsensor.global.PIR_TYPE
 import com.sensoguard.detectsensor.global.PROCESS_STATE
 import com.sensoguard.detectsensor.global.RADAR_TYPE
 import com.sensoguard.detectsensor.global.SEISMIC_TYPE
+import com.sensoguard.detectsensor.global.SET_LOGIC_CAR_COUNT_SEISMIC_VALUE
+import com.sensoguard.detectsensor.global.SET_LOGIC_CAR_DURATION_SEISMIC_VALUE
+import com.sensoguard.detectsensor.global.SET_LOGIC_COUNT_PIR_VALUE
+import com.sensoguard.detectsensor.global.SET_LOGIC_COUNT_RADAR_VALUE
+import com.sensoguard.detectsensor.global.SET_LOGIC_COUNT_VIB_VALUE
+import com.sensoguard.detectsensor.global.SET_LOGIC_DURATION_PIR_VALUE
+import com.sensoguard.detectsensor.global.SET_LOGIC_DURATION_RADAR_VALUE
+import com.sensoguard.detectsensor.global.SET_LOGIC_DURATION_VIB_VALUE
+import com.sensoguard.detectsensor.global.SET_LOGIC_INTRUDER_COUNT_SEISMIC_VALUE
+import com.sensoguard.detectsensor.global.SET_LOGIC_INTRUDER_DURATION_SEISMIC_VALUE
+import com.sensoguard.detectsensor.global.SET_LOGIC_SUSPEND_PIR_VALUE
+import com.sensoguard.detectsensor.global.SET_LOGIC_SUSPEND_RADAR_VALUE
+import com.sensoguard.detectsensor.global.SET_LOGIC_SUSPEND_SEISMIC_VALUE
+import com.sensoguard.detectsensor.global.SET_LOGIC_SUSPEND_VIB_VALUE
+import com.sensoguard.detectsensor.global.SET_MIN_POWER_PIR_VALUE
+import com.sensoguard.detectsensor.global.SET_MIN_POWER_RADAR_VALUE
+import com.sensoguard.detectsensor.global.SET_MIN_POWER_SEISMIC_VALUE
+import com.sensoguard.detectsensor.global.SET_MIN_POWER_VIB_VALUE
+import com.sensoguard.detectsensor.global.SET_SENS_CAR_VALUE
+import com.sensoguard.detectsensor.global.SET_SENS_INTRUDER_VALUE
+import com.sensoguard.detectsensor.global.SET_SNR_CAR_VALUE
+import com.sensoguard.detectsensor.global.SET_SNR_INTRUDER_VALUE
 import com.sensoguard.detectsensor.global.SUCCESS_STATE
 import com.sensoguard.detectsensor.global.TIMEOUT_STATE
 import com.sensoguard.detectsensor.global.VIBRATION_TYPE
+import com.sensoguard.detectsensor.global.getIntInPreference
+import com.sensoguard.detectsensor.global.getStringInPreference
+import com.sensoguard.detectsensor.global.setIntInPreference
+import com.sensoguard.detectsensor.global.setStringInPreference
 import com.sensoguard.detectsensor.global.showToast
 
 class CommandAdapter(
@@ -203,6 +229,16 @@ class CommandAdapter(
                         tvSelectCar?.text = context.resources.getString(R.string.car)
                         tvSelectIntruder?.text =
                             context.resources.getString(R.string.intruder)
+                        getIntInPreference(context, SET_SENS_INTRUDER_VALUE, 4)?.let {
+                            spIntruderSens?.setSelection(
+                                it
+                            )
+                        }
+                        getIntInPreference(context, SET_SENS_CAR_VALUE, 4)?.let {
+                            spCarSens?.setSelection(
+                                it
+                            )
+                        }
                     }
 
                     context.resources.getString(R.string.set_snr) -> {
@@ -222,7 +258,13 @@ class CommandAdapter(
                         tvSelectCar?.text = context.resources.getString(R.string.car)
                         tvSelectIntruder?.text =
                             context.resources.getString(R.string.intruder)
+                        getStringInPreference(context, SET_SNR_CAR_VALUE, "")?.let {
+                            etCarSnr?.setText(it)
 
+                        }
+                        getStringInPreference(context, SET_SNR_INTRUDER_VALUE, "")?.let {
+                            etIntruderSnr?.setText(it)
+                        }
                     }
 
                     context.resources.getString(R.string.set_logic_param) -> {
@@ -245,6 +287,41 @@ class CommandAdapter(
                                 context.resources.getString(R.string.car)
                             tvSelectIntruder?.text =
                                 context.resources.getString(R.string.intruder)
+                            getStringInPreference(
+                                context,
+                                SET_LOGIC_CAR_COUNT_SEISMIC_VALUE,
+                                ""
+                            )?.let {
+                                etCarCount?.setText(it)
+                            }
+                            getStringInPreference(
+                                context,
+                                SET_LOGIC_CAR_DURATION_SEISMIC_VALUE,
+                                ""
+                            )?.let {
+                                etCarDuration?.setText(it)
+                            }
+                            getStringInPreference(
+                                context,
+                                SET_LOGIC_INTRUDER_COUNT_SEISMIC_VALUE,
+                                ""
+                            )?.let {
+                                etIntruderCount?.setText(it)
+                            }
+                            getStringInPreference(
+                                context,
+                                SET_LOGIC_INTRUDER_DURATION_SEISMIC_VALUE,
+                                ""
+                            )?.let {
+                                etIntruderDuration?.setText(it)
+                            }
+                            getStringInPreference(
+                                context,
+                                SET_LOGIC_SUSPEND_SEISMIC_VALUE,
+                                ""
+                            )?.let {
+                                etSeconds?.setText(it)
+                            }
                         } else if (command.sensorType == RADAR_TYPE
                             || command.sensorType == PIR_TYPE
                             || command.sensorType == VIBRATION_TYPE
@@ -253,6 +330,65 @@ class CommandAdapter(
                             tvSelectCar?.text =
                                 context.resources.getString(R.string.select_logic_param)
                             tvSelectIntruder?.text = ""
+                            if (command.sensorType == RADAR_TYPE) {
+                                getStringInPreference(
+                                    context,
+                                    SET_LOGIC_COUNT_RADAR_VALUE,
+                                    ""
+                                )?.let {
+                                    etIntruderCount?.setText(it)
+                                }
+                                getStringInPreference(
+                                    context,
+                                    SET_LOGIC_DURATION_RADAR_VALUE,
+                                    ""
+                                )?.let {
+                                    etIntruderDuration?.setText(it)
+                                }
+                                getStringInPreference(
+                                    context,
+                                    SET_LOGIC_SUSPEND_RADAR_VALUE,
+                                    ""
+                                )?.let {
+                                    etSeconds?.setText(it)
+                                }
+                            } else if (command.sensorType == PIR_TYPE) {
+                                getStringInPreference(context, SET_LOGIC_COUNT_PIR_VALUE, "")?.let {
+                                    etIntruderCount?.setText(it)
+                                }
+                                getStringInPreference(
+                                    context,
+                                    SET_LOGIC_DURATION_PIR_VALUE,
+                                    ""
+                                )?.let {
+                                    etIntruderDuration?.setText(it)
+                                }
+                                getStringInPreference(
+                                    context,
+                                    SET_LOGIC_SUSPEND_PIR_VALUE,
+                                    ""
+                                )?.let {
+                                    etSeconds?.setText(it)
+                                }
+                            } else if (command.sensorType == VIBRATION_TYPE) {
+                                getStringInPreference(context, SET_LOGIC_COUNT_VIB_VALUE, "")?.let {
+                                    etIntruderCount?.setText(it)
+                                }
+                                getStringInPreference(
+                                    context,
+                                    SET_LOGIC_DURATION_VIB_VALUE,
+                                    ""
+                                )?.let {
+                                    etIntruderDuration?.setText(it)
+                                }
+                                getStringInPreference(
+                                    context,
+                                    SET_LOGIC_SUSPEND_VIB_VALUE,
+                                    ""
+                                )?.let {
+                                    etSeconds?.setText(it)
+                                }
+                            }
                         }
 
 
@@ -274,6 +410,24 @@ class CommandAdapter(
                         tvSelectCar?.text =
                             context.resources.getString(R.string.min_power)
                         tvSelectIntruder?.visibility = View.GONE
+                        if (command.sensorType == SEISMIC_TYPE
+                        ) {
+                            getStringInPreference(context, SET_MIN_POWER_SEISMIC_VALUE, "")?.let {
+                                etCarSnr?.setText(it)
+                            }
+                        } else if (command.sensorType == VIBRATION_TYPE) {
+                            getStringInPreference(context, SET_MIN_POWER_VIB_VALUE, "")?.let {
+                                etCarSnr?.setText(it)
+                            }
+                        } else if (command.sensorType == RADAR_TYPE) {
+                            getStringInPreference(context, SET_MIN_POWER_RADAR_VALUE, "")?.let {
+                                etCarSnr?.setText(it)
+                            }
+                        } else if (command.sensorType == PIR_TYPE) {
+                            getStringInPreference(context, SET_MIN_POWER_PIR_VALUE, "")?.let {
+                                etCarSnr?.setText(it)
+                            }
+                        }
                     }
                 }
             } else {
@@ -313,16 +467,26 @@ class CommandAdapter(
                                 5,
                                 spIntruderSens?.selectedItem.toString().toInt()
                             )
+                            setIntInPreference(
+                                context,
+                                SET_SENS_CAR_VALUE,
+                                spCarSens?.selectedItem.toString().toInt()
+                            )
+                            setIntInPreference(
+                                context,
+                                SET_SENS_INTRUDER_VALUE,
+                                spIntruderSens?.selectedItem.toString().toInt()
+                            )
                             itemClick.invoke(commands[adapterPosition])
                         }
 
                         context.resources.getString(R.string.set_snr) -> {
 
                             if (validIsEmpty(etCarSnr) && validIsEmpty(etIntruderSnr)) {
-                                var carSrn = etCarSnr?.text.toString().toInt()
-                                var intruderSrn: Float = etIntruderSnr?.text.toString().toFloat()
-                                var intruderFirst: Int = intruderSrn.toInt()
-                                var intruderSecond: Float = 10 * (intruderSrn - intruderFirst)
+                                val carSrn = etCarSnr?.text.toString().toInt()
+                                val intruderSrn: Float = etIntruderSnr?.text.toString().toFloat()
+                                val intruderFirst: Int = intruderSrn.toInt()
+                                val intruderSecond: Float = 10 * (intruderSrn - intruderFirst)
                                 commands[adapterPosition].snrCar = carSrn
                                 commands[adapterPosition].snrIntruder = intruderSrn
                                 commands[adapterPosition].commandContent?.set(
@@ -337,6 +501,16 @@ class CommandAdapter(
                                     6,
                                     carSrn
                                 )
+                                setStringInPreference(
+                                    context,
+                                    SET_SNR_CAR_VALUE,
+                                    etCarSnr?.text.toString()
+                                )
+                                setStringInPreference(
+                                    context,
+                                    SET_SNR_INTRUDER_VALUE,
+                                    etIntruderSnr?.text.toString()
+                                )
                                 itemClick.invoke(commands[adapterPosition])
                             }
                         }
@@ -348,12 +522,12 @@ class CommandAdapter(
                                     )
                                     && validIsEmpty(etSeconds)
                                 ) {
-                                    var countCar = etCarCount?.text.toString().toInt()
-                                    var countIntruder = etIntruderCount?.text.toString().toInt()
-                                    var durationCar = etCarDuration?.text.toString().toInt()
-                                    var durationIntruder =
+                                    val countCar = etCarCount?.text.toString().toInt()
+                                    val countIntruder = etIntruderCount?.text.toString().toInt()
+                                    val durationCar = etCarDuration?.text.toString().toInt()
+                                    val durationIntruder =
                                         etIntruderDuration?.text.toString().toInt()
-                                    var seconds = etSeconds?.text.toString().toInt()
+                                    val seconds = etSeconds?.text.toString().toInt()
                                     commands[adapterPosition].logicCountCar = countCar
                                     commands[adapterPosition].logicdurationCar = durationCar
                                     commands[adapterPosition].logicCountIntruder = countIntruder
@@ -382,6 +556,31 @@ class CommandAdapter(
                                         8,
                                         seconds
                                     )
+                                    setStringInPreference(
+                                        context,
+                                        SET_LOGIC_CAR_COUNT_SEISMIC_VALUE,
+                                        etCarCount?.text.toString()
+                                    )
+                                    setStringInPreference(
+                                        context,
+                                        SET_LOGIC_CAR_DURATION_SEISMIC_VALUE,
+                                        etCarDuration?.text.toString()
+                                    )
+                                    setStringInPreference(
+                                        context,
+                                        SET_LOGIC_INTRUDER_COUNT_SEISMIC_VALUE,
+                                        etIntruderCount?.text.toString()
+                                    )
+                                    setStringInPreference(
+                                        context,
+                                        SET_LOGIC_INTRUDER_DURATION_SEISMIC_VALUE,
+                                        etIntruderDuration?.text.toString()
+                                    )
+                                    setStringInPreference(
+                                        context,
+                                        SET_LOGIC_SUSPEND_SEISMIC_VALUE,
+                                        etSeconds?.text.toString()
+                                    )
                                     itemClick.invoke(commands[adapterPosition])
                                 }
                             } else if (command.sensorType == RADAR_TYPE
@@ -392,13 +591,13 @@ class CommandAdapter(
                                     && validIsEmpty(etIntruderDuration)
                                 ) {
 
-                                    var seconds = etSeconds?.text.toString().toInt()
+                                    val seconds = etSeconds?.text.toString().toInt()
                                     if (seconds < 256 && seconds < 15) {
                                         etSeconds?.error =
                                             context.getString(R.string.value_out_of_range_15_256)
                                     } else {
-                                        var countIntruder = etIntruderCount?.text.toString().toInt()
-                                        var durationIntruder =
+                                        val countIntruder = etIntruderCount?.text.toString().toInt()
+                                        val durationIntruder =
                                             etIntruderDuration?.text.toString().toInt()
 
                                         commands[adapterPosition].logicCountIntruder = countIntruder
@@ -419,6 +618,39 @@ class CommandAdapter(
                                             8,
                                             seconds
                                         )
+                                        if (command.sensorType == RADAR_TYPE) {
+                                            setStringInPreference(
+                                                context,
+                                                SET_LOGIC_COUNT_RADAR_VALUE,
+                                                etIntruderCount?.text.toString()
+                                            )
+                                            setStringInPreference(
+                                                context,
+                                                SET_LOGIC_DURATION_RADAR_VALUE,
+                                                etIntruderDuration?.text.toString()
+                                            )
+                                            setStringInPreference(
+                                                context,
+                                                SET_LOGIC_SUSPEND_RADAR_VALUE,
+                                                etSeconds?.text.toString()
+                                            )
+                                        } else if (command.sensorType == PIR_TYPE) {
+                                            setStringInPreference(
+                                                context,
+                                                SET_LOGIC_COUNT_PIR_VALUE,
+                                                etIntruderCount?.text.toString()
+                                            )
+                                            setStringInPreference(
+                                                context,
+                                                SET_LOGIC_DURATION_PIR_VALUE,
+                                                etIntruderDuration?.text.toString()
+                                            )
+                                            setStringInPreference(
+                                                context,
+                                                SET_LOGIC_SUSPEND_PIR_VALUE,
+                                                etSeconds?.text.toString()
+                                            )
+                                        }
                                         itemClick.invoke(commands[adapterPosition])
                                     }
                                 }
@@ -453,6 +685,21 @@ class CommandAdapter(
                                     commands[adapterPosition].commandContent?.set(
                                         8,
                                         seconds
+                                    )
+                                    setStringInPreference(
+                                        context,
+                                        SET_LOGIC_COUNT_VIB_VALUE,
+                                        etIntruderCount?.text.toString()
+                                    )
+                                    setStringInPreference(
+                                        context,
+                                        SET_LOGIC_DURATION_VIB_VALUE,
+                                        etIntruderDuration?.text.toString()
+                                    )
+                                    setStringInPreference(
+                                        context,
+                                        SET_LOGIC_SUSPEND_VIB_VALUE,
+                                        etSeconds?.text.toString()
                                     )
                                     itemClick.invoke(commands[adapterPosition])
                                 }
@@ -490,6 +737,22 @@ class CommandAdapter(
                                             promote
                                         )
                                     }
+
+                                    if (command.sensorType == SEISMIC_TYPE
+                                    ) {
+                                        setStringInPreference(
+                                            context,
+                                            SET_MIN_POWER_SEISMIC_VALUE,
+                                            etCarSnr?.text.toString()
+                                        )
+                                    } else if (command.sensorType == VIBRATION_TYPE) {
+                                        setStringInPreference(
+                                            context,
+                                            SET_MIN_POWER_VIB_VALUE,
+                                            etCarSnr?.text.toString()
+                                        )
+                                    }
+
                                     itemClick.invoke(commands[adapterPosition])
                                 }
                             } else if (command.sensorType == RADAR_TYPE
@@ -503,6 +766,20 @@ class CommandAdapter(
                                             4,
                                             minPower
                                         )
+                                        if (command.sensorType == RADAR_TYPE) {
+                                            setStringInPreference(
+                                                context,
+                                                SET_MIN_POWER_RADAR_VALUE,
+                                                etCarSnr?.text.toString()
+                                            )
+                                        } else if (command.sensorType == PIR_TYPE) {
+                                            setStringInPreference(
+                                                context,
+                                                SET_MIN_POWER_PIR_VALUE,
+                                                etCarSnr?.text.toString()
+                                            )
+                                        }
+
                                         itemClick.invoke(commands[adapterPosition])
                                     } else {
                                         etCarSnr?.error =
