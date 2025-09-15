@@ -258,11 +258,11 @@ class CommandAdapter(
                         tvSelectCar?.text = context.resources.getString(R.string.car)
                         tvSelectIntruder?.text =
                             context.resources.getString(R.string.intruder)
-                        getStringInPreference(context, SET_SNR_CAR_VALUE, "")?.let {
+                        getStringInPreference(context, SET_SNR_CAR_VALUE, "3")?.let {
                             etCarSnr?.setText(it)
 
                         }
-                        getStringInPreference(context, SET_SNR_INTRUDER_VALUE, "")?.let {
+                        getStringInPreference(context, SET_SNR_INTRUDER_VALUE, "2.5")?.let {
                             etIntruderSnr?.setText(it)
                         }
                     }
@@ -290,35 +290,35 @@ class CommandAdapter(
                             getStringInPreference(
                                 context,
                                 SET_LOGIC_CAR_COUNT_SEISMIC_VALUE,
-                                ""
+                                "2"
                             )?.let {
                                 etCarCount?.setText(it)
                             }
                             getStringInPreference(
                                 context,
                                 SET_LOGIC_CAR_DURATION_SEISMIC_VALUE,
-                                ""
+                                "6"
                             )?.let {
                                 etCarDuration?.setText(it)
                             }
                             getStringInPreference(
                                 context,
                                 SET_LOGIC_INTRUDER_COUNT_SEISMIC_VALUE,
-                                ""
+                                "1"
                             )?.let {
                                 etIntruderCount?.setText(it)
                             }
                             getStringInPreference(
                                 context,
                                 SET_LOGIC_INTRUDER_DURATION_SEISMIC_VALUE,
-                                ""
+                                "4"
                             )?.let {
                                 etIntruderDuration?.setText(it)
                             }
                             getStringInPreference(
                                 context,
                                 SET_LOGIC_SUSPEND_SEISMIC_VALUE,
-                                ""
+                                "20"
                             )?.let {
                                 etSeconds?.setText(it)
                             }
@@ -334,57 +334,65 @@ class CommandAdapter(
                                 getStringInPreference(
                                     context,
                                     SET_LOGIC_COUNT_RADAR_VALUE,
-                                    ""
+                                    "1"
                                 )?.let {
                                     etIntruderCount?.setText(it)
                                 }
                                 getStringInPreference(
                                     context,
                                     SET_LOGIC_DURATION_RADAR_VALUE,
-                                    ""
+                                    "4"
                                 )?.let {
                                     etIntruderDuration?.setText(it)
                                 }
                                 getStringInPreference(
                                     context,
                                     SET_LOGIC_SUSPEND_RADAR_VALUE,
-                                    ""
+                                    "20"
                                 )?.let {
                                     etSeconds?.setText(it)
                                 }
                             } else if (command.sensorType == PIR_TYPE) {
-                                getStringInPreference(context, SET_LOGIC_COUNT_PIR_VALUE, "")?.let {
+                                getStringInPreference(
+                                    context,
+                                    SET_LOGIC_COUNT_PIR_VALUE,
+                                    "1"
+                                )?.let {
                                     etIntruderCount?.setText(it)
                                 }
                                 getStringInPreference(
                                     context,
                                     SET_LOGIC_DURATION_PIR_VALUE,
-                                    ""
+                                    "4"
                                 )?.let {
                                     etIntruderDuration?.setText(it)
                                 }
                                 getStringInPreference(
                                     context,
                                     SET_LOGIC_SUSPEND_PIR_VALUE,
-                                    ""
+                                    "20"
                                 )?.let {
                                     etSeconds?.setText(it)
                                 }
                             } else if (command.sensorType == VIBRATION_TYPE) {
-                                getStringInPreference(context, SET_LOGIC_COUNT_VIB_VALUE, "")?.let {
+                                getStringInPreference(
+                                    context,
+                                    SET_LOGIC_COUNT_VIB_VALUE,
+                                    "1"
+                                )?.let {
                                     etIntruderCount?.setText(it)
                                 }
                                 getStringInPreference(
                                     context,
                                     SET_LOGIC_DURATION_VIB_VALUE,
-                                    ""
+                                    "4"
                                 )?.let {
                                     etIntruderDuration?.setText(it)
                                 }
                                 getStringInPreference(
                                     context,
                                     SET_LOGIC_SUSPEND_VIB_VALUE,
-                                    ""
+                                    "20"
                                 )?.let {
                                     etSeconds?.setText(it)
                                 }
@@ -412,19 +420,19 @@ class CommandAdapter(
                         tvSelectIntruder?.visibility = View.GONE
                         if (command.sensorType == SEISMIC_TYPE
                         ) {
-                            getStringInPreference(context, SET_MIN_POWER_SEISMIC_VALUE, "")?.let {
+                            getStringInPreference(context, SET_MIN_POWER_SEISMIC_VALUE, "70")?.let {
                                 etCarSnr?.setText(it)
                             }
                         } else if (command.sensorType == VIBRATION_TYPE) {
-                            getStringInPreference(context, SET_MIN_POWER_VIB_VALUE, "")?.let {
+                            getStringInPreference(context, SET_MIN_POWER_VIB_VALUE, "15")?.let {
                                 etCarSnr?.setText(it)
                             }
                         } else if (command.sensorType == RADAR_TYPE) {
-                            getStringInPreference(context, SET_MIN_POWER_RADAR_VALUE, "")?.let {
+                            getStringInPreference(context, SET_MIN_POWER_RADAR_VALUE, "4")?.let {
                                 etCarSnr?.setText(it)
                             }
                         } else if (command.sensorType == PIR_TYPE) {
-                            getStringInPreference(context, SET_MIN_POWER_PIR_VALUE, "")?.let {
+                            getStringInPreference(context, SET_MIN_POWER_PIR_VALUE, "4")?.let {
                                 etCarSnr?.setText(it)
                             }
                         }
