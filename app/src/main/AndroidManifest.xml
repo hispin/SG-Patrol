@@ -73,7 +73,7 @@
 
         <activity android:name=".activities.ParentActivity" />
         <activity android:name=".activities.DownloadOfflineTilesActivity" />
-        <activity android:name=".activities.MapmobActivity" /> <!-- <meta-data android:name="com.google.firebase.messaging.default_notification_icon" -->
+        <!--     haggay   <activity android:name=".activities.MapmobActivity" /> &lt;!&ndash; <meta-data android:name="com.google.firebase.messaging.default_notification_icon" &ndash;&gt;-->
         <!-- android:resource="@mipmap/ic_launcher" /> -->
         <activity
                 android:name=".activities.InitAppActivity"

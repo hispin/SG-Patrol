@@ -1,5 +1,6 @@
 package com.sensoguard.detectsensor.fragments
 
+//import com.sensoguard.detectsensor.activities.DownloadOfflineTilesActivity
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
@@ -13,16 +14,53 @@ import android.text.method.PasswordTransformationMethod
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.Button
+import android.widget.EditText
+import android.widget.ImageButton
+import android.widget.ListPopupWindow
+import android.widget.RadioGroup
+import android.widget.TextView
+import android.widget.Toast
+import android.widget.ToggleButton
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.sensoguard.detectsensor.R
-import com.sensoguard.detectsensor.activities.DownloadOfflineTilesActivity
 import com.sensoguard.detectsensor.adapters.GeneralItemMenuAdapter
-import com.sensoguard.detectsensor.classes.*
-import com.sensoguard.detectsensor.global.*
+import com.sensoguard.detectsensor.classes.GeneralItemMenu
+import com.sensoguard.detectsensor.classes.LanguageManager
+import com.sensoguard.detectsensor.classes.MyEmailAccount
+import com.sensoguard.detectsensor.classes.Sensor
+import com.sensoguard.detectsensor.global.ALARM_FLICKERING_DURATION_KEY
+import com.sensoguard.detectsensor.global.CURRENT_LANG_KEY_PREF
+import com.sensoguard.detectsensor.global.IS_FORWARD_ALARM_EMAIL
+import com.sensoguard.detectsensor.global.IS_NOTIFICATION_SOUND_KEY
+import com.sensoguard.detectsensor.global.IS_SENSOR_NAME_ALWAYS_KEY
+import com.sensoguard.detectsensor.global.IS_SSL_MAIL
+import com.sensoguard.detectsensor.global.IS_VIBRATE_WHEN_ALARM_KEY
+import com.sensoguard.detectsensor.global.MAP_SHOW_NORMAL_VALUE
+import com.sensoguard.detectsensor.global.MAP_SHOW_SATELLITE_VALUE
+import com.sensoguard.detectsensor.global.MAP_SHOW_VIEW_TYPE_KEY
+import com.sensoguard.detectsensor.global.PASSWORD_MAIL
+import com.sensoguard.detectsensor.global.PORT_MAIL
+import com.sensoguard.detectsensor.global.RECIPIENT_MAIL
+import com.sensoguard.detectsensor.global.SELECTED_NOTIFICATION_SOUND_KEY
+import com.sensoguard.detectsensor.global.SERVER_MAIL
+import com.sensoguard.detectsensor.global.USER_NAME_MAIL
+import com.sensoguard.detectsensor.global.getBooleanInPreference
+import com.sensoguard.detectsensor.global.getIntInPreference
+import com.sensoguard.detectsensor.global.getLongInPreference
+import com.sensoguard.detectsensor.global.getScreenWidth
+import com.sensoguard.detectsensor.global.getSensorsFromLocally
+import com.sensoguard.detectsensor.global.getStringInPreference
+import com.sensoguard.detectsensor.global.setBooleanInPreference
+import com.sensoguard.detectsensor.global.setIntInPreference
+import com.sensoguard.detectsensor.global.setLongInPreference
+import com.sensoguard.detectsensor.global.setStringInPreference
+import com.sensoguard.detectsensor.global.showToast
+import com.sensoguard.detectsensor.global.storeSensorsToLocally
+import com.sensoguard.detectsensor.global.validIsEmpty
 import com.sensoguard.detectsensor.interfaces.CallToParentInterface
 import com.sensoguard.detectsensor.interfaces.OnFragmentListener
 
@@ -124,7 +162,7 @@ open class ConfigurationFragment : ParentFragment(), CallToParentInterface {
                 setLongInPreference(activity, ALARM_FLICKERING_DURATION_KEY, timeFlicker)
                 Toast.makeText(
                     activity,
-                    resources.getString(com.sensoguard.detectsensor.R.string.time_flickering_save_successfully),
+                    resources.getString(R.string.time_flickering_save_successfully),
                     Toast.LENGTH_SHORT
                 ).show()
             } catch (ex: NumberFormatException) {
@@ -199,12 +237,12 @@ open class ConfigurationFragment : ParentFragment(), CallToParentInterface {
 
         btnSaveOffline = view.findViewById(R.id.btnSaveOffline)
         btnSaveOffline?.setOnClickListener {
-            startActivity(
-                Intent(
-                    requireActivity(),
-                    DownloadOfflineTilesActivity::class.java
-                )
-            )
+// haggay           startActivity(
+//                Intent(
+//                    requireActivity(),
+//                    DownloadOfflineTilesActivity::class.java
+//                )
+//            )
         }
         ibSetEmailDetails = view.findViewById(R.id.ibSetEmailDetails)
         ibSetEmailDetails?.setOnClickListener {
@@ -276,7 +314,7 @@ open class ConfigurationFragment : ParentFragment(), CallToParentInterface {
                 txtAlarmSoundValue?.text = title
                 setStringInPreference(activity, SELECTED_NOTIFICATION_SOUND_KEY, uri.toString())
             } else {
-                txtAlarmSoundValue?.text = resources.getString(com.sensoguard.detectsensor.R.string.no_selected_sound)
+                txtAlarmSoundValue?.text = resources.getString(R.string.no_selected_sound)
             }
         }
     }
@@ -322,17 +360,17 @@ open class ConfigurationFragment : ParentFragment(), CallToParentInterface {
         fun askBeforeDeleteExtraSensor() {
             val dialog= AlertDialog.Builder(activity)
                 //set message, title, and icon
-                .setTitle(activity?.resources?.getString(com.sensoguard.detectsensor.R.string.remove_extra_sensors))
+                .setTitle(activity?.resources?.getString(R.string.remove_extra_sensors))
                 .setMessage(
                     activity?.resources?.getString(
-                        com.sensoguard.detectsensor.R.string.content_delete_extra_sensor
+                        R.string.content_delete_extra_sensor
                     )
                 ).setIcon(
                     android.R.drawable.ic_menu_delete
 
                 )
 
-                .setPositiveButton(activity?.resources?.getString(com.sensoguard.detectsensor.R.string.yes)) { dialog, _ ->
+                .setPositiveButton(activity?.resources?.getString(R.string.yes)) { dialog, _ ->
 
                     //remove extra sensors
                     if(numSensorsRequest!=null) {
@@ -361,7 +399,7 @@ open class ConfigurationFragment : ParentFragment(), CallToParentInterface {
                 }
 
 
-                .setNegativeButton(activity?.resources?.getString(com.sensoguard.detectsensor.R.string.no)) { dialog, _ -> dialog.dismiss() }
+                .setNegativeButton(activity?.resources?.getString(R.string.no)) { dialog, _ -> dialog.dismiss() }
                 .create()
             dialog.show()
 
@@ -379,7 +417,7 @@ open class ConfigurationFragment : ParentFragment(), CallToParentInterface {
             && numSensorsRequest >254) {
             Toast.makeText(
                 this.context,
-                resources.getString(com.sensoguard.detectsensor.R.string.invalid_mum_sensors),
+                resources.getString(R.string.invalid_mum_sensors),
                 Toast.LENGTH_LONG
             ).show()
             return
@@ -485,28 +523,28 @@ open class ConfigurationFragment : ParentFragment(), CallToParentInterface {
 
 
         val etUserName: EditText = promptsView
-            .findViewById(R.id.etSenderEmail) as EditText
+                    .findViewById(R.id.etSenderEmail)
 
         val etPassword: EditText = promptsView
-            .findViewById(R.id.tvIntruderValue) as EditText
+                    .findViewById(R.id.tvIntruderValue)
 
         val ibTogglePass: ImageButton = promptsView
-            .findViewById(R.id.ibTogglePass) as ImageButton
+                    .findViewById(R.id.ibTogglePass)
         ibTogglePass.setOnClickListener {
             togglePassVisibility(etPassword)
         }
 
         val etMailServer: EditText = promptsView
-            .findViewById(R.id.etMailServer) as EditText
+                    .findViewById(R.id.etMailServer)
 
         val etMailServerPort: EditText = promptsView
-            .findViewById(R.id.etMailServerPort) as EditText
+                    .findViewById(R.id.etMailServerPort)
 
         val etMailRecipient: EditText = promptsView
-            .findViewById(R.id.etMailRecipient) as EditText
+                    .findViewById(R.id.etMailRecipient)
 
         val rgIsSSL: RadioGroup = promptsView
-            .findViewById(R.id.rgIsSSL) as RadioGroup
+                    .findViewById(R.id.rgIsSSL)
 
 
         val userName = getStringInPreference(requireContext(), USER_NAME_MAIL, "-1")
@@ -545,7 +583,7 @@ open class ConfigurationFragment : ParentFragment(), CallToParentInterface {
             .setCancelable(false)
             .show()
 
-        val positiveButton = promptsView.findViewById(R.id.btnSave) as Button
+        val positiveButton: Button = promptsView.findViewById(R.id.btnSave)
         //dialog?.getButton(AlertDialog.BUTTON_POSITIVE)!!
         positiveButton.setOnClickListener(View.OnClickListener {
 
@@ -579,7 +617,7 @@ open class ConfigurationFragment : ParentFragment(), CallToParentInterface {
 
             //     Toast.makeText(SysManagerActivity.this, "dialog is open", Toast.LENGTH_SHORT).show();
         })
-        val negativeButton: Button = promptsView.findViewById(R.id.btnCancel) as Button
+        val negativeButton: Button = promptsView.findViewById(R.id.btnCancel)
         //dialog?.getButton(AlertDialog.BUTTON_POSITIVE)!!
         negativeButton.setOnClickListener(View.OnClickListener {
             dialog?.dismiss()
