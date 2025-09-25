@@ -30,7 +30,6 @@ package com.sensoguard.detectsensor.fragments
 //import com.mapbox.mapboxsdk.style.layers.PropertyFactory.textVariableAnchor
 //import com.mapbox.mapboxsdk.style.layers.SymbolLayer
 //import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
-import android.app.Activity
 import android.app.Dialog
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -38,18 +37,18 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
-import android.graphics.PointF
+import android.graphics.Color
 import android.location.Location
 import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.Button
 import android.widget.EditText
-import android.widget.PopupWindow
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -70,8 +69,11 @@ import com.mapbox.maps.MapView
 import com.mapbox.maps.MapboxMap
 import com.mapbox.maps.OfflineRegion
 import com.mapbox.maps.Style
+import com.mapbox.maps.ViewAnnotationAnchor
+import com.mapbox.maps.ViewAnnotationOptions
 import com.mapbox.maps.plugin.annotation.AnnotationPlugin
 import com.mapbox.maps.plugin.annotation.annotations
+import com.mapbox.maps.plugin.annotation.generated.OnPointAnnotationClickListener
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotation
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
@@ -79,6 +81,10 @@ import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
 import com.mapbox.maps.plugin.gestures.OnMoveListener
 import com.mapbox.maps.plugin.gestures.addOnMapLongClickListener
 import com.mapbox.maps.plugin.gestures.addOnMoveListener
+import com.mapbox.maps.viewannotation.ViewAnnotationManager
+import com.mapbox.maps.viewannotation.annotationAnchor
+import com.mapbox.maps.viewannotation.geometry
+import com.mapbox.maps.viewannotation.viewAnnotationOptions
 import com.sensoguard.detectsensor.R
 import com.sensoguard.detectsensor.adapters.SensorsDialogAdapter
 import com.sensoguard.detectsensor.classes.AlarmSensor
@@ -113,10 +119,8 @@ import com.sensoguard.detectsensor.global.READ_DATA_KEY_TEST
 import com.sensoguard.detectsensor.global.RESET_MARKERS_KEY
 import com.sensoguard.detectsensor.global.SEISMIC_TYPE
 import com.sensoguard.detectsensor.global.STOP_ALARM_SOUND
-import com.sensoguard.detectsensor.global.TABLAYOUT_HEIGHT_DEFAULT
 import com.sensoguard.detectsensor.global.UserSession
 import com.sensoguard.detectsensor.global.VIBRATION_TYPE
-import com.sensoguard.detectsensor.global.dpToPx
 import com.sensoguard.detectsensor.global.getIntInPreference
 import com.sensoguard.detectsensor.global.getLongInPreference
 import com.sensoguard.detectsensor.global.getSensorsFromLocally
@@ -141,13 +145,16 @@ private const val ARG_PARAM2 = "param2"
  */
 class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
 
+    private var currentPopup: View? = null
+
     //annotations (markers)
+    private var viewAnnotationManager: ViewAnnotationManager? = null//mapView?.viewAnnotationManager
     private var pointAnnotationManager: PointAnnotationManager? = null
     private var annotationApi: AnnotationPlugin? = null
     private var pointAnnotation: PointAnnotation? = null
     //////////////
 
-    private var popup: PopupWindow? = null
+    //private var popup: PopupWindow? = null
     private var currentLocationMarker: Feature? = null
     private var markersList: ArrayList<Feature>? = null
     //private var symbolOption: SymbolOptions? = null
@@ -207,12 +214,17 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
             param2 = it.getString(ARG_PARAM2)
         }
 
+        startTimerListener()
+    }
+
+    /**
+     * initialize annotation for markers
+     */
+    private fun initializeAnnotation() {
+        viewAnnotationManager = mapView?.viewAnnotationManager
         // Create an instance of the Annotation API and get the PointAnnotationManager.
         annotationApi = mapView?.annotations
-        pointAnnotationManager = annotationApi?.createPointAnnotationManager(null)
-
-
-        startTimerListener()
+        pointAnnotationManager = annotationApi?.createPointAnnotationManager()
     }
 
     //start listener to timer
@@ -253,11 +265,9 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
         //Mapbox.getInstance(requireActivity(), getString(R.string.mapbox_access_token))
         val view = inflater.inflate(R.layout.fragment_mapmob, container, false)
 
-        //haggay
+
         mapView = view.findViewById(R.id.mapView)
-        //mapView?.onCreate(savedInstanceState)
-//
-//
+
         fbRefresh = view.findViewById(R.id.fbRefresh1)
         fbRefresh?.setOnClickListener {
             gotoMySingleLocation()
@@ -268,7 +278,11 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
             showTestEventDialog()
         }
 
+        //normal or satellite
         initMapType()
+
+        //initialize annotation for markers
+        initializeAnnotation()
 
         return view
     }
@@ -336,17 +350,7 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
                         // set camera position
                         myMapboxMap?.setCamera(cameraPosition)
                     }
-
-//                val cameraPosition = CameraPosition.Builder()
-//                    .target(LatLng(myLocate?.latitude!!, myLocate?.longitude!!))
-//                    .zoom(15.0)
-//                    .tilt(20.0)
-//                    .build()
-//
-//
-//                // Move camera to new position
-//                myMapboxMap!!.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
-
+                //show all markers
                 showMarkers()
 
             }
@@ -369,7 +373,7 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
         //get sensors from locally
         val sensorsArr = activity?.let { getSensorsFromLocally(it) }
 
-        //for
+        // scan all saved (with locations) sensors
         val iteratorList = sensorsArr?.listIterator()
         while (iteratorList != null && iteratorList.hasNext()) {
             val sensorItem = iteratorList.next()
@@ -395,7 +399,7 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
                     }
 
                 } else {
-                    //show sensor marker
+                    //show one sensor marker
                     showSensorMarker(sensorItem)
                 }
 
@@ -659,10 +663,8 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
         return null
     }
 
-    //haggay var mySymbolCurrLocation: Symbol? = null
-
     /**
-     * show marker of current location
+     * show marker of current location if exist
      */
     private fun showCurrentLocationMarker() {
 
@@ -860,15 +862,57 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
             .withPoint(Point.fromLngLat(location.longitude, location.latitude))
             // Specify the bitmap you assigned to the point annotation
             // The bitmap will be added to map style automatically.
-
-
             .withIconImage(
                 BitmapFactory.decodeResource(
                     requireActivity().resources, myIcon
                 )
             )
+        pointAnnotationOptions.textField = "$cameraName:$type"
+
+        //set transparent to hide preview text (without click)
+        //TODO to learn how to hide annotation view text
+        pointAnnotationOptions.withTextColor(Color.TRANSPARENT)
         // Add the resulting pointAnnotation to the map.
         pointAnnotationManager?.create(pointAnnotationOptions)
+        pointAnnotationManager?.addClickListener(object : OnPointAnnotationClickListener {
+            override fun onAnnotationClick(annotation: PointAnnotation): Boolean {
+
+
+                // Remove existing popup if any
+                viewAnnotationManager?.removeAllViewAnnotations()
+
+                currentPopup = createPopup(annotation)
+
+
+                val options: ViewAnnotationOptions?
+                options = viewAnnotationOptions {
+                    geometry(
+                        Point.fromLngLat(
+                            annotation.point.longitude(),
+                            annotation.point.latitude()
+                        )
+                    )
+                    allowOverlap(false)
+                    annotationAnchor { anchor(ViewAnnotationAnchor.BOTTOM) }
+                    //visible(false)
+                }
+
+                val lp = LinearLayout.LayoutParams(
+                    WRAP_CONTENT,
+                    WRAP_CONTENT
+                )
+                currentPopup?.layoutParams = lp
+
+
+                if (currentPopup != null) {
+                    // Add the popup as a ViewAnnotation
+                    viewAnnotationManager?.addViewAnnotation(currentPopup!!, options)
+                }
+
+
+                return true
+            }
+        })
 
 
 ////haggay
@@ -1007,6 +1051,23 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
 ////                })
 ////        }//end checking the array
         return null//feature
+    }
+
+    /**
+     * create popup for sensor (with marker) info
+     */
+    private fun createPopup(annotation: PointAnnotation): View {
+        // Inflate the popup layout
+        val layoutInflater =
+            context?.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        val popup: View = layoutInflater.inflate(R.layout.popup_marker, null)
+
+
+        val arr = annotation.textField.toString().split(":")
+        popup.findViewById<TextView>(R.id.tvCameraName1).text = arr[0]
+        popup.findViewById<TextView>(R.id.tvCameraType1).text = arr[1]
+
+        return popup
     }
 
 
@@ -1490,58 +1551,61 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
 
 
     //popup with camera info
-    private fun showPopup(
-        context: Activity,
-        pointF: PointF,
-        cameraName: String,
-        sensorType: String
-    ) {
-
-        //when press on icon of current location
-        if (cameraName == "myLocate")
-            return
-
-        // Inflate the popup_layout.xml
-        //val viewGroup = context.findViewById<View>(R.id.popup) as LinearLayout
-        val layoutInflater = context
-            .getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        val layout: View = layoutInflater.inflate(R.layout.popup_marker, null)
-
-        // Creating the PopupWindow
-        if (popup != null)
-            popup?.dismiss()
-
-        popup = PopupWindow(context)
-        popup?.contentView = layout
-
-        popup?.isFocusable = false
-
-
-        //disregard the tab layout height
-        val offsetY = dpToPx(TABLAYOUT_HEIGHT_DEFAULT, requireActivity())
-
-
-        // Displaying the popup at the specified location, + offsets.
-        popup?.showAtLocation(
-            layout,
-            Gravity.NO_GRAVITY,
-            pointF.x.toInt(),
-            pointF.y.toInt() + offsetY
-        )
-
-        // Getting a reference to Close button, and close the popup when clicked.
-        val tvCameraName = layout.findViewById<TextView>(R.id.tvCameraName)
-        tvCameraName.text = cameraName
-
-        val tvCameraType = layout.findViewById<TextView>(R.id.tvCameraType)
-        tvCameraType.text = sensorType//cameraName
-    }
+//    private fun showPopup(
+//        context: Activity,
+//        pointF: PointF,
+//        iconAnchor: IconAnchor,
+//        cameraName: String,
+//        sensorType: String
+//    ): PopupWindow? {
+//
+//        //when press on icon of current location
+//        if (cameraName == "myLocate")
+//            return null
+//
+//        // Inflate the popup_layout.xml
+//        //val viewGroup = context.findViewById<View>(R.id.popup) as LinearLayout
+//        val layoutInflater = context
+//            .getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+//        val layout: View = layoutInflater.inflate(R.layout.popup_marker, null)
+//
+//        // Creating the PopupWindow
+//        if (popup != null)
+//            popup?.dismiss()
+//
+//        popup = PopupWindow(context)
+//        popup?.contentView = layout
+//
+//        popup?.isFocusable = false
+//
+//
+//        //disregard the tab layout height
+//        val offsetY = dpToPx(TABLAYOUT_HEIGHT_DEFAULT, requireActivity())
+//
+//        //popup?.showAsDropDown(iconAnchor)
+//        // Displaying the popup at the specified location, + offsets.
+//        popup?.showAtLocation(
+//            layout,
+//            Gravity.NO_GRAVITY,
+//            pointF.x.toInt(),
+//            pointF.y.toInt() + offsetY
+//        )
+//
+//        // Getting a reference to Close button, and close the popup when clicked.
+//        val tvCameraName = layout.findViewById<TextView>(R.id.tvCameraName1)
+//        tvCameraName.text = cameraName
+//
+//        val tvCameraType = layout.findViewById<TextView>(R.id.tvCameraType1)
+//        tvCameraType.text = sensorType//cameraName
+//
+//        return popup
+//    }
 
     //to dismiss info popup when
     //haggay
     override fun onMoveBegin(detector: MoveGestureDetector) {
-        if (popup != null)
-            popup?.dismiss()
+        if (viewAnnotationManager != null && currentPopup != null)
+            viewAnnotationManager?.removeViewAnnotation(currentPopup!!)
     }
 
     override fun onMove(detector: MoveGestureDetector): Boolean {

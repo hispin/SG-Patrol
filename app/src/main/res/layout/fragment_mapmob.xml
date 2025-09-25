@@ -16,7 +16,6 @@
             mapbox:mapbox_cameraTargetLat="32.941484"
             mapbox:mapbox_cameraTargetLng="35.795603"
             mapbox:mapbox_cameraZoom="16"
-
             />
     <!--    mapbox:mapbox_uiRotateGestures="true"-->
     <!--    mapbox:mapbox_cameraZoomMax="18"-->
