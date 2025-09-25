@@ -70,10 +70,15 @@ import com.mapbox.maps.MapView
 import com.mapbox.maps.MapboxMap
 import com.mapbox.maps.OfflineRegion
 import com.mapbox.maps.Style
+import com.mapbox.maps.plugin.annotation.AnnotationPlugin
 import com.mapbox.maps.plugin.annotation.annotations
+import com.mapbox.maps.plugin.annotation.generated.PointAnnotation
+import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager
 import com.mapbox.maps.plugin.annotation.generated.PointAnnotationOptions
 import com.mapbox.maps.plugin.annotation.generated.createPointAnnotationManager
 import com.mapbox.maps.plugin.gestures.OnMoveListener
+import com.mapbox.maps.plugin.gestures.addOnMapLongClickListener
+import com.mapbox.maps.plugin.gestures.addOnMoveListener
 import com.sensoguard.detectsensor.R
 import com.sensoguard.detectsensor.adapters.SensorsDialogAdapter
 import com.sensoguard.detectsensor.classes.AlarmSensor
@@ -135,6 +140,13 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
+
+    //annotations (markers)
+    private var pointAnnotationManager: PointAnnotationManager? = null
+    private var annotationApi: AnnotationPlugin? = null
+    private var pointAnnotation: PointAnnotation? = null
+    //////////////
+
     private var popup: PopupWindow? = null
     private var currentLocationMarker: Feature? = null
     private var markersList: ArrayList<Feature>? = null
@@ -194,6 +206,12 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
+
+        // Create an instance of the Annotation API and get the PointAnnotationManager.
+        annotationApi = mapView?.annotations
+        pointAnnotationManager = annotationApi?.createPointAnnotationManager(null)
+
+
         startTimerListener()
     }
 
@@ -250,7 +268,6 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
             showTestEventDialog()
         }
 
-
         initMapType()
 
         return view
@@ -304,13 +321,21 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
                 myLocate?.longitude != null
             ) {
 
+                pointAnnotationManager =
+                    mapView?.annotations?.createPointAnnotationManager().apply {
 
-                val cameraPosition = CameraOptions.Builder()
-                    .center(Point.fromLngLat(myLocate?.latitude!!, myLocate?.longitude!!))
-                    .zoom(15.0)
-                    .build()
-                // set camera position
-                mapView?.mapboxMap?.setCamera(cameraPosition)
+                        val cameraPosition = CameraOptions.Builder()
+                            .zoom(15.0)
+                            .center(
+                                Point.fromLngLat(
+                                    myLocate?.longitude!!,
+                                    myLocate?.latitude!!
+                                )
+                            )//Point.fromLngLat(myLocate?.latitude!!, myLocate?.longitude!!))
+                            .build()
+                        // set camera position
+                        myMapboxMap?.setCamera(cameraPosition)
+                    }
 
 //                val cameraPosition = CameraPosition.Builder()
 //                    .target(LatLng(myLocate?.latitude!!, myLocate?.longitude!!))
@@ -330,7 +355,9 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
 
     }
 
-    //show all markers
+    /**
+     * show all markers
+     */
     fun showMarkers() {
 
         //clear the markers
@@ -448,7 +475,9 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
         return isValid
     }
 
-    //Done show marker of sensor
+    /**
+     * show marker of sensors that have locations
+     */
     private fun showSensorMarker(sensorItem: Sensor) {
 
         if (mapView == null || sensorItem == null) {
@@ -632,7 +661,9 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
 
     //haggay var mySymbolCurrLocation: Symbol? = null
 
-    //show marker of current location
+    /**
+     * show marker of current location
+     */
     private fun showCurrentLocationMarker() {
 
         if (mapView == null) {
@@ -643,15 +674,41 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
             return
         }
 
-
         if (myLocate != null) {
-            currentLocationMarker = addMarker(
-                myLocate!!,
-                BLUE_ICON_ID,
-                "myLocate",
-                ""
-            )
+
+            if (pointAnnotation == null) {
+                // Set options for the resulting symbol layer.
+                val pointAnnotationOptions: PointAnnotationOptions = PointAnnotationOptions()
+                    // Define a geographic coordinate.
+                    .withPoint(Point.fromLngLat(myLocate?.longitude!!, myLocate?.latitude!!))
+                    // Specify the bitmap you assigned to the point annotation
+                    // The bitmap will be added to map style automatically.
+                    .withIconImage(
+                        BitmapFactory.decodeResource(
+                            requireActivity().resources, R.drawable.ic_my_locate
+                        )
+                    )
+                // Add the resulting pointAnnotation to the map.
+                pointAnnotation = pointAnnotationManager?.create(pointAnnotationOptions)
+            } else {
+                //if pointAnnotation is already exist then update the current markers location
+                pointAnnotation?.point =
+                    Point.fromLngLat(myLocate?.longitude!!, myLocate?.latitude!!)
+                if (pointAnnotation != null) {
+                    pointAnnotationManager?.update(pointAnnotation!!)
+                }
+            }
+
+
         }
+//        if (myLocate != null) {
+//            currentLocationMarker = addMarker(
+//                myLocate!!,
+//                BLUE_ICON_ID,
+//                "myLocate",
+//                ""
+//            )
+//        }
 
     }
 
@@ -773,13 +830,47 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
     }
 
 
-    //add marker
-//    private fun addMarker(
-//        location: LatLng,
-//        iconId: String,
-//        cameraName: String?,
-//        type: String?
-//    ): Feature? {
+    /**
+     * add one marker to the map
+     */
+    private fun addMarker(
+        location: LatLng,
+        iconId: String,
+        cameraName: String?,
+        type: String?
+    ): Feature? {
+
+        var myIcon: Int? = null
+
+        when (iconId) {
+            GREEN_ICON_ID -> {
+                myIcon = R.drawable.ic_sensor_item
+            }
+
+            else -> {}
+        }
+
+        if (myIcon == null) {
+            return null
+        }
+
+        // Set options for the resulting symbol layer.
+        val pointAnnotationOptions: PointAnnotationOptions = PointAnnotationOptions()
+            // Define a geographic coordinate.
+            .withPoint(Point.fromLngLat(location.longitude, location.latitude))
+            // Specify the bitmap you assigned to the point annotation
+            // The bitmap will be added to map style automatically.
+
+
+            .withIconImage(
+                BitmapFactory.decodeResource(
+                    requireActivity().resources, myIcon
+                )
+            )
+        // Add the resulting pointAnnotation to the map.
+        pointAnnotationManager?.create(pointAnnotationOptions)
+
+
 ////haggay
 //
 //
@@ -915,8 +1006,8 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
 ////                    ), Style.OnStyleLoaded {
 ////                })
 ////        }//end checking the array
-//        return null//feature
-//    }
+        return null//feature
+    }
 
 
     //configureActivation map type
@@ -1097,7 +1188,103 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
         super.onStart()
         setFilter()
         initMapType()
-        //haggay mapView?.onStart()
+        mapView?.onStart()
+    }
+
+
+    override fun onResume() {
+        super.onResume()
+
+        mapView?.onResume()
+
+        //load map
+        if (isAdded) {
+
+//            val mapOptions= MapInitOptions(
+//                context = requireActivity(),
+//                styleUri = mapType
+//            )
+            myMapboxMap = mapView?.mapboxMap
+
+            myMapboxMap?.loadStyle(mapType)
+
+            //detect map dragging
+            myMapboxMap?.addOnMoveListener(this)
+
+            myMapboxMap?.addOnMapLongClickListener { point ->
+                currentLongitude = point.longitude()
+                currentLatitude = point.latitude()
+                showDialogSensorsList()
+                true
+            }
+
+            //go to last location
+            val location = initFindLocation()
+
+
+            //set last location if exist
+            location?.let {
+                myLocate =
+                    LatLng(it.latitude, it.longitude)
+            }
+
+            showLocation(location)
+//
+            gotoMyLocation()
+
+
+//            mapView?.getMapAsync {
+//                mapView?.getMapAsync { mapboxMap ->
+//                    mapboxMap.uiSettings.isCompassEnabled = true
+//                    mapboxMap.uiSettings.setCompassFadeFacingNorth(false)
+//                    mapboxMap.setStyle(mapType) {
+//
+//                        loadedMapStyle = it
+//                        loadedMapStyle?.addSource(GeoJsonSource("source-id"))
+//                        myMapboxMap = mapboxMap
+//
+//                        myMapboxMap?.addOnMapClickListener { point ->
+//
+//                            val result = handleClickIcon(
+//                                mapboxMap.projection.toScreenLocation(point),
+//                                point
+//                            )
+//                            result
+//                        }
+//
+//                        //detect map dragging
+//                        mapboxMap.addOnMoveListener(this)// done
+//
+//                        myMapboxMap?.addOnMapLongClickListener { point -> //done
+//                            currentLongitude = point.longitude
+//                            currentLatitude = point.latitude
+//                            showDialogSensorsList()
+//                            true
+//                        }
+//
+//
+//                        //for markers
+//                        markerViewManager = MarkerViewManager(mapView, myMapboxMap)
+//
+//
+//                        //go to last location
+//                        val location = initFindLocation() // done
+//
+//
+//                        //set last location if exist
+//                        location?.let { // done
+//                            myLocate =
+//                                LatLng(it.latitude, it.longitude)
+//                        }
+//
+//                        showLocation(location) // done
+//
+//                        gotoMyLocation() // done
+//                    }
+//                }
+//            }
+
+        }
     }
 
 
@@ -1277,13 +1464,13 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
         }
     }
 
-    private val PROPERTY_NAME = "name"
-    private val PROPERTY_NAME_WIN = "name_win"
-    private val PROPERTY_SENSOR_TYPE = "sensor_type"
-
+//    private val PROPERTY_NAME = "name"
+//    private val PROPERTY_NAME_WIN = "name_win"
+//    private val PROPERTY_SENSOR_TYPE = "sensor_type"
+//
 //    private fun handleClickIcon(screenPoint: PointF, point: LatLng): Boolean {
 //        if (myMapboxMap != null) {
-//            val features: List<Feature> = myMapboxMap!!.queryRenderedFeatures(screenPoint, LAYER_ID)
+//            val features: List<Feature> = mapView.mapboxMap.queryRenderedFeatures(screenPoint, LAYER_ID)
 //            if (features.isNotEmpty()) {
 //                val cameraName = features[0].getStringProperty(PROPERTY_NAME_WIN)
 //                val sensorType = features[0].getStringProperty(PROPERTY_SENSOR_TYPE)
