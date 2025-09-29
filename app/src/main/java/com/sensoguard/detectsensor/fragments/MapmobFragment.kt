@@ -364,6 +364,10 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
      */
     fun showMarkers() {
 
+        //remove all markers
+        pointAnnotationManager?.deleteAll()
+        pointAnnotation = null
+
         //clear the markers
         markersList = ArrayList<Feature>()
 
@@ -668,6 +672,10 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
      */
     private fun showCurrentLocationMarker() {
 
+        if (activity == null) {
+            return
+        }
+
         if (mapView == null) {
             return
         }
@@ -847,6 +855,41 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
         when (iconId) {
             GREEN_ICON_ID -> {
                 myIcon = R.drawable.ic_sensor_item
+            }
+            CAR_ICON_ID -> {
+                myIcon = R.drawable.ic_alarm_car
+            }
+
+            INTRUDER_ICON_ID -> {
+                myIcon = R.drawable.ic_alarm_intruder
+            }
+
+            GRAY_ICON_ID -> {
+                myIcon = R.drawable.ic_sensor_item_disable
+            }
+
+            SENSOR_OFF_ICON_ID -> {
+                myIcon = R.drawable.ic_alarm_sensor_off
+            }
+
+            PIR_ICON_ID -> {
+                myIcon = R.drawable.ic_pir
+            }
+
+            RADAR_ICON_ID -> {
+                myIcon = R.drawable.ic_radar
+            }
+
+            VIBRATION_ICON_ID -> {
+                myIcon = R.drawable.ic_vibration
+            }
+
+            RED_ICON_ID -> {
+                myIcon = R.drawable.ic_sensor_alarm
+            }
+
+            LOW_BATTERY_ICON_ID -> {
+                myIcon = R.drawable.ic_alarm_low_battery
             }
 
             else -> {}

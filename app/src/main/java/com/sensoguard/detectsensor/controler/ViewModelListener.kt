@@ -8,7 +8,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.sensoguard.detectsensor.classes.AlarmSensor
 import com.sensoguard.detectsensor.classes.Sensor
-import com.sensoguard.detectsensor.global.*
+import com.sensoguard.detectsensor.global.ALARM_FLICKERING_DURATION_DEFAULT_VALUE_SECONDS
+import com.sensoguard.detectsensor.global.ALARM_FLICKERING_DURATION_KEY
+import com.sensoguard.detectsensor.global.STOP_ALARM_SOUND
+import com.sensoguard.detectsensor.global.UserSession
+import com.sensoguard.detectsensor.global.getLongInPreference
+import com.sensoguard.detectsensor.global.getSensorsFromLocally
 import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
@@ -57,7 +62,7 @@ class ViewModelListener(application: Application) : AndroidViewModel(application
 
         // This schedule a task to run every 10 minutes:
         scheduleTaskExecutor?.scheduleAtFixedRate({
-            Log.d("testTimer", "tick")
+            Log.d("testTimer2", "tick")
             try {
 
                 //check if there is alarm sensor that already timeout
@@ -78,7 +83,7 @@ class ViewModelListener(application: Application) : AndroidViewModel(application
                 this.currentCalendar?.postValue(Calendar.getInstance())
 
             } catch (ex: Exception) {
-                Log.d("testTimer", "exception:" + ex.message)
+                Log.d("testTimer2", "exception:" + ex.message)
             }
 
         }, 0, 1, TimeUnit.SECONDS)

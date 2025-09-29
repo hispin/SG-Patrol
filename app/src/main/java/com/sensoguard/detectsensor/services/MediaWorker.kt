@@ -60,7 +60,7 @@ class MediaWorker(val context: Context, workerParams: WorkerParameters) :
 
         // This schedule a task to run every 10 minutes:
         scheduleTaskExecutor?.scheduleAtFixedRate({
-            Log.d("testTimer", "tick")
+            Log.d("testTimer1", "tick")
             try {
 
                 //check if there is alarm sensor that already timeout
@@ -81,7 +81,7 @@ class MediaWorker(val context: Context, workerParams: WorkerParameters) :
                 //this.currentCalendar?.postValue(Calendar.getInstance())
 
             } catch (ex: Exception) {
-                Log.d("testTimer", "exception:" + ex.message)
+                Log.d("testTimer1", "exception:" + ex.message)
             }
 
         }, 0, 1, TimeUnit.SECONDS)
