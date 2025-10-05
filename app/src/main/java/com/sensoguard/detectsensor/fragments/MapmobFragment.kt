@@ -1292,14 +1292,13 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
         super.onStart()
         setFilter()
         initMapType()
-        mapView?.onStart()
+        //mapView?.onStart()
     }
 
 
     override fun onResume() {
         super.onResume()
-
-        mapView?.onResume()
+        //mapView?.onResume()
 
         //load map
         if (isAdded) {
@@ -1439,29 +1438,20 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
         sensorsArr?.let { activity?.let { context -> storeSensorsToLocally(it, context) } }
     }
 
-//haggay
-//    override fun onPause() {
-//        super.onPause()
-//        popup?.dismiss()
-//        mapView?.onPause()
-//        activity?.stopService(Intent(context, ServiceFindLocation::class.java))
-//    }
-//
-//    override fun onStop() {
-//        super.onStop()
-//        mapView?.onStop()
-//    }
-//
-//    override fun onLowMemory() {
-//        super.onLowMemory()
-//        mapView?.onLowMemory()
-//    }
-//
-//    override fun onDestroy() {
-//        super.onDestroy()
-//        mapView?.onDestroy()
-//        activity?.unregisterReceiver(usbReceiver)
-//    }
+
+    override fun onPause() {
+        super.onPause()
+        currentPopup?.let { viewAnnotationManager?.removeViewAnnotation(it) }
+        pointAnnotationManager?.deleteAll()
+        pointAnnotation = null
+        requireActivity().stopService(Intent(context, ServiceFindLocation::class.java))
+    }
+
+
+    override fun onDestroy() {
+        super.onDestroy()
+        activity?.unregisterReceiver(usbReceiver)
+    }
 
     //save the name of the sensor
     override fun saveNameSensor(detector: Sensor) {

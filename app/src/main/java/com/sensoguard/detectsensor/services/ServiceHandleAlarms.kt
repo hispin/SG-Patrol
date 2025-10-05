@@ -47,6 +47,7 @@ import com.sensoguard.detectsensor.global.SERVER_MAIL
 import com.sensoguard.detectsensor.global.SIX_SEVEN_FOTMAT_BITS
 import com.sensoguard.detectsensor.global.STOP_ALARM_SOUND
 import com.sensoguard.detectsensor.global.TEN_FOTMAT_BITS
+import com.sensoguard.detectsensor.global.UPDATE_MEDIA
 import com.sensoguard.detectsensor.global.USER_NAME_MAIL
 import com.sensoguard.detectsensor.global.UserSession
 import com.sensoguard.detectsensor.global.VIBRATION_TYPE
@@ -66,6 +67,7 @@ import javax.mail.internet.InternetAddress
 
 
 class ServiceHandleAlarms : ParentService() {
+    private var mediaWorkRequest: OneTimeWorkRequest? = null
     private val TAG = "ServiceHandleAlarms"
 
 
@@ -352,19 +354,23 @@ class ServiceHandleAlarms : ParentService() {
      * stop playing alarm
      */
     private fun stopPlayingAlarm() {
-        WorkManager.getInstance(applicationContext).cancelAllWorkByTag(MEDIA_WORKER)
+        WorkManager.getInstance(this).cancelAllWorkByTag(MEDIA_WORKER)
     }
 
     /**
      * start media worker
      */
     private fun startWorkerMedia() {
-        val mediaWorkRequest =
-            OneTimeWorkRequest.Builder(MediaWorker::class.java).addTag(MEDIA_WORKER)
-                .build() //OneTimeWorkRequestBuilder < MediaWorker > ().build();
+        if (mediaWorkRequest == null) {
+            mediaWorkRequest =
+                OneTimeWorkRequest.Builder(MediaWorker::class.java).addTag(MEDIA_WORKER)
+                    .build() //OneTimeWorkRequestBuilder < MediaWorker > ().build();
 
-        WorkManager.getInstance(this)
-            .enqueue(mediaWorkRequest)
+            WorkManager.getInstance(this)
+                .enqueue(mediaWorkRequest!!)
+        } else {
+            sendBroadcast(Intent(UPDATE_MEDIA))
+        }
     }
 
     //general validate of the bits and get the format

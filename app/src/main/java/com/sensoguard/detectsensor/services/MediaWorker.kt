@@ -1,6 +1,9 @@
 package com.sensoguard.detectsensor.services
 
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.media.Ringtone
 import android.media.RingtoneManager
 import android.net.Uri
@@ -8,6 +11,7 @@ import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.sensoguard.detectsensor.classes.AlarmSensor
@@ -17,6 +21,7 @@ import com.sensoguard.detectsensor.global.ALARM_FLICKERING_DURATION_KEY
 import com.sensoguard.detectsensor.global.IS_NOTIFICATION_SOUND_KEY
 import com.sensoguard.detectsensor.global.IS_VIBRATE_WHEN_ALARM_KEY
 import com.sensoguard.detectsensor.global.SELECTED_NOTIFICATION_SOUND_KEY
+import com.sensoguard.detectsensor.global.UPDATE_MEDIA
 import com.sensoguard.detectsensor.global.UserSession
 import com.sensoguard.detectsensor.global.getBooleanInPreference
 import com.sensoguard.detectsensor.global.getLongInPreference
@@ -34,7 +39,9 @@ class MediaWorker(val context: Context, workerParams: WorkerParameters) :
 
     private var scheduleTaskExecutor: ScheduledExecutorService? = null
 
+
     override fun doWork(): Result {
+        setFilter()
         playVibrate()
         if (playAlarmSound()) {
             shutDownTimer()
@@ -42,6 +49,15 @@ class MediaWorker(val context: Context, workerParams: WorkerParameters) :
         }
 
         return Result.success()
+    }
+
+    private fun setFilter() {
+        val filter = IntentFilter(UPDATE_MEDIA)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            context.registerReceiver(usbReceiver, filter, AppCompatActivity.RECEIVER_EXPORTED)
+        } else {
+            context.registerReceiver(usbReceiver, filter)
+        }
     }
 
     fun startTimer() {
@@ -209,13 +225,29 @@ class MediaWorker(val context: Context, workerParams: WorkerParameters) :
     private fun stopPlayingAlarm() {
         if (rington != null && rington?.isPlaying!!) {
             rington?.stop()
+            rington = null
         }
     }
 
     override fun onStopped() {
         super.onStopped()
+        context.unregisterReceiver(usbReceiver)
         stopPlayingAlarm()
         shutDownTimer()
+    }
+
+    private val usbReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            when (intent.action) {
+                UPDATE_MEDIA -> {
+                    playVibrate()
+                    if (playAlarmSound()) {
+                        shutDownTimer()
+                        startTimer()
+                    }
+                }
+            }
+        }
     }
 
 }

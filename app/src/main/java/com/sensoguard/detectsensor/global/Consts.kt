@@ -33,6 +33,7 @@ const val IS_NOTIFICATION_SOUND_KEY = "isNotificationSoundKey"
 const val IS_SENSOR_NAME_ALWAYS_KEY = "isSensorNameAlwaysKey"
 const val ACTIVATION_CODE_KEY = "activationCodeKey"
 const val IMEI_KEY = "imeiKey"
+const val UPDATE_MEDIA = "updateMedia"
 
 const val CURRENT_LANG_KEY_PREF = "currentLangKey"
 const val CURRENT_LATITUDE_PREF = "currentLatitudePref"
