@@ -62,7 +62,6 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.mapbox.android.gestures.MoveGestureDetector
 import com.mapbox.geojson.Feature
-import com.mapbox.geojson.FeatureCollection
 import com.mapbox.geojson.Point
 import com.mapbox.maps.CameraOptions
 import com.mapbox.maps.MapView
@@ -100,11 +99,7 @@ import com.sensoguard.detectsensor.global.ALARM_KEEP_ALIVE
 import com.sensoguard.detectsensor.global.ALARM_LOW_BATTERY
 import com.sensoguard.detectsensor.global.ALARM_MOTION
 import com.sensoguard.detectsensor.global.ALARM_SENSOR_OFF
-import com.sensoguard.detectsensor.global.CREATE_ALARM_ID_KEY
-import com.sensoguard.detectsensor.global.CREATE_ALARM_IS_ARMED
 import com.sensoguard.detectsensor.global.CREATE_ALARM_KEY
-import com.sensoguard.detectsensor.global.CREATE_ALARM_TYPE_INDEX_KEY
-import com.sensoguard.detectsensor.global.CREATE_ALARM_TYPE_KEY
 import com.sensoguard.detectsensor.global.CURRENT_LATITUDE_PREF
 import com.sensoguard.detectsensor.global.CURRENT_LOCATION
 import com.sensoguard.detectsensor.global.CURRENT_LONGTUDE_PREF
@@ -154,17 +149,11 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
     private var pointAnnotation: PointAnnotation? = null
     //////////////
 
-    //private var popup: PopupWindow? = null
     private var currentLocationMarker: Feature? = null
     private var markersList: ArrayList<Feature>? = null
-    //private var symbolOption: SymbolOptions? = null
-    //private var markerViewManager: MarkerViewManager? = null
 
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    //haggay
+
     private var mapView: MapView? = null
     private var mapType = Style.OUTDOORS
     private var myLocate: LatLng? = null
@@ -187,10 +176,6 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
     private var dialog: Dialog? = null
     var sensorsDialogAdapter: SensorsDialogAdapter? = null
 
-    private val SOURCE_ID = "SOURCE_ID"
-    private val CURRENT_LOC_SOURCE = "current_loc_source"
-    private val LAYER_ID = "LAYER_ID"
-
     private val ICON_PROPERTY: String = "ICON_PROPERTY"
     private val BLUE_ICON_ID = "BLUE_ICON_ID"
     private val GREEN_ICON_ID = "GREEN_ICON_ID"
@@ -206,13 +191,11 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
 
     private var locationManager: LocationManager? = null
 
+    private var isPaused = false
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
 
         startTimerListener()
     }
@@ -643,16 +626,16 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
     }
 
     //remove alarm sensor if exist
-    private fun removeSensorAlarmById(alarmId: String) {
-
-        val iteratorList = UserSession.instance.alarmSensors?.listIterator()
-        while (iteratorList != null && iteratorList.hasNext()) {
-            val sensorItem = iteratorList.next()
-            if (sensorItem.alarmSensorId == alarmId) {
-                iteratorList.remove()
-            }
-        }
-    }
+//    private fun removeSensorAlarmById(alarmId: String) {
+//
+//        val iteratorList = UserSession.instance.alarmSensors?.listIterator()
+//        while (iteratorList != null && iteratorList.hasNext()) {
+//            val sensorItem = iteratorList.next()
+//            if (sensorItem.alarmSensorId == alarmId) {
+//                iteratorList.remove()
+//            }
+//        }
+//    }
 
     //check if the sensor is in alarm process
     private fun getSensorAlarmBySensor(sensor: Sensor): AlarmSensor? {
@@ -711,133 +694,127 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
 
 
         }
-//        if (myLocate != null) {
-//            currentLocationMarker = addMarker(
-//                myLocate!!,
-//                BLUE_ICON_ID,
-//                "myLocate",
-//                ""
-//            )
-//        }
 
     }
 
     //refresh markers
-    private fun refreshMarkers() {
-
-        if (markersList != null && markersList?.size!! > 0) {
-
-            val annotationApi = mapView?.annotations
-            val pointAnnotationManager = annotationApi?.createPointAnnotationManager(null)
-
-            val pointAnnotationOptions: PointAnnotationOptions = PointAnnotationOptions()
-
-//            myMapboxMap?.setStyle(Style.Builder()
-//                .fromUri(mapType)
-
-                // Add the SymbolLayer icon image to the map style
-                .withIconImage(
-                    BitmapFactory.decodeResource(
-                        requireActivity().resources, R.drawable.ic_sensor_item
-                    )
-                )
-                .withIconImage(
-                    BitmapFactory.decodeResource(
-                        requireActivity().resources, R.drawable.ic_my_locate
-                    )
-                )
-                .withIconImage(
-                    BitmapFactory.decodeResource(
-                        requireActivity().resources, R.drawable.ic_sensor_item_disable
-                    )
-                )
-                .withIconImage(
-                    BitmapFactory.decodeResource(
-                        requireActivity().resources, R.drawable.ic_alarm_car
-                    )
-                )
-                .withIconImage(
-                    BitmapFactory.decodeResource(
-                        requireActivity().resources, R.drawable.ic_alarm_intruder
-                    )
-                )
-                .withIconImage(
-                    BitmapFactory.decodeResource(
-                        requireActivity().resources, R.drawable.ic_alarm_sensor_off
-                    )
-                )
-                .withIconImage(
-                    BitmapFactory.decodeResource(
-                        requireActivity().resources, R.drawable.ic_pir
-                    )
-                )
-                .withIconImage(
-                    BitmapFactory.decodeResource(
-                        requireActivity().resources, R.drawable.ic_radar
-                    )
-                )
-                .withIconImage(
-                    BitmapFactory.decodeResource(
-                        requireActivity().resources, R.drawable.ic_vibration
-                    )
-                )
-
-                .withIconImage(
-                    BitmapFactory.decodeResource(
-                        requireActivity().resources, R.drawable.ic_alarm_low_battery
-                    )
-                )
-
-                .withIconImage(
-                    BitmapFactory.decodeResource(
-                        requireActivity().resources, R.drawable.ic_sensor_alarm
-                    )
-                )
-
-
-            val featureCollection: FeatureCollection = FeatureCollection.fromFeatures(markersList!!)
-            //GeoJsonSource(SOURCE_ID,featureCollection)
-                // Adding a GeoJson source for the SymbolLayer icons.
+//    private fun refreshMarkers() {
+//
+//        Toast.makeText(activity, "refreshMarkers", Toast.LENGTH_LONG).show()
+//
+//        if (markersList != null && markersList?.size!! > 0) {
+//
+//            val annotationApi = mapView?.annotations
+//            pointAnnotationManager = annotationApi?.createPointAnnotationManager(null)
+//
+//            val pointAnnotationOptions: PointAnnotationOptions = PointAnnotationOptions()
+//
+////            myMapboxMap?.setStyle(Style.Builder()
+////                .fromUri(mapType)
+//
+//                // Add the SymbolLayer icon image to the map style
 //                .withIconImage(
-//                    GeoJsonSource(
-//                        SOURCE_ID,
-//                        FeatureCollection.fromFeatures(markersList!!)
+//                    BitmapFactory.decodeResource(
+//                        requireActivity().resources, R.drawable.ic_sensor_item
 //                    )
 //                )
-            pointAnnotationManager?.create(pointAnnotationOptions)
-
-                // Adding the actual SymbolLayer to the map style. An offset is added that the bottom of the red
-                // marker icon gets fixed to the coordinate, rather than the middle of the icon being fixed to
-                // the coordinate point. This is offset is not always needed and is dependent on the image
-                // that you use for the SymbolLayer icon.
-//                .withLayer(
-//                    SymbolLayer(LAYER_ID, SOURCE_ID)
-//                        .withProperties(
-//                            iconImage(
-//                                Expression.match(
-//                                    get(ICON_PROPERTY),
-//                                    Expression.literal(GREEN_ICON_ID),
-//                                    Expression.stop(GRAY_ICON_ID, GRAY_ICON_ID),
-//                                    Expression.stop(BLUE_ICON_ID, BLUE_ICON_ID),
-//                                    Expression.stop(GREEN_ICON_ID, GREEN_ICON_ID),
-//                                    Expression.stop(CAR_ICON_ID, CAR_ICON_ID),
-//                                    Expression.stop(INTRUDER_ICON_ID, INTRUDER_ICON_ID),
-//                                    Expression.stop(SENSOR_OFF_ICON_ID, SENSOR_OFF_ICON_ID),
-//                                    Expression.stop(PIR_ICON_ID, PIR_ICON_ID),
-//                                    Expression.stop(RADAR_ICON_ID, RADAR_ICON_ID),
-//                                    Expression.stop(VIBRATION_ICON_ID, VIBRATION_ICON_ID),
-//                                    Expression.stop(RED_ICON_ID, RED_ICON_ID),
-//                                    Expression.stop(LOW_BATTERY_ICON_ID, LOW_BATTERY_ICON_ID)
+//                .withIconImage(
+//                    BitmapFactory.decodeResource(
+//                        requireActivity().resources, R.drawable.ic_my_locate
+//                    )
+//                )
+//                .withIconImage(
+//                    BitmapFactory.decodeResource(
+//                        requireActivity().resources, R.drawable.ic_sensor_item_disable
+//                    )
+//                )
+//                .withIconImage(
+//                    BitmapFactory.decodeResource(
+//                        requireActivity().resources, R.drawable.ic_alarm_car
+//                    )
+//                )
+//                .withIconImage(
+//                    BitmapFactory.decodeResource(
+//                        requireActivity().resources, R.drawable.ic_alarm_intruder
+//                    )
+//                )
+//                .withIconImage(
+//                    BitmapFactory.decodeResource(
+//                        requireActivity().resources, R.drawable.ic_alarm_sensor_off
+//                    )
+//                )
+//                .withIconImage(
+//                    BitmapFactory.decodeResource(
+//                        requireActivity().resources, R.drawable.ic_pir
+//                    )
+//                )
+//                .withIconImage(
+//                    BitmapFactory.decodeResource(
+//                        requireActivity().resources, R.drawable.ic_radar
+//                    )
+//                )
+//                .withIconImage(
+//                    BitmapFactory.decodeResource(
+//                        requireActivity().resources, R.drawable.ic_vibration
+//                    )
+//                )
 //
-//                                )
-//                            ),
-//                            iconAllowOverlap(true),
-//                            iconIgnorePlacement(true)
-//                        )
-//                ), Style.OnStyleLoaded {
-//            })
-        }//end checking the array
-    }
+//                .withIconImage(
+//                    BitmapFactory.decodeResource(
+//                        requireActivity().resources, R.drawable.ic_alarm_low_battery
+//                    )
+//                )
+//
+//                .withIconImage(
+//                    BitmapFactory.decodeResource(
+//                        requireActivity().resources, R.drawable.ic_sensor_alarm
+//                    )
+//                )
+//
+//
+//            val featureCollection: FeatureCollection = FeatureCollection.fromFeatures(markersList!!)
+//            //GeoJsonSource(SOURCE_ID,featureCollection)
+//                // Adding a GeoJson source for the SymbolLayer icons.
+////                .withIconImage(
+////                    GeoJsonSource(
+////                        SOURCE_ID,
+////                        FeatureCollection.fromFeatures(markersList!!)
+////                    )
+////                )
+//            pointAnnotationManager?.create(pointAnnotationOptions)
+//
+//                // Adding the actual SymbolLayer to the map style. An offset is added that the bottom of the red
+//                // marker icon gets fixed to the coordinate, rather than the middle of the icon being fixed to
+//                // the coordinate point. This is offset is not always needed and is dependent on the image
+//                // that you use for the SymbolLayer icon.
+////                .withLayer(
+////                    SymbolLayer(LAYER_ID, SOURCE_ID)
+////                        .withProperties(
+////                            iconImage(
+////                                Expression.match(
+////                                    get(ICON_PROPERTY),
+////                                    Expression.literal(GREEN_ICON_ID),
+////                                    Expression.stop(GRAY_ICON_ID, GRAY_ICON_ID),
+////                                    Expression.stop(BLUE_ICON_ID, BLUE_ICON_ID),
+////                                    Expression.stop(GREEN_ICON_ID, GREEN_ICON_ID),
+////                                    Expression.stop(CAR_ICON_ID, CAR_ICON_ID),
+////                                    Expression.stop(INTRUDER_ICON_ID, INTRUDER_ICON_ID),
+////                                    Expression.stop(SENSOR_OFF_ICON_ID, SENSOR_OFF_ICON_ID),
+////                                    Expression.stop(PIR_ICON_ID, PIR_ICON_ID),
+////                                    Expression.stop(RADAR_ICON_ID, RADAR_ICON_ID),
+////                                    Expression.stop(VIBRATION_ICON_ID, VIBRATION_ICON_ID),
+////                                    Expression.stop(RED_ICON_ID, RED_ICON_ID),
+////                                    Expression.stop(LOW_BATTERY_ICON_ID, LOW_BATTERY_ICON_ID)
+////
+////                                )
+////                            ),
+////                            iconAllowOverlap(true),
+////                            iconIgnorePlacement(true)
+////                        )
+////                ), Style.OnStyleLoaded {
+////            })
+//        }//end checking the array
+//    }
 
 
     /**
@@ -1152,43 +1129,38 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
     }
 
     //remove all the time out sensors alarm and show them with regular sensor marker
-    private fun replaceSensorAlarmTimeOutToSensorMarker() {
-        val iteratorList = UserSession.instance.alarmSensors?.listIterator()
-        while (iteratorList != null && iteratorList.hasNext()) {
-            val sensorItem = iteratorList.next()
-            if (isSensorAlarmTimeout(sensorItem)) {
-                //show regular sensor marker
-                sensorItem.markerFeature?.let {
-                    showSensorMarker(
-                        it,
-                        sensorItem.isSensorArmed
-                    )
-                }
-                //remove the sensor alarm because it timeout
-                iteratorList.remove()
-            }
-        }
-    }
+//    private fun replaceSensorAlarmTimeOutToSensorMarker() {
+//        val iteratorList = UserSession.instance.alarmSensors?.listIterator()
+//        while (iteratorList != null && iteratorList.hasNext()) {
+//            val sensorItem = iteratorList.next()
+//            if (isSensorAlarmTimeout(sensorItem)) {
+//                //show regular sensor marker
+//                sensorItem.markerFeature?.let {
+//                    showSensorMarker(
+//                        it,
+//                        sensorItem.isSensorArmed
+//                    )
+//                }
+//                //remove the sensor alarm because it timeout
+//                iteratorList.remove()
+//            }
+//        }
+//    }
 
     //show marker of sensor
-    private fun showSensorMarker(
-        markerFeature: Feature,
-        isSensorArmed: Boolean
-
-    ) {
-        //haggay
-//        if (markerFeature == null || mapView == null) {
-//            return
+//    private fun showSensorMarker(
+//        markerFeature: Feature,
+//        isSensorArmed: Boolean
+//
+//    ) {
+//
+//        if (isSensorArmed) {
+//            markerFeature.addStringProperty(ICON_PROPERTY, GREEN_ICON_ID)
+//        } else {
+//            markerFeature.addStringProperty(ICON_PROPERTY, GRAY_ICON_ID)
 //        }
-
-
-        if (isSensorArmed) {
-            markerFeature.addStringProperty(ICON_PROPERTY, GREEN_ICON_ID)
-        } else {
-            markerFeature.addStringProperty(ICON_PROPERTY, GRAY_ICON_ID)
-        }
-        refreshMarkers()
-    }
+//        refreshMarkers()
+//    }
 
     private fun showDialogSensorsList() {
 
@@ -1298,15 +1270,11 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
 
     override fun onResume() {
         super.onResume()
-        //mapView?.onResume()
 
+        isPaused = false
         //load map
         if (isAdded) {
 
-//            val mapOptions= MapInitOptions(
-//                context = requireActivity(),
-//                styleUri = mapType
-//            )
             myMapboxMap = mapView?.mapboxMap
 
             myMapboxMap?.loadStyle(mapType)
@@ -1332,60 +1300,8 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
             }
 
             showLocation(location)
-//
+
             gotoMyLocation()
-
-
-//            mapView?.getMapAsync {
-//                mapView?.getMapAsync { mapboxMap ->
-//                    mapboxMap.uiSettings.isCompassEnabled = true
-//                    mapboxMap.uiSettings.setCompassFadeFacingNorth(false)
-//                    mapboxMap.setStyle(mapType) {
-//
-//                        loadedMapStyle = it
-//                        loadedMapStyle?.addSource(GeoJsonSource("source-id"))
-//                        myMapboxMap = mapboxMap
-//
-//                        myMapboxMap?.addOnMapClickListener { point ->
-//
-//                            val result = handleClickIcon(
-//                                mapboxMap.projection.toScreenLocation(point),
-//                                point
-//                            )
-//                            result
-//                        }
-//
-//                        //detect map dragging
-//                        mapboxMap.addOnMoveListener(this)// done
-//
-//                        myMapboxMap?.addOnMapLongClickListener { point -> //done
-//                            currentLongitude = point.longitude
-//                            currentLatitude = point.latitude
-//                            showDialogSensorsList()
-//                            true
-//                        }
-//
-//
-//                        //for markers
-//                        markerViewManager = MarkerViewManager(mapView, myMapboxMap)
-//
-//
-//                        //go to last location
-//                        val location = initFindLocation() // done
-//
-//
-//                        //set last location if exist
-//                        location?.let { // done
-//                            myLocate =
-//                                LatLng(it.latitude, it.longitude)
-//                        }
-//
-//                        showLocation(location) // done
-//
-//                        gotoMyLocation() // done
-//                    }
-//                }
-//            }
 
         }
     }
@@ -1445,6 +1361,7 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
         pointAnnotationManager?.deleteAll()
         pointAnnotation = null
         requireActivity().stopService(Intent(context, ServiceFindLocation::class.java))
+        isPaused = true
     }
 
 
@@ -1478,31 +1395,10 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
         override fun onReceive(arg0: Context, inn: Intent) {
             //accept currentAlarm
             if (inn.action == CREATE_ALARM_KEY) {
-
-                val alarmSensorId = inn.getStringExtra(CREATE_ALARM_ID_KEY)
-                val type = inn.getStringExtra(CREATE_ALARM_TYPE_KEY)
-                val typeIdx = inn.getIntExtra(CREATE_ALARM_TYPE_INDEX_KEY, -1)
-                val isArmed = inn.getBooleanExtra(CREATE_ALARM_IS_ARMED, false)
-
-//                //prevent duplicate alarm at the same sensor at the same time
-//                alarmSensorId?.let { removeSensorAlarmById(it) }
-//
-//                //add alarm process to queue
-//                val alarmSensor = alarmSensorId.let {
-//                    it?.let { it1 ->
-//                        type?.let { it2 ->
-//                            AlarmSensor(
-//                                it1,
-//                                Calendar.getInstance(),
-//                                it2,
-//                                isArmed
-//                            )
-//                        }
-//                    }
-//                }
-//                alarmSensor?.typeIdx = typeIdx
-//                alarmSensor?.let { UserSession.instance.alarmSensors?.add(it) }
-                showMarkers()
+                // if the map fragment has been paused then this outside broadcast is unnecessary
+                if (!isPaused) {
+                    showMarkers()
+                }
 
             } else if (inn.action == GET_CURRENT_LOCATION_KEY) {
                 val location: Location? = inn.getParcelableExtra(CURRENT_LOCATION)
