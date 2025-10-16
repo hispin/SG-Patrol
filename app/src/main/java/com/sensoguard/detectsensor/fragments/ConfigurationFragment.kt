@@ -27,6 +27,7 @@ import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.sensoguard.detectsensor.R
+import com.sensoguard.detectsensor.activities.DownloadOfflineTilesActivity
 import com.sensoguard.detectsensor.adapters.GeneralItemMenuAdapter
 import com.sensoguard.detectsensor.classes.GeneralItemMenu
 import com.sensoguard.detectsensor.classes.LanguageManager
@@ -237,12 +238,12 @@ open class ConfigurationFragment : ParentFragment(), CallToParentInterface {
 
         btnSaveOffline = view.findViewById(R.id.btnSaveOffline)
         btnSaveOffline?.setOnClickListener {
-// haggay           startActivity(
-//                Intent(
-//                    requireActivity(),
-//                    DownloadOfflineTilesActivity::class.java
-//                )
-//            )
+            startActivity(
+                Intent(
+                    requireActivity(),
+                    DownloadOfflineTilesActivity::class.java
+                )
+            )
         }
         ibSetEmailDetails = view.findViewById(R.id.ibSetEmailDetails)
         ibSetEmailDetails?.setOnClickListener {

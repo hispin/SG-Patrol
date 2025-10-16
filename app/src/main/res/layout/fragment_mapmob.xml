@@ -17,16 +17,6 @@
             mapbox:mapbox_cameraTargetLng="35.795603"
             mapbox:mapbox_cameraZoom="16"
             />
-    <!--    mapbox:mapbox_uiRotateGestures="true"-->
-    <!--    mapbox:mapbox_cameraZoomMax="18"-->
-    <!--    mapbox:mapbox_cameraZoomMin="6"-->
-    <!--    mapbox:mapbox_cameraTilt="50.25"-->
-
-    <!--    <androidx.appcompat.widget.AppCompatButton-->
-    <!--            android:id="@+id/btnDownloadMaps"-->
-    <!--            android:layout_width="wrap_content"-->
-    <!--            android:layout_height="wrap_content"-->
-    <!--            android:text="download Maps"/>-->
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fbRefresh1"

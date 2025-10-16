@@ -1,260 +1,222 @@
-//package com.sensoguard.detectsensor.activities;
-//
-//import android.content.Context;
-//import android.content.pm.PackageManager;
-//import android.graphics.Color;
-//import android.graphics.PointF;
-//import android.location.Location;
-//import android.location.LocationManager;
-//import android.os.Bundle;
-//import android.util.Log;
-//import android.view.View;
-//import android.widget.ProgressBar;
-//import android.widget.Toast;
-//
-//import androidx.annotation.NonNull;
-//import androidx.appcompat.widget.AppCompatButton;
-//import androidx.appcompat.widget.AppCompatTextView;
-//import androidx.core.content.ContextCompat;
-//import androidx.core.content.res.ResourcesCompat;
-//
-//import com.mapbox.mapboxsdk.Mapbox;
-//import com.mapbox.mapboxsdk.annotations.PolygonOptions;
-//import com.mapbox.mapboxsdk.camera.CameraPosition;
-//import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
-//import com.mapbox.mapboxsdk.geometry.LatLng;
-//import com.mapbox.mapboxsdk.geometry.LatLngBounds;
-//import com.mapbox.mapboxsdk.maps.MapView;
-//import com.mapbox.mapboxsdk.maps.MapboxMap;
-//import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
-//import com.mapbox.mapboxsdk.maps.Style;
-//import com.mapbox.mapboxsdk.offline.OfflineManager;
-//import com.mapbox.mapboxsdk.offline.OfflineRegion;
-//import com.mapbox.mapboxsdk.offline.OfflineRegionError;
-//import com.mapbox.mapboxsdk.offline.OfflineRegionStatus;
-//import com.mapbox.mapboxsdk.offline.OfflineTilePyramidRegionDefinition;
-//import com.mapbox.mapboxsdk.plugins.annotation.OnSymbolDragListener;
-//import com.mapbox.mapboxsdk.plugins.annotation.Symbol;
-//import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager;
-//import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions;
-//import com.mapbox.mapboxsdk.style.sources.GeoJsonSource;
-//import com.mapbox.mapboxsdk.utils.BitmapUtils;
-//import com.sensoguard.detectsensor.R;
-//import com.sensoguard.detectsensor.global.SysMethodsSharedPrefKt;
-//
-//import org.json.JSONObject;
-//
-//import java.util.ArrayList;
-//import java.util.Iterator;
-//
-//import static com.sensoguard.detectsensor.global.ConstsKt.CURRENT_LATITUDE_PREF;
-//import static com.sensoguard.detectsensor.global.ConstsKt.CURRENT_LONGTUDE_PREF;
-//import static com.sensoguard.detectsensor.global.SysMethodsSharedPrefKt.getStringInPreference;
-//
-/// /import com.mapbox.mapboxandroiddemo.R;
-/// /import com.mapbox.mapboxsdk.plugins.annotation.OnSymbolDragListener;
-/// /import com.mapbox.mapboxsdk.plugins.annotation.Symbol;
-/// /import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager;
-/// /import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions;
-//
+package com.sensoguard.detectsensor.activities;//package com.sensoguard.detectsensor.activities;
+
+import static com.sensoguard.detectsensor.global.ConstsKt.CURRENT_LATITUDE_PREF;
+import static com.sensoguard.detectsensor.global.ConstsKt.CURRENT_LONGTUDE_PREF;
+import static com.sensoguard.detectsensor.global.SysMethodsSharedPrefKt.getStringInPreference;
+
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.location.LocationManager;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.ProgressBar;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.AppCompatButton;
+import androidx.appcompat.widget.AppCompatTextView;
+import androidx.core.content.ContextCompat;
+
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.PolygonOptions;
+import com.mapbox.geojson.Point;
+import com.mapbox.maps.CameraOptions;
+import com.mapbox.maps.MapView;
+import com.mapbox.maps.MapboxMap;
+import com.mapbox.maps.OfflineManager;
+import com.mapbox.maps.Style;
+import com.mapbox.maps.plugin.gestures.OnMapClickListener;
+import com.sensoguard.detectsensor.R;
+
+import java.util.Iterator;
+
 ////import timber.log.Timber;
-//public class DownloadOfflineTilesActivity extends ParentActivity implements MapboxMap.OnMapClickListener {
+public class DownloadOfflineTilesActivity extends ParentActivity implements OnMapClickListener {
+
+    @Override
+    public boolean onMapClick(@NonNull Point point) {
+        return false;
+    }
+
+    // JSON encoding/decoding
+    public static final String JSON_CHARSET = "UTF-8";
+    public static final String JSON_FIELD_REGION_NAME = "FIELD_REGION_NAME";
+    public static final String ID_ICON_LOCATION = "location";
+    private static final String TAG = "SimpleOfflineMap";
+    private static final LatLng locationOne = new LatLng(32.173001, 34.842284);
+    private static final LatLng locationTwo = new LatLng(32.067477, 34.801851);
+    PolygonOptions boundsArea;
+    int sum = 0;
+    private boolean isEndNotified;
+    private ProgressBar progressBar;
+    private MapView mapView;
+    private OfflineManager offlineManager;
+    private AppCompatTextView tvResults;
+    private MapboxMap myMapboxMap;
+    private Style myStyle;
+    private AppCompatButton btnDownload;
+    private AppCompatButton btnDelete;
+    private LatLng myTopRight;
+    private LatLng myBottomLeft;
+    private Iterator<LatLng> polyRegions;
+
+
+    private LatLng myLocate = null;
+    private LocationManager locationManager;
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+// Mapbox access token is configured here. This needs to be called either in your application
+// object or in the same activity which contains the mapview.
+        //Mapbox.getInstance(this, getString(R.string.mapbox_access_token));
+
+// This contains the MapView in XML and needs to be called after the access token is configured.
+        setContentView(R.layout.activity_dowmload_offline_tiles);
+
+        mapView = findViewById(R.id.mapView);
+        //mapView.onCreate(savedInstanceState);
+
+        tvResults = findViewById(R.id.tvResults);
+
+        btnDownload = findViewById(R.id.btnDownload);
+        btnDownload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //haggay downLoadOfflineMap();
+            }
+        });
+
+        btnDelete = findViewById(R.id.btnDelete);
+        btnDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //haggay deleteTile();
+            }
+        });
+
+        myMapboxMap = mapView.getMapboxMap();
+        myMapboxMap.loadStyle(Style.SATELLITE_STREETS);
+        myStyle = myMapboxMap.getStyle();
+
+        //go to last location
+        android.location.Location location = initFindLocation();
+
+        //set last location if exist
+        if (location != null) {
+            myLocate =
+                    new LatLng(location.getLatitude(), location.getLongitude());
+        }
+
+        showLocation(location);
+
+        //myTopRight = new LatLng(myLocate.getLatitude()+10,myLocate.getLongitude()+10);
+        //myBottomLeft = new LatLng(myLocate.getLatitude()-10,myLocate.getLongitude()-10);
+
+        int viewportWidth = mapView.getWidth();
+        int viewportHeight = mapView.getHeight();
+
+        //start haggay
+//        myTopRight = myMapboxMap.getProjection().fromScreenLocation(new PointF((viewportWidth) / 2, viewportHeight / 4));
+//        myBottomLeft = myMapboxMap.getProjection().fromScreenLocation(new PointF((viewportWidth) / 4, viewportHeight / 2));
 //
-//    // JSON encoding/decoding
-//    public static final String JSON_CHARSET = "UTF-8";
-//    public static final String JSON_FIELD_REGION_NAME = "FIELD_REGION_NAME";
-//    public static final String ID_ICON_LOCATION = "location";
-//    private static final String TAG = "SimpleOfflineMap";
-//    private static final LatLng locationOne = new LatLng(32.173001, 34.842284);
-//    private static final LatLng locationTwo = new LatLng(32.067477, 34.801851);
-//    PolygonOptions boundsArea;
-//    int sum = 0;
-//    private boolean isEndNotified;
-//    private ProgressBar progressBar;
-//    private MapView mapView;
-//    private OfflineManager offlineManager;
-//    private AppCompatTextView tvResults;
-//    private MapboxMap myMapboxMap;
-//    private Style myStyle;
-//    private AppCompatButton btnDownload;
-//    private AppCompatButton btnDelete;
-//    private LatLng myTopRight;
-//    private LatLng myBottomLeft;
-//    private Iterator<LatLng> polyRegions;
-//
-//
-//    private LatLng myLocate = null;
-//    private LocationManager locationManager;
-//
-//    @Override
-//    protected void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//
-//// Mapbox access token is configured here. This needs to be called either in your application
-//// object or in the same activity which contains the mapview.
-//        Mapbox.getInstance(this, getString(R.string.mapbox_access_token));
-//
-//// This contains the MapView in XML and needs to be called after the access token is configured.
-//        setContentView(R.layout.activity_dowmload_offline_tiles);
-//
-//        mapView = findViewById(R.id.mapView);
-//        mapView.onCreate(savedInstanceState);
-//
-//        tvResults = findViewById(R.id.tvResults);
-//
-//        btnDownload = findViewById(R.id.btnDownload);
-//        btnDownload.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                downLoadOfflineMap();
-//            }
-//        });
-//
-//        btnDelete = findViewById(R.id.btnDelete);
-//        btnDelete.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                deleteTile();
-//            }
-//        });
-//
-//        mapView.getMapAsync(new OnMapReadyCallback() {
-//            @Override
-//            public void onMapReady(@NonNull final MapboxMap mapboxMap) {
-//
-//                myMapboxMap = mapboxMap;
-//
-//                mapboxMap.getUiSettings().setCompassEnabled(true);
-//                mapboxMap.getUiSettings().setCompassFadeFacingNorth(false);
-//
-//                mapboxMap.setStyle(Style.SATELLITE_STREETS, new Style.OnStyleLoaded() {
-//                    @Override
-//                    public void onStyleLoaded(@NonNull Style style) {
-//
-//                        myStyle = style;
-////                        mapboxMap.animateCamera(
-////                                CameraUpdateFactory.newCameraPosition(new CameraPosition.Builder()
-////                                        .zoom(10)
-////                                        .build()), 2000);
-//
-//
-//                        //go to last location
-//                        Location location = initFindLocation();
-//
-//
-//                        //set last location if exist
-//                        if (location != null) {
-//                            myLocate =
-//                                    new LatLng(location.getLatitude(), location.getLongitude());
-//                        }
-//
-//                        showLocation(location);
-//
-//                        //myTopRight = new LatLng(myLocate.getLatitude()+10,myLocate.getLongitude()+10);
-//                        //myBottomLeft = new LatLng(myLocate.getLatitude()-10,myLocate.getLongitude()-10);
-//
-//                        int viewportWidth = mapView.getWidth();
-//                        int viewportHeight = mapView.getHeight();
-//
-//                        myTopRight = myMapboxMap.getProjection().fromScreenLocation(new PointF((viewportWidth) / 2, viewportHeight / 4));
-//                        myBottomLeft = myMapboxMap.getProjection().fromScreenLocation(new PointF((viewportWidth) / 4, viewportHeight / 2));
-//
-//                        addMarkerIconsToMap(style);
-//                        drawRectangle();
-//                    }
-//                });
-//            }
-//        });
-//    }
-//
-//    //get last location
-//    private Location initFindLocation() {
-//        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-//
-//
-//        if (
-//                ContextCompat.checkSelfPermission(
-//                        this,
-//                        android.Manifest.permission.ACCESS_FINE_LOCATION
-//                )
-//                        == PackageManager.PERMISSION_GRANTED
-//        ) {
-//
-//            return locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-//        }
-//
-//        return null;
-//    }
-//
-//    // move the camera to ic_mark location
-//    private void showLocation(Location location) {
-//
-//        if (location != null) {
-//            setMyLocate(
-//                    new LatLng(
-//                            location.getLatitude(),
-//                            location.getLongitude()
-//                    )
-//            );
-//        } else {
-//
-//            myLocate = getLastLocationLocally();
-//
-//            if (myLocate == null) {
-//                //set default location (london)
-//                myLocate = new LatLng(51.509865, -0.118092);
-//                //set default location (london) if there is no last location
-//                setMyLocate(new LatLng(51.509865, -0.118092));
-//            }
-//        }
-//        //add marker at the focus of the map
-//        if (myLocate != null) {
-//            //load the camera
-//            if (myLocate != null
-//            ) {
-//
-//                CameraPosition cameraPosition = new CameraPosition.Builder()
-//                        .target(new LatLng(myLocate.getLatitude(), myLocate.getLongitude()))
-//                        .zoom(15.0)
-//                        .tilt(20.0)
-//                        .build();
-//
-//
-//                // Move camera to new position
-//                myMapboxMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-//
-//                //howMarkers()
-//
-//            }
-//
-//        }
-//
-//    }
-//
-//    private void setMyLocate(LatLng myLocate) {
-//        this.myLocate = myLocate;
-//    }
-//
-//    //get last location from shared preference
-//    private LatLng getLastLocationLocally() {
-//        String latitude = getStringInPreference(this, CURRENT_LATITUDE_PREF, "-1");
-//        String longtude = getStringInPreference(this, CURRENT_LONGTUDE_PREF, "-1");
-//        double lat = 0;
-//        double lon = 0;
-//
-//        if (!latitude.equals("-1") && !longtude.equals("-1")) {
-//            try {
-//                lat = Double.parseDouble(latitude);
-//                lon = Double.parseDouble(longtude);
-//                return new LatLng(lat, lon);
-//            } catch (NumberFormatException ex) {
-//            }
-//
-//        }
-//        return null;
-//
-//    }
-//
+//        addMarkerIconsToMap(style);
+//        drawRectangle();
+        // end haggay
+
+    }
+
+    //get last location
+    private android.location.Location initFindLocation() {
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+
+        if (
+                ContextCompat.checkSelfPermission(
+                        this,
+                        android.Manifest.permission.ACCESS_FINE_LOCATION
+                )
+                        == PackageManager.PERMISSION_GRANTED
+        ) {
+
+            return locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        }
+
+        return null;
+    }
+
+    // move the camera to ic_mark location
+    private void showLocation(android.location.Location location) {
+
+        if (location != null) {
+            setMyLocate(
+                    new LatLng(
+                            location.getLatitude(),
+                            location.getLongitude()
+                    )
+            );
+        } else {
+
+            myLocate = getLastLocationLocally();
+
+            if (myLocate == null) {
+                //set default location (london)
+                myLocate = new LatLng(51.509865, -0.118092);
+                //set default location (london) if there is no last location
+                setMyLocate(new LatLng(51.509865, -0.118092));
+            }
+        }
+        //add marker at the focus of the map
+        if (myLocate != null) {
+            //load the camera
+            if (myLocate != null
+            ) {
+
+                CameraOptions cameraPosition = new CameraOptions.Builder()
+                        .zoom(15.0)
+                        .center(
+                                Point.fromLngLat(
+                                        myLocate.longitude,
+                                        myLocate.latitude
+                                )
+                        )//Point.fromLngLat(myLocate?.latitude!!, myLocate?.longitude!!))
+                        .build();
+
+                myMapboxMap.setCamera(cameraPosition);
+
+                //howMarkers()
+
+            }
+
+        }
+
+    }
+
+    private void setMyLocate(LatLng myLocate) {
+        this.myLocate = myLocate;
+    }
+
+    //get last location from shared preference
+    private LatLng getLastLocationLocally() {
+        String latitude = getStringInPreference(this, CURRENT_LATITUDE_PREF, "-1");
+        String longtude = getStringInPreference(this, CURRENT_LONGTUDE_PREF, "-1");
+        double lat = 0;
+        double lon = 0;
+
+        if (!latitude.equals("-1") && !longtude.equals("-1")) {
+            try {
+                lat = Double.parseDouble(latitude);
+                lon = Double.parseDouble(longtude);
+                return new LatLng(lat, lon);
+            } catch (NumberFormatException ex) {
+            }
+
+        }
+        return null;
+
+    }
+
 //    //draw rectangle for selecting offline region
 //    private void drawRectangle() {
 //        if (boundsArea != null && boundsArea.getPolygon() != null) {
@@ -690,4 +652,4 @@
 //        return false;
 //    }
 //
-//}
+}
