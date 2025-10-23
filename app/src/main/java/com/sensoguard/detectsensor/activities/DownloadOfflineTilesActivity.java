@@ -23,9 +23,11 @@ import com.mapbox.maps.CameraOptions;
 import com.mapbox.maps.MapView;
 import com.mapbox.maps.MapboxMap;
 import com.mapbox.maps.OfflineManager;
+import com.mapbox.maps.ScreenCoordinate;
 import com.mapbox.maps.Style;
 import com.mapbox.maps.plugin.gestures.OnMapClickListener;
 import com.sensoguard.detectsensor.R;
+import com.sensoguard.detectsensor.classes.PolygonCreator;
 
 import java.util.Iterator;
 
@@ -56,7 +58,9 @@ public class DownloadOfflineTilesActivity extends ParentActivity implements OnMa
     private AppCompatButton btnDownload;
     private AppCompatButton btnDelete;
     private LatLng myTopRight;
+    private Point myTopRightP;
     private LatLng myBottomLeft;
+    private Point myBottomLeftP;
     private Iterator<LatLng> polyRegions;
 
 
@@ -111,19 +115,24 @@ public class DownloadOfflineTilesActivity extends ParentActivity implements OnMa
 
         showLocation(location);
 
-        //myTopRight = new LatLng(myLocate.getLatitude()+10,myLocate.getLongitude()+10);
-        //myBottomLeft = new LatLng(myLocate.getLatitude()-10,myLocate.getLongitude()-10);
+        mapView.post(new Runnable() {
+            @Override
+            public void run() {
+                int viewportWidth = mapView.getWidth();
+                int viewportHeight = mapView.getHeight();
 
-        int viewportWidth = mapView.getWidth();
-        int viewportHeight = mapView.getHeight();
+                ScreenCoordinate pixel1 = new ScreenCoordinate((viewportWidth) / 2, viewportHeight / 4);
+                myTopRightP = myMapboxMap.coordinateForPixel(pixel1);
+                ScreenCoordinate pixel2 = new ScreenCoordinate((viewportWidth) / 4, viewportHeight / 2);
+                myBottomLeftP = myMapboxMap.coordinateForPixel(pixel2);
 
-        //start haggay
-//        myTopRight = myMapboxMap.getProjection().fromScreenLocation(new PointF((viewportWidth) / 2, viewportHeight / 4));
-//        myBottomLeft = myMapboxMap.getProjection().fromScreenLocation(new PointF((viewportWidth) / 4, viewportHeight / 2));
-//
-//        addMarkerIconsToMap(style);
-//        drawRectangle();
-        // end haggay
+                //        addMarkerIconsToMap(style);
+
+                var polygonCreateor = new PolygonCreator();
+                polygonCreateor.drawRectangle(mapView, myTopRightP, myBottomLeftP);
+                // end haggay
+            }
+        });
 
     }
 
@@ -217,7 +226,7 @@ public class DownloadOfflineTilesActivity extends ParentActivity implements OnMa
 
     }
 
-//    //draw rectangle for selecting offline region
+    //draw rectangle for selecting offline region
 //    private void drawRectangle() {
 //        if (boundsArea != null && boundsArea.getPolygon() != null) {
 //            myMapboxMap.removePolygon(boundsArea.getPolygon());
