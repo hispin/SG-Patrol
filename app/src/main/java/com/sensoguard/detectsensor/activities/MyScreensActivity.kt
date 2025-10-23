@@ -144,19 +144,19 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, Observer {
     override fun onResume() {
         super.onResume()
         if (isAnySensorAlarmNotTimeOut()) {
-            startTimer()
+            //startTimer()
         }
         configureActionBar()
     }
 
     //create timeout for reset sensor to regular icon and cancel the alarm icon
-    private fun startTimer() {
-
-        Log.d("testTimer", "start timer")
-        ViewModelProvider(this)[ViewModelListener::class.java].startTimer()
-
-
-    }
+//    private fun startTimer() {
+//
+//        Log.d("testTimer", "start timer")
+//        ViewModelProvider(this)[ViewModelListener::class.java].startTimer()
+//
+//
+//    }
 
     //check it there is any sensor alarm which is not time out
     private fun isAnySensorAlarmNotTimeOut(): Boolean {
