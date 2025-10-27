@@ -1,10 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools">
-
-    <!--    <uses-permission android:name="com.symbol.emdk.permission.EMDK" />-->
-
-    <!--fixing to allow device-->
+    <!-- <uses-permission android:name="com.symbol.emdk.permission.EMDK" /> -->
+    <!-- fixing to allow device -->
     <uses-permission android:name="android.permission.READ_PHONE_STATE" /> <!-- <uses-permission android:name="android.permission.READ_PRIVILEGED_PHONE_STATE" /> -->
     <uses-permission
             android:name="android.permission.READ_PRIVILEGED_PHONE_STATE"
@@ -16,47 +14,41 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
-
-
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission
             android:name="android.permission.WRITE_EXTERNAL_STORAGE"
             tools:ignore="ScopedStorage" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-    <uses-feature
-            android:name="android.hardware.location.gps"
-             />
 
-    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-feature android:name="android.hardware.location.gps" />
+
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE" />
-
     <uses-permission android:name="android.permission.VIBRATE" />
 
-    <uses-feature
-            android:name="android.hardware.usb.host"
-             />
-
+    <uses-feature android:name="android.hardware.usb.host" />
 
     <application
             android:name=".LSPatrolApp"
             android:allowBackup="false"
-
             android:icon="@drawable/ic_launcher"
             android:label="@string/app_name"
             android:requestLegacyExternalStorage="true"
             android:roundIcon="@drawable/ic_launcher"
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
-<!--        <uses-library android:name="com.symbol.emdk" />-->
+        <activity
+                android:name=".activities.DownloadOfflineTilesActivity1"
+                android:exported="false" />
+        <!-- <uses-library android:name="com.symbol.emdk" /> -->
         <service
                 android:name=".services.TimerGeneralService"
                 android:exported="false"
                 android:foregroundServiceType="shortService"
-                android:permission="android.permission.BIND_JOB_SERVICE" />
-        <!-- <service -->
+                android:permission="android.permission.BIND_JOB_SERVICE" /> <!-- <service -->
         <!-- android:name=".services.TimerService" -->
         <!-- android:enabled="true" -->
         <!-- android:exported="true" /> -->
@@ -67,19 +59,18 @@
                 android:permission="android.permission.BIND_JOB_SERVICE" />
         <service
                 android:name=".services.ParentService"
-                android:foregroundServiceType="connectedDevice"
                 android:enabled="true"
-                android:exported="false" />
+                android:exported="false"
+                android:foregroundServiceType="connectedDevice" />
 
         <activity android:name=".activities.ParentActivity" />
-        <activity android:name=".activities.DownloadOfflineTilesActivity" />
-        <!--     haggay   <activity android:name=".activities.MapmobActivity" /> &lt;!&ndash; <meta-data android:name="com.google.firebase.messaging.default_notification_icon" &ndash;&gt;-->
+        <activity android:name=".activities.DownloadOfflineTilesActivity" /> <!-- haggay   <activity android:name=".activities.MapmobActivity" /> &lt;!&ndash; <meta-data android:name="com.google.firebase.messaging.default_notification_icon" &ndash;&gt; -->
         <!-- android:resource="@mipmap/ic_launcher" /> -->
         <activity
                 android:name=".activities.InitAppActivity"
+                android:exported="true"
                 android:screenOrientation="sensorPortrait"
-                android:theme="@style/Theme.AppCompat.NoActionBar"
-                android:exported="true">
+                android:theme="@style/Theme.AppCompat.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
@@ -97,8 +88,8 @@
                 android:name=".activities.MyScreensActivity"
                 android:screenOrientation="sensorPortrait"
                 android:windowSoftInputMode="adjustPan" /> <!-- prevent hiding the field by softkey -->
-<!--        <uses-library-->
-<!--                android:name="string"  />-->
+        <!-- <uses-library -->
+        <!-- android:name="string"  /> -->
         <meta-data
                 android:name="com.google.android.geo.API_KEY"
                 android:value="AIzaSyC7lrolhXNPEeiNJuBccG6LgOwGRrBRQos" /> <!-- TODO restrict the api key -->
@@ -108,9 +99,9 @@
         <!-- android:exported="true" /> -->
         <service
                 android:name=".services.ServiceConnectSensor"
-                android:foregroundServiceType="connectedDevice"
                 android:enabled="true"
                 android:exported="false"
+                android:foregroundServiceType="connectedDevice"
                 android:stopWithTask="false">
             <intent-filter>
                 <action android:name="com.androidexample.screenonoff.AEScreenOnOffService" />
@@ -118,18 +109,16 @@
         </service>
         <service
                 android:name=".services.ServiceFindLocation"
-                android:foregroundServiceType="location"
-                android:exported="false" />
+                android:exported="false"
+                android:foregroundServiceType="location" />
         <service
                 android:name=".services.ServiceHandleAlarms"
-                android:foregroundServiceType="mediaPlayback"
-                android:exported="false" />
+                android:exported="false"
+                android:foregroundServiceType="mediaPlayback" />
         <service
                 android:name=".services.ServiceFindSingleLocation"
-                android:foregroundServiceType="location"
-                android:exported="false" />
-
-        <!-- <receiver android:name=".ScreenOnOffReceiver"> -->
+                android:exported="false"
+                android:foregroundServiceType="location" /> <!-- <receiver android:name=".ScreenOnOffReceiver"> -->
         <!-- <intent-filter> -->
         <!-- <action android:name="android.intent.action.SCREEN_ON" /> -->
         <!-- <action android:name="android.intent.action.SCREEN_OFF" /> -->

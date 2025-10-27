@@ -25,11 +25,16 @@ import com.mapbox.maps.MapboxMap;
 import com.mapbox.maps.OfflineManager;
 import com.mapbox.maps.ScreenCoordinate;
 import com.mapbox.maps.Style;
+import com.mapbox.maps.plugin.annotation.AnnotationPlugin;
+import com.mapbox.maps.plugin.annotation.generated.PointAnnotation;
+import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager;
 import com.mapbox.maps.plugin.gestures.OnMapClickListener;
+import com.mapbox.maps.viewannotation.ViewAnnotationManager;
 import com.sensoguard.detectsensor.R;
 import com.sensoguard.detectsensor.classes.PolygonCreator;
 
 import java.util.Iterator;
+
 
 ////import timber.log.Timber;
 public class DownloadOfflineTilesActivity extends ParentActivity implements OnMapClickListener {
@@ -67,6 +72,13 @@ public class DownloadOfflineTilesActivity extends ParentActivity implements OnMa
     private LatLng myLocate = null;
     private LocationManager locationManager;
 
+    //annotations (markers)
+    private ViewAnnotationManager viewAnnotationManager; //mapView?.viewAnnotationManager
+    private PointAnnotationManager pointAnnotationManager;
+    private AnnotationPlugin annotationApi;
+    private PointAnnotation pointAnnotation;
+
+    /// ///////////
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,6 +130,10 @@ public class DownloadOfflineTilesActivity extends ParentActivity implements OnMa
         mapView.post(new Runnable() {
             @Override
             public void run() {
+
+
+                PolygonCreator.Companion.getInstance().initializeAnnotation(mapView);
+
                 int viewportWidth = mapView.getWidth();
                 int viewportHeight = mapView.getHeight();
 
@@ -126,15 +142,17 @@ public class DownloadOfflineTilesActivity extends ParentActivity implements OnMa
                 ScreenCoordinate pixel2 = new ScreenCoordinate((viewportWidth) / 4, viewportHeight / 2);
                 myBottomLeftP = myMapboxMap.coordinateForPixel(pixel2);
 
-                //        addMarkerIconsToMap(style);
+                //addMarkerIconsToMap(style);
 
-                var polygonCreateor = new PolygonCreator();
-                polygonCreateor.drawRectangle(mapView, myTopRightP, myBottomLeftP);
+                //var polygonCreateor = new PolygonCreator();
+                PolygonCreator.Companion.getInstance().drawRectangle(mapView, myTopRightP, myBottomLeftP);
+                //PolygonCreator..drawRectangle(mapView, myTopRightP, myBottomLeftP);
                 // end haggay
             }
         });
 
     }
+
 
     //get last location
     private android.location.Location initFindLocation() {
