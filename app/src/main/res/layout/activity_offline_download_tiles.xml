@@ -4,17 +4,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         xmlns:mapbox="http://schemas.android.com/apk/res-auto"
-        tools:context=".activities.DownloadOfflineTilesActivity">
-
-
-    <com.mapbox.maps.MapView
-            android:id="@+id/mapView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            mapbox:mapbox_cameraBearing="-17.6"
-            mapbox:mapbox_cameraTargetLat="32.941484"
-            mapbox:mapbox_cameraTargetLng="35.795603"
-            mapbox:mapbox_cameraZoom="16" />
+        tools:context=".activities.DownloadOfflineTilesActivity2">
 
     <FrameLayout
             android:layout_width="match_parent"
@@ -32,6 +22,16 @@
                 android:paddingRight="25dp"
                 android:visibility="gone" />
     </FrameLayout>
+
+    <com.mapbox.maps.MapView
+            android:id="@+id/mapView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            mapbox:mapbox_cameraBearing="-17.6"
+            mapbox:mapbox_cameraTargetLat="32.941484"
+            mapbox:mapbox_cameraTargetLng="35.795603"
+            mapbox:mapbox_cameraZoom="16" />
+
 
     <!--    <androidx.appcompat.widget.AppCompatButton-->
     <!--            android:layout_width="wrap_content"-->
@@ -79,7 +79,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
             android:background="@color/white"
-            android:gravity="center_vertical"
+            android:gravity="center"
             android:layout_gravity="bottom"
             android:layout_marginBottom="35dp"
             android:hint="@string/results"

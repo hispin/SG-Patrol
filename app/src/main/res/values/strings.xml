@@ -138,6 +138,8 @@
     <string name="min_power" translatable="false">Min Power</string>
     <string name="value_out_of_range" translatable="false">The value is out of range (0-7)</string>
     <string name="value_out_of_range_15_256" translatable="false">The value is out of range (15-256)</string>
+    <string name="tile_download_complete" translatable="false">Tile download complete:</string>
+
 
     <string-array name="car_ids">
         <item>0</item>

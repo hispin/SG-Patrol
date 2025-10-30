@@ -27,7 +27,7 @@ import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.sensoguard.detectsensor.R
-import com.sensoguard.detectsensor.activities.DownloadOfflineTilesActivity1
+import com.sensoguard.detectsensor.activities.DownloadOfflineTilesActivity
 import com.sensoguard.detectsensor.adapters.GeneralItemMenuAdapter
 import com.sensoguard.detectsensor.classes.GeneralItemMenu
 import com.sensoguard.detectsensor.classes.LanguageManager
@@ -241,7 +241,7 @@ open class ConfigurationFragment : ParentFragment(), CallToParentInterface {
             startActivity(
                 Intent(
                     requireActivity(),
-                    DownloadOfflineTilesActivity1::class.java
+                    DownloadOfflineTilesActivity::class.java
                 )
             )
         }

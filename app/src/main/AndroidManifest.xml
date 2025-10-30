@@ -41,9 +41,8 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
         <activity
-                android:name=".activities.DownloadOfflineTilesActivity1"
-                android:exported="false" />
-        <!-- <uses-library android:name="com.symbol.emdk" /> -->
+                android:name=".activities.DownloadOfflineTilesActivity"
+                android:exported="false" /> <!-- <uses-library android:name="com.symbol.emdk" /> -->
         <service
                 android:name=".services.TimerGeneralService"
                 android:exported="false"
@@ -64,7 +63,7 @@
                 android:foregroundServiceType="connectedDevice" />
 
         <activity android:name=".activities.ParentActivity" />
-        <activity android:name=".activities.DownloadOfflineTilesActivity" /> <!-- haggay   <activity android:name=".activities.MapmobActivity" /> &lt;!&ndash; <meta-data android:name="com.google.firebase.messaging.default_notification_icon" &ndash;&gt; -->
+        <activity android:name=".activities.DownloadOfflineTilesActivity2" /> <!-- haggay   <activity android:name=".activities.MapmobActivity" /> &lt;!&ndash; <meta-data android:name="com.google.firebase.messaging.default_notification_icon" &ndash;&gt; -->
         <!-- android:resource="@mipmap/ic_launcher" /> -->
         <activity
                 android:name=".activities.InitAppActivity"
