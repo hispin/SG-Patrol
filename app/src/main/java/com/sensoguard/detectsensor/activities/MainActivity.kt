@@ -15,7 +15,18 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import com.sensoguard.detectsensor.R
 import com.sensoguard.detectsensor.classes.MyExceptionHandler
-import com.sensoguard.detectsensor.global.*
+import com.sensoguard.detectsensor.global.CURRENT_ITEM_TOP_MENU_KEY
+import com.sensoguard.detectsensor.global.DISCONNECT_USB_PROCESS_KEY
+import com.sensoguard.detectsensor.global.IS_SSL_MAIL
+import com.sensoguard.detectsensor.global.PASSWORD_MAIL
+import com.sensoguard.detectsensor.global.PORT_MAIL
+import com.sensoguard.detectsensor.global.RECIPIENT_MAIL
+import com.sensoguard.detectsensor.global.SERVER_MAIL
+import com.sensoguard.detectsensor.global.USB_DEVICE_CONNECT_STATUS
+import com.sensoguard.detectsensor.global.USER_NAME_MAIL
+import com.sensoguard.detectsensor.global.setBooleanInPreference
+import com.sensoguard.detectsensor.global.setIntInPreference
+import com.sensoguard.detectsensor.global.setStringInPreference
 
 //import io.fabric.sdk.android.Fabric
 
@@ -82,8 +93,8 @@ class MainActivity : ParentActivity() {
     //hide unwanted badge of app icon
     private fun hideBudgetNotification() {
         val id = "my_channel_01"
-        val name = getString(com.sensoguard.detectsensor.R.string.channel_name)
-        val descriptionText = getString(com.sensoguard.detectsensor.R.string.channel_description)
+        val name = getString(R.string.channel_name)
+        val descriptionText = getString(R.string.channel_description)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val importance = NotificationManager.IMPORTANCE_LOW
             val mChannel =
@@ -172,12 +183,12 @@ class MainActivity : ParentActivity() {
     }
 
     private fun initViews() {
-        clickConsSensorTable = findViewById(com.sensoguard.detectsensor.R.id.clickConsSensorTable)
-        clickConsMap = findViewById(com.sensoguard.detectsensor.R.id.clickConsMap)
+        clickConsSensorTable = findViewById(R.id.clickConsSensorTable)
+        clickConsMap = findViewById(R.id.clickConsMap)
         clickConsConfiguration =
-            findViewById(com.sensoguard.detectsensor.R.id.clickConsConfiguration)
-        clickAlarmLog = findViewById(com.sensoguard.detectsensor.R.id.clickAlarmLog)
-        tvShowVer = findViewById(com.sensoguard.detectsensor.R.id.tvShowVer)
+            findViewById(R.id.clickConsConfiguration)
+        clickAlarmLog = findViewById(R.id.clickAlarmLog)
+        tvShowVer = findViewById(R.id.tvShowVer)
 //        btnTest = findViewById(com.sensoguard.detectsensor.R.id.btnTest)
 //        btnTest?.setOnClickListener {
 //            //CustomMapTileProvider(ivOfflineMap,this)
@@ -186,7 +197,6 @@ class MainActivity : ParentActivity() {
 //
 //            //replaceFragment(R.id.flTestMapmob, MapmobFragment(),true,"MapmobFragment")
 //        }
-
     }
 
 
