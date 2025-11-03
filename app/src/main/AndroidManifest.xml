@@ -19,7 +19,6 @@
             android:name="android.permission.WRITE_EXTERNAL_STORAGE"
             tools:ignore="ScopedStorage" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-
     <uses-feature android:name="android.hardware.location.gps" />
 
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
@@ -63,7 +62,6 @@
                 android:foregroundServiceType="connectedDevice" />
 
         <activity android:name=".activities.ParentActivity" />
-        <activity android:name=".activities.DownloadOfflineTilesActivity2" /> <!-- haggay   <activity android:name=".activities.MapmobActivity" /> &lt;!&ndash; <meta-data android:name="com.google.firebase.messaging.default_notification_icon" &ndash;&gt; -->
         <!-- android:resource="@mipmap/ic_launcher" /> -->
         <activity
                 android:name=".activities.InitAppActivity"

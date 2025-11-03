@@ -15,7 +15,6 @@ import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.content.ContextCompat
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.PolygonOptions
 import com.mapbox.bindgen.Value
 import com.mapbox.common.Cancelable
 import com.mapbox.common.NetworkRestriction
@@ -64,10 +63,6 @@ class DownloadOfflineTilesActivity : ParentActivity() {
     val ID_ICON_LOCATION: String = "location"
 
     val TAG: String = "DownloadOfflineTilesActivity"
-    val locationOne: LatLng = LatLng(32.173001, 34.842284)
-    val locationTwo: LatLng = LatLng(32.067477, 34.801851)
-    var boundsArea: PolygonOptions? = null
-    var sum: Int = 0
     private var isEndNotified = true
     private var progressBar: ProgressBar? = null
     private var mapView: MapView? = null
@@ -78,11 +73,8 @@ class DownloadOfflineTilesActivity : ParentActivity() {
     private var myStyle: Style? = null
     private var btnDownload: AppCompatButton? = null
     private var btnDelete: AppCompatButton? = null
-    private val myTopRight: LatLng? = null
     private var myTopRightP: Point? = null
-    private val myBottomLeft: LatLng? = null
     private var myBottomLeftP: Point? = null
-    private val polyRegions: Iterator<LatLng>? = null
 
 
     private var myLocate: LatLng? = null
@@ -101,8 +93,11 @@ class DownloadOfflineTilesActivity : ParentActivity() {
 
 
     private val TILE_REGION_METADATA = "my-offline-region"
+    val TILE_REGION_ID = "myTileRegion"
+    val STYLE_PACK_STANDARD_SATELLITE_METADATA = "my-standard-satellite-style-pack"
+    val STYLE_PACK_STANDARD_METADATA = "my-standard-style-pack"
 
-    //private lateinit var binding: ActivityOfflineBinding
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -113,18 +108,16 @@ class DownloadOfflineTilesActivity : ParentActivity() {
 
         progressBar = findViewById(R.id.progress_bar)
 
-        //mapView.onCreate(savedInstanceState);
         tvResults = findViewById(R.id.tvResults)
 
         btnDownload = findViewById(R.id.btnDownload)
         btnDownload?.setOnClickListener(View.OnClickListener {
             downloadOfflineRegion()
-            //haggay downLoadOfflineMap();
         })
 
         btnDelete = findViewById(R.id.btnDelete)
         btnDelete?.setOnClickListener(View.OnClickListener {
-            //haggay deleteTile();
+            removeOfflineRegions()
         })
 
         myMapboxMap = mapView?.mapboxMap
@@ -166,14 +159,10 @@ class DownloadOfflineTilesActivity : ParentActivity() {
                 myBottomLeftP = myMapboxMap!!.coordinateForPixel(pixel2)
 
 
-                //var polygonCreateor = new PolygonCreator();
                 if (mapView != null && myTopRightP != null && myBottomLeftP != null) {
                     drawRectangle(mapView!!, myTopRightP!!, myBottomLeftP!!)
                     addMarkerIconsToMap()
                 }
-                //instance.drawRectangle(mapView!!, myTopRightP!!, myBottomLeftP!!)
-                //PolygonCreator..drawRectangle(mapView, myTopRightP, myBottomLeftP);
-                // end haggay
             }
         })
 
@@ -237,7 +226,7 @@ class DownloadOfflineTilesActivity : ParentActivity() {
                             myLocate!!.longitude,
                             myLocate!!.latitude
                         )
-                    ) //Point.fromLngLat(myLocate?.latitude!!, myLocate?.longitude!!))
+                    )
                     .build()
 
                 myMapboxMap!!.setCamera(cameraPosition)
@@ -336,12 +325,10 @@ class DownloadOfflineTilesActivity : ParentActivity() {
                         resources, R.drawable.ic_sensor_alarm
                     )
                 )
-                //.withIconImage("icon-id")
                 .withDraggable(true)
                 .withIconSize(1.5)
 
 
-            //pointAnnotationOptions.ad
             // Add the resulting pointAnnotation to the map.
             pointTopRight = pointAnnotationManager?.create(pointAnnotationOptions1)
 
@@ -362,7 +349,6 @@ class DownloadOfflineTilesActivity : ParentActivity() {
                         resources, R.drawable.ic_sensor_alarm
                     )
                 )
-                //.withIconImage("icon-id")
                 .withDraggable(true)
                 .withIconSize(1.5)
 
@@ -400,9 +386,6 @@ class DownloadOfflineTilesActivity : ParentActivity() {
                         Log.d("idIcon", "iconTwo")
                     }
                     drawRectangle(mapView!!, myTopRightP!!, myBottomLeftP!!)
-                    //Log.d("idIcon",annotation.id)
-                    //Log.d("idIcon",annotation.getType().value..lat().)
-
                 }
 
                 override fun onAnnotationDragStarted(annotation: Annotation<*>) {
@@ -412,11 +395,6 @@ class DownloadOfflineTilesActivity : ParentActivity() {
         }
     }
 
-    val ZOOM = 12.0
-    val TOKYO = Point.fromLngLat(139.769305, 35.682027)
-    val TILE_REGION_ID = "myTileRegion"
-    val STYLE_PACK_STANDARD_SATELLITE_METADATA = "my-standard-satellite-style-pack"
-    val STYLE_PACK_STANDARD_METADATA = "my-standard-style-pack"
 
 
     /**
@@ -526,13 +504,11 @@ class DownloadOfflineTilesActivity : ParentActivity() {
                             tvResults?.text = ""
                             if (isEndNotified) {
                                 isEndNotified = false
-                                //startProgress()
                                 tvResults?.text = "start download"
                             } else {
                                 val msg =
                                     progress.completedResourceCount.toString() + "/" + progress.requiredResourceCount.toString()
                                 tvResults?.text = msg
-                                //Log.d(TAG+"1","process:"+msg)
                             }
                         })
 
@@ -546,13 +522,11 @@ class DownloadOfflineTilesActivity : ParentActivity() {
                             tvResults?.text = ""
                             tvResults?.text =
                                 getString(R.string.tile_download_complete) + region.completedResourceCount
-                            //endProgress(getString(R.string.simple_offline_end_progress_success))
                         })
 
                     }
                     expected.error?.let1 {
                         // Handle error occurred during the tile region download.
-                        //logErrorMessage("TileRegionError: $it")
                         Log.d(TAG, "TileRegionError: $it")
                         tvResults?.text = ""
                         tvResults?.text = "TileRegionError: $it"
@@ -564,6 +538,7 @@ class DownloadOfflineTilesActivity : ParentActivity() {
     }
 
 
+    //to use in future if it will be necessary
     private fun startProgress() {
         tvResults!!.text = ""
         // Start and show the progress bar
@@ -590,6 +565,58 @@ class DownloadOfflineTilesActivity : ParentActivity() {
 
         // Show a toast
         Toast.makeText(this@DownloadOfflineTilesActivity, message, Toast.LENGTH_LONG).show()
-    } //
+    }
+    //////////////////////////
+
+
+    /**
+     * Remove offline regions
+     */
+    private fun removeOfflineRegions() {
+
+        tvResults?.text = getString(R.string.delete_process)
+
+        // Remove the tile region with the tile region ID.
+        // Note this will not remove the downloaded tile packs, instead, it will just mark the tileset
+        // not a part of a tile region. The tiles still exists as a predictive cache in TileStore.
+        tileStore?.removeTileRegion(TILE_REGION_ID)
+
+        // Remove the style pack with the style url.
+        // Note this will not remove the downloaded style pack, instead, it will just mark the resources
+        // not a part of the existing style pack. The resources still exists as disk cache.
+        offlineManager.removeStylePack(Style.STANDARD_SATELLITE)
+        offlineManager.removeStylePack(Style.STANDARD)
+
+        MapboxMap.clearData {
+            it.error?.let1 { error ->
+                showMessageToastInUiProcess(error)
+            }
+        }
+
+        // Explicitly clear ambient cache data (so that if we try to download tile store regions again - it would actually truly download it from network).
+        // Ambient cache data is anything not associated with an offline region or a style pack, including predictively cached data.
+        // Note that it is advisable to rely on internal TileStore implementation to clear cache when needed.
+        tileStore?.clearAmbientCache {
+            if (it.error == null) {
+                runOnUiThread(kotlinx.coroutines.Runnable {
+                    showMessageToastInUiProcess(getString(R.string.remove_tile_regin_successfully))
+                })
+            }
+            it.error?.let1 { error ->
+                showMessageToastInUiProcess(error.message)
+            }
+
+        }
+    }
+
+    /**
+     * show message toast in ui process
+     */
+    fun showMessageToastInUiProcess(msg: String) {
+        runOnUiThread(kotlinx.coroutines.Runnable {
+            Toast.makeText(this@DownloadOfflineTilesActivity, msg, Toast.LENGTH_LONG).show()
+            tvResults?.text = msg
+        })
+    }
 
 }

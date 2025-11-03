@@ -139,7 +139,9 @@
     <string name="value_out_of_range" translatable="false">The value is out of range (0-7)</string>
     <string name="value_out_of_range_15_256" translatable="false">The value is out of range (15-256)</string>
     <string name="tile_download_complete" translatable="false">Tile download complete:</string>
-
+    <string name="remove_tile_regin_successfully" translatable="false">Remove tile regin has been complete</string>
+    <string name="delete_all_maps" translatable="false">Delete all maps</string>
+    <string name="delete_process" translatable="false">Delete...</string>
 
     <string-array name="car_ids">
         <item>0</item>
