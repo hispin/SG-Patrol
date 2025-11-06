@@ -8,6 +8,7 @@ class Alarm(
     var isArmed: Boolean?,
     var timeInMillis: Long?
 ){
+    var isReadyToDelete: Boolean = false
     var longitude: Double?=null
     var latitude: Double?=null
     var isLocallyDefined:Boolean=false

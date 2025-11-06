@@ -142,6 +142,16 @@
     <string name="remove_tile_regin_successfully" translatable="false">Remove tile regin has been complete</string>
     <string name="delete_all_maps" translatable="false">Delete all maps</string>
     <string name="delete_process" translatable="false">Delete...</string>
+    <string name="date_time" translatable="false">Date and time</string>
+    <string name="systems_filter" translatable="false">System</string>
+    <string name="filter_by" translatable="false">Filter by:</string>
+    <string name="description" translatable="false">description</string>
+    <string name="select_all" translatable="false">Select all</string>
+    <string name="reset" translatable="false">reset</string>
+    <string name="from" translatable="false">from</string>
+    <string name="to" translatable="false">to</string>
+    <string name="ok" translatable="false">OK</string>
+    <string name="date_older" translatable="false">End date may not be earlier than start date</string>
 
     <string-array name="car_ids">
         <item>0</item>

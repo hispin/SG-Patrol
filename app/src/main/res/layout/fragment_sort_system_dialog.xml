@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/blackCapacity50">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/conSubLayer"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_default="percent"
+            app:layout_constraintHeight_percent="0.666"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.228"
+            app:layout_constraintWidth_default="percent"
+            app:layout_constraintWidth_percent="0.955">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/conTitle"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:background="@color/gray12"
+                app:layout_constraintHeight_default="percent"
+                app:layout_constraintHeight_percent="0.064"
+                app:layout_constraintTop_toTopOf="parent">
+
+            <!--            <androidx.appcompat.widget.AppCompatTextView-->
+            <!--                    android:id="@+id/tvIdTitle"-->
+            <!--                    android:layout_width="wrap_content"-->
+            <!--                    android:layout_height="wrap_content"-->
+            <!--                    android:layout_marginStart="71dp"-->
+            <!--                    android:text="@string/id_title"-->
+
+            <!--                    android:textColor="@color/gray13"-->
+            <!--                    android:textSize="12sp"-->
+            <!--                    app:layout_constraintBottom_toBottomOf="parent"-->
+            <!--                    app:layout_constraintStart_toStartOf="parent"-->
+            <!--                    app:layout_constraintTop_toTopOf="parent"-->
+            <!--                    app:layout_constraintVertical_bias="0.487" />-->
+
+            <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvNameTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="85dp"
+                    android:text="@string/name_title"
+
+                    android:textColor="@color/gray13"
+                    android:textSize="12sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.487" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!--system camera dialog-->
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintTop_toBottomOf="@+id/conTitle"
+
+                >
+
+
+            <!--<ScrollView android:layout_width="wrap_content" android:layout_height="wrap_content">-->
+            <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvSystemCameras"
+                    android:name="com.app.simplehostdev.viewLayer.fragments.NewReservationFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:clipToPadding="false"
+                    android:scrollbars="vertical"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:context=".fragment.MainUartFragment"
+                    tools:listitem="@layout/item_system_filter_dialog" />
+            <!--</ScrollView>-->
+
+        </LinearLayout>
+
+        <!--date time dialog-->
+        <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/linerCalendarContainer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.1"
+                        android:background="@color/gray2"
+                        android:gravity="center_vertical"
+                        android:text="@string/from" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvFromDate"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.2"
+                        android:background="@color/gray2"
+                        android:gravity="center_vertical" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnFromTime"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.2"
+                        android:background="@color/gray3" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.1"
+                        android:background="@color/gray2"
+                        android:gravity="center_vertical"
+                        android:text="@string/to" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvToDate"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.2"
+                        android:background="@color/gray2"
+                        android:gravity="center_vertical" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnToTime"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.2"
+                        android:background="@color/gray3" />
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <com.squareup.timessquare.CalendarPickerView
+                    android:id="@+id/calendar_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentTop="true" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnApplySort"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:textAllCaps="false"
+            android:text="@string/ok"
+            android:textColor="@color/white"
+            app:backgroundTint="@color/green1"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.860"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.920" />
+
+    <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnCancelSort"
+            android:textAllCaps="false"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:backgroundTint="@color/orange"
+            android:text="@string/cancel"
+            android:textColor="@color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.160"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.920" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

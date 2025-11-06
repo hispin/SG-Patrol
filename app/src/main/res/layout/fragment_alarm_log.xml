@@ -14,7 +14,108 @@
 
             >
 
-    <!--&gt;-->
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/conUpContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+
+                >
+
+            <Button
+                    android:id="@+id/btnFilterDateTime"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginEnd="1.5dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="@color/gray11"
+                    android:text="@string/date_time"
+                    android:textColor="@color/black"
+                    android:textAllCaps="false"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/btnFilterSystem"
+                    app:layout_constraintHeight_default="percent"
+                    app:layout_constraintHeight_percent="0.500"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintHorizontal_chainStyle="packed"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintWidth_default="percent"
+                    app:layout_constraintWidth_percent="0.264" />
+
+            <Button
+                    android:id="@+id/btnFilterSystem"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="1.5dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="@color/gray11"
+                    android:text="@string/systems_filter"
+                    android:textAllCaps="false"
+                    android:textColor="@color/black"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHeight_default="percent"
+                    app:layout_constraintHeight_percent="0.500"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/btnFilterDateTime"
+                    app:layout_constraintWidth_default="percent"
+                    app:layout_constraintWidth_percent="0.264" />
+
+            <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/filter_by"
+                    android:textColor="@color/gray9"
+                    android:textSize="14.7sp"
+                    app:layout_constraintBottom_toTopOf="@+id/btnFilterDateTime"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                    android:id="@+id/ibDeleteSelectedItems"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@color/transparent"
+                    android:contentDescription="@string/description"
+                    android:src="@drawable/btn_delete"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/btnFilterSystem"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:visibility="gone" />
+
+            <CheckBox
+                    android:id="@+id/cbIsSelected"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:text="@string/select_all"
+                    android:textSize="11sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:visibility="gone" />
+
+            <TextView
+                    android:id="@+id/tvReset"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:autoLink="web"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:text="@string/reset"
+                    android:textColor="@color/blue"
+                    android:textSize="12sp"
+                    app:layout_constraintBottom_toTopOf="@+id/btnFilterDateTime"
+                    app:layout_constraintStart_toStartOf="@+id/btnFilterDateTime"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <!--&gt;-->
 
     <include
             android:id="@+id/inHeader"
@@ -58,5 +159,11 @@
             android:layout_marginStart="36dp"
             android:layout_marginBottom="36dp"
             android:text="@string/delete_all" />
+
+    <FrameLayout
+            android:id="@+id/flSortBySystemCamera"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
 
 </FrameLayout>

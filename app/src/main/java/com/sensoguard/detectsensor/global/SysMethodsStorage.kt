@@ -2,6 +2,7 @@ package com.sensoguard.detectsensor.global
 
 import android.app.Activity
 import android.content.Context
+import com.sensoguard.detectsensor.classes.Alarm
 import com.sensoguard.detectsensor.classes.Sensor
 
 //store the sensors to locally
@@ -38,4 +39,17 @@ fun getSensorsFromLocally(context: Context): ArrayList<Sensor>? {
         detectorListStr?.let { convertJsonToSensorList(it) }
     }
     return sensors
+}
+
+//get the alarms from locally
+fun populateAlarmsFromLocally(context: Context): ArrayList<Alarm>? {
+    val alarms: ArrayList<Alarm>?
+    val alarmListStr = getStringInPreference(context, ALARM_LIST_KEY_PREF, ERROR_RESP)
+
+    alarms = if (alarmListStr.equals(ERROR_RESP)) {
+        ArrayList()
+    } else {
+        alarmListStr?.let { convertJsonToAlarmList(it) }
+    }
+    return alarms
 }

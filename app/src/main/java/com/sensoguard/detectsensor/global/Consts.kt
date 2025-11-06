@@ -168,3 +168,95 @@ const val SEISMIC_TYPE = 0L
 const val PIR_TYPE = 1L
 const val RADAR_TYPE = 2L
 const val VIBRATION_TYPE = 3L
+//////////
+
+const val DETECT_ALARM_KEY = "handle.detect.alarm"
+const val ADD_ATTACHED_PHOTOS_KEY = "add.attached.photos"
+const val RESULT_VALIDATION_EMAIL_ACTION = "result.validation.email"
+const val ERROR_RESULT_VALIDATION_EMAIL_ACTION = "error_result.validation.email"
+const val LOGIN_COMPLETE_KEY = "login.complete"
+
+
+const val ALARM_DISPLAY_KEY = "alarmDisplay"
+const val LOGIN_TYPE_KEY = "loginType"
+const val AZURE = "azure"
+const val AMAZON = "amazon"
+
+const val ERROR_VALIDATION_EMAIL_MSG_KEY = "errorValidationEmailMessageKey"
+
+const val REGISTER_ID_KEY = "registrationID"
+
+
+const val VALIDATION_EMAIL_RESULT = "validationEmailResult"
+
+const val TOKEN_AMAZON_KEY_PREF = "tokenAmazonKeyPref"
+
+
+const val USB_CONNECTION_FAILED = "usbConnectionFailed"
+
+const val AMAZON_PRECESS_TYPE_KEY = "AmazonProcessTypeKey"
+const val AMAZON_PRECESS_DIALOG_VALUE = "AmazonProcessDialogValue"
+const val AMAZON_PRECESS_WITH_USER_VALUE = "AmazonProcessWithUserValue"
+
+
+const val IS_EMAIL_CONFIG_PREF_KEY = "isEmailConfigPrefKey"
+
+const val CAMERA_KEY = "cameraKey"
+const val EMAIL_ACCOUNT_KEY = "emailAccount"
+
+const val TAGS_KEY = "tagsKey"
+const val USER_INFO_AZURE_KEY = "userInfoAzure"
+const val USER_INFO_AMAZON_KEY = "userInfoAmazon"
+
+const val SORT_TYPE_KEY = "sortType"
+const val SORT_BY_SYSTEM_KEY = 1
+const val SORT_BY_DATETIME_KEY = 2
+const val ACTION_TYPE_KEY = "actionType"
+const val ACTION_PICTURE_KEY = 1
+const val ACTION_VIDEO_KEY = 2
+
+const val IMAGE_PATH_KEY = "imagePathKey"
+const val IMAGE_TIME_KEY = "imageTimeKey"
+
+const val ALARM_OTHER = "other"
+
+const val TARGET_CAMERA_EXTRA_SETTING_REQUEST_CODE = "targetCameraExtra"
+const val TAKE_PICTURE_REQUEST_CODE = 2
+const val SORT_BY_SYSTEM_REQUEST_CODE = "sortBySystem"
+const val SORT_PICK_DATE_TIME_REQUEST_CODE = "sortPickDateTime"
+const val RESULT_CODE = "resultCode"
+const val FROM_CALENDAR = "fromCalendar"
+const val TO_CALENDAR = "toCalendar"
+const val REQUEST_KEY = "requestKey"
+
+
+const val CHANNEL_NAME = "newAlarmDetected"
+const val CHANNEL_ID = "1.0"
+
+const val IS_MYSCREENACTIVITY_FOREGROUND = "isMyScreenActivityForeground"
+const val IS_LOAD_APP = "isLoadApp"
+const val HUNTER_LOG = "hunterLog"
+
+const val NO_SORTED = 0
+const val DATE_SORTED = 1
+const val CAMERA_SORTED = 2
+
+const val AMAZONE_POST_LOGIN_RESULT_SUCCESS = "amazonLoginSuccess"
+const val AMAZONE_POST_LOGIN_RESULT_FAILED = "amazonLoginFailed"
+
+const val AZURA_POST_RESULT_OK = "1"
+const val AZURA_POST_RESULT_UNHUTHORIZED = "-1"
+const val AZURA_POST_RESULT_NO_USER = "-2"
+const val AZURA_POST_RESULT_USER_NO_ACTIVE = "-3"
+const val AZURA_POST_RESULT_ERROR_NO_DATA = "-99"
+
+const val LAST_DATE_ALARM = "lastDateAlarm"
+
+const val HOUR_OFFSET = 3
+
+const val PWA_URL = "https://outwatch.sensoguard.com/pwa"//"https://outwatchpwa.sensoguard.com")
+
+const val IS_SETTINGS_NOTIFICATION_LAUNCHER = "isSettingsNotificationLauncher"
+
+
+/////////

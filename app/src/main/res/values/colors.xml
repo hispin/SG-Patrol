@@ -30,4 +30,11 @@
     <color name="white2">#f8f8f8</color>
     <color name="medium_green">#39a647</color>
     <color name="dark4">#070707</color>
+    <color name="gray11">#dbd5d5</color>
+    <color name="gray9">#524e4e</color>
+    <color name="blue">#0000FF</color>
+    <color name="blackCapacity50">#75000000</color>
+    <color name="gray12">#e6e6e6</color>
+    <color name="gray13">#999999</color>
+    <color name="green2">#4b9c55</color>
 </resources>

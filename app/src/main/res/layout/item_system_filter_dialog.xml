@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tool="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="70dp">
+
+
+    <ToggleButton
+            android:id="@+id/togIsSelected"
+            android:layout_width="30dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="21.3dp"
+            android:background="@color/transparent"
+            android:button="@drawable/toggle_selector_selected"
+            android:gravity="center"
+            android:textOff=""
+            android:textOn=""
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+    <TextView
+            android:id="@+id/tvName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:textColor="@color/black"
+            android:textSize="14.7sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/togIsSelected"
+            app:layout_constraintTop_toTopOf="parent"
+            tool:text="name" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
