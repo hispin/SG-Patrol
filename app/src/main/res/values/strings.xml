@@ -152,6 +152,9 @@
     <string name="to" translatable="false">to</string>
     <string name="ok" translatable="false">OK</string>
     <string name="date_older" translatable="false">End date may not be earlier than start date</string>
+    <string name="no_selected_alarms" translatable="false">No selected alarm</string>
+    <string name="selected_alarms" translatable="false">selected alarm</string>
+    <string name="do_you_realy_want_delete_selected_alarm" translatable="false">Do you realy want to delete selected alarms?</string>
 
     <string-array name="car_ids">
         <item>0</item>

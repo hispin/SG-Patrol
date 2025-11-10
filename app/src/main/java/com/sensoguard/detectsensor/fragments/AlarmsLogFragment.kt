@@ -15,6 +15,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.CheckBox
+import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -51,6 +52,7 @@ import com.sensoguard.detectsensor.global.getStringFromCalendar
 import com.sensoguard.detectsensor.global.getStringInPreference
 import com.sensoguard.detectsensor.global.setStringInPreference
 import com.sensoguard.detectsensor.global.shareCsv
+import com.sensoguard.detectsensor.global.storeAlarmsToLocally
 import com.sensoguard.detectsensor.global.writeCsvFile
 import com.sensoguard.detectsensor.interfaces.OnAdapterListener
 import java.util.*
@@ -75,7 +77,6 @@ class AlarmsLogFragment : ParentFragment(), OnAdapterListener {
     private var rvAlarm: RecyclerView? = null
     private var alarmAdapter: AlarmAdapter? = null
     private var btnCsv: Button? = null
-    private var btnDeleteAll: Button? = null
     private var btnFilterSystem: Button? = null
     private var btnFilterDateTime: Button? = null
     private var cbIsSelected: CheckBox? = null
@@ -85,6 +86,7 @@ class AlarmsLogFragment : ParentFragment(), OnAdapterListener {
     var toCalendar: Calendar? = null
     private var typeOfSorted: Int = NO_SORTED
     private var tvReset: TextView? = null
+    private var ibDeleteSelectedItems: ImageButton? = null
 
 
 
@@ -147,11 +149,26 @@ class AlarmsLogFragment : ParentFragment(), OnAdapterListener {
             }
 
         }
-        btnDeleteAll = view.findViewById(R.id.btnDeleteAll)
-        btnDeleteAll?.setOnClickListener {
 
-            showDeleteDialog()
+        ibDeleteSelectedItems = view.findViewById(R.id.ibDeleteSelectedItems)
+        ibDeleteSelectedItems?.setOnClickListener {
 
+            var alarmCounter = 0
+            if (typeOfSorted == DATE_SORTED || typeOfSorted == CAMERA_SORTED) {
+                mySortedAlarms?.let { it1 -> alarmCounter = getCountItemSelected(it1) }
+            } else {
+                myAlarms?.let { it1 -> alarmCounter = getCountItemSelected(it1) }
+            }
+            if (alarmCounter > 0) {
+                showDeleteDialog(alarmCounter)
+            } else {
+                Toast.makeText(
+                    activity,
+                    resources.getString(R.string.no_selected_alarms),
+                    Toast.LENGTH_LONG
+                )
+                    .show()
+            }
         }
 
         cbIsSelected = view.findViewById(R.id.cbIsSelected)
@@ -184,7 +201,6 @@ class AlarmsLogFragment : ParentFragment(), OnAdapterListener {
             btnFilterSystem?.isEnabled = false
             btnFilterDateTime?.isEnabled = false
             btnCsv?.visibility = View.GONE
-            btnDeleteAll?.visibility = View.GONE
 
             openSortByType(SORT_BY_SYSTEM_KEY, SORT_BY_SYSTEM_REQUEST_CODE)
         }
@@ -209,7 +225,6 @@ class AlarmsLogFragment : ParentFragment(), OnAdapterListener {
             btnFilterSystem?.isEnabled = false
             btnFilterDateTime?.isEnabled = false
             btnCsv?.visibility = View.GONE
-            btnDeleteAll?.visibility = View.GONE
 
             openSortByType(SORT_BY_DATETIME_KEY, SORT_PICK_DATE_TIME_REQUEST_CODE)
         }
@@ -300,34 +315,6 @@ class AlarmsLogFragment : ParentFragment(), OnAdapterListener {
             val alarmsJsonStr = convertToAlarmsGson(alarms)
             setStringInPreference(activity, ALARM_LIST_KEY_PREF, alarmsJsonStr)
         }
-    }
-
-    //show dialog before delete alarms log
-    private fun showDeleteDialog() {
-        val builder = AlertDialog.Builder(context)
-        builder.setTitle(requireContext().resources.getString(R.string.delete_all))
-        val yes = requireContext().resources.getString(R.string.yes)
-        val no = requireContext().resources.getString(R.string.no)
-        builder.setMessage(requireContext().resources.getString(R.string.do_you_really_want_delete_all_alarm))
-            .setCancelable(false)
-        builder.setPositiveButton(yes) { dialog, which ->
-
-            //remove all alarms log
-            myAlarms = populateAlarmsFromLocally()
-            myAlarms?.clear()
-            myAlarms?.let { alarms -> storeAlarmsToLocally(alarms) }
-            refreshAlarmsFromPref()
-            dialog.dismiss()
-
-        }
-
-
-        // Display a negative button on alert dialog
-        builder.setNegativeButton(no) { dialog, which ->
-            dialog.dismiss()
-        }
-        val alert = builder.create()
-        alert.show()
     }
 
 
@@ -471,7 +458,7 @@ class AlarmsLogFragment : ParentFragment(), OnAdapterListener {
      */
     private fun setUIAfterSorting() {
         btnCsv?.visibility = View.VISIBLE
-        btnDeleteAll?.visibility = View.VISIBLE
+        //btnDeleteAll?.visibility = View.VISIBLE
         btnFilterSystem?.isEnabled = true
         btnFilterDateTime?.isEnabled = true
 
@@ -568,5 +555,68 @@ class AlarmsLogFragment : ParentFragment(), OnAdapterListener {
             }
         }
         return false
+    }
+
+    //get the counter of selected alarms
+    private fun getCountItemSelected(alarms: ArrayList<Alarm>): Int {
+        val iteratorList = alarms.listIterator()
+        var counter = 0
+        while (iteratorList != null && iteratorList.hasNext()) {
+            val item = iteratorList.next()
+            if (item.isReadyToDelete) {
+                counter++
+            }
+
+        }
+        return counter
+    }
+
+    //show dialog before delete alarms
+    private fun showDeleteDialog(alarmCounter: Int) {
+        val builder = AlertDialog.Builder(context)
+        builder.setTitle(alarmCounter.toString() + " " + requireContext().resources.getString(R.string.selected_alarms))
+        val yes = requireContext().resources.getString(R.string.yes)
+        val no = requireContext().resources.getString(R.string.no)
+        builder.setMessage(requireContext().resources.getString(R.string.do_you_realy_want_delete_selected_alarm))
+            .setCancelable(false)
+        builder.setPositiveButton(yes) { dialog, which ->
+
+            //delete from main array and also from sort array
+            myAlarms?.let { deleteItemSelected(it) }
+            mySortedAlarms?.let { deleteItemSelected(it) }
+            //save the changing in shared preference
+            if (context != null && myAlarms != null) {
+                myAlarms?.let { storeAlarmsToLocally(it, requireContext()) }
+            }
+
+            clearSelection()
+
+            refreshAlarmsFromPref()
+
+            dialog.dismiss()
+        }
+
+
+        // Display a negative button on alert dialog
+        builder.setNegativeButton(no) { dialog, which ->
+            dialog.dismiss()
+        }
+        val alert = builder.create()
+        alert.show()
+    }
+
+    //delete the selected alarms
+    private fun deleteItemSelected(alarms: ArrayList<Alarm>): Int {
+        val iteratorList = alarms.listIterator()
+        var counter = 0
+        while (iteratorList != null && iteratorList.hasNext()) {
+            val item = iteratorList.next()
+            if (item.isReadyToDelete) {
+                iteratorList.remove()
+                counter++
+            }
+
+        }
+        return counter
     }
 }

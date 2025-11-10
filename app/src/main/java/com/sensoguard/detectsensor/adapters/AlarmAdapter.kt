@@ -11,7 +11,6 @@ import com.sensoguard.detectsensor.R
 import com.sensoguard.detectsensor.classes.Alarm
 import com.sensoguard.detectsensor.global.getStrDateTimeByMilliSeconds
 import com.sensoguard.detectsensor.interfaces.OnAdapterListener
-import java.util.*
 
 class AlarmAdapter (private var alarms: ArrayList<Alarm>, val context: Context, val onAdapterListener: OnAdapterListener, var itemClick: (Alarm) -> Unit) : RecyclerView.Adapter<AlarmAdapter.ViewHolder>() {
 
@@ -53,6 +52,16 @@ class AlarmAdapter (private var alarms: ArrayList<Alarm>, val context: Context, 
             itemView.setOnClickListener {
                 itemClick.invoke(alarms[adapterPosition])
             }
+            itemView.setOnLongClickListener {
+
+                //toggle the status of ready to delete
+                alarms[bindingAdapterPosition].isReadyToDelete =
+                    !alarms[bindingAdapterPosition].isReadyToDelete
+                notifyItemChanged(bindingAdapterPosition, alarms[bindingAdapterPosition])
+
+                return@setOnLongClickListener false
+
+            }
         }
 
 
@@ -92,6 +101,12 @@ class AlarmAdapter (private var alarms: ArrayList<Alarm>, val context: Context, 
             tvType?.text = alarm.type
             tvName?.text = alarm.name
 
+            //set selected/unselected
+            if (alarm.isReadyToDelete) {
+                itemView.alpha = 0.2F
+            } else {
+                itemView.alpha = 1.0F
+            }
 
         }
     }

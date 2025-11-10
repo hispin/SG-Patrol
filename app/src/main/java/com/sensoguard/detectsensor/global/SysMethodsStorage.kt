@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import com.sensoguard.detectsensor.classes.Alarm
 import com.sensoguard.detectsensor.classes.Sensor
+import java.lang.ref.WeakReference
 
 //store the sensors to locally
 fun storeSensorsToLocally(sensors:ArrayList<Sensor>,context: Context){
@@ -53,3 +54,17 @@ fun populateAlarmsFromLocally(context: Context): ArrayList<Alarm>? {
     }
     return alarms
 }
+
+//store the detectors to locally
+fun storeAlarmsToLocally(alarms: java.util.ArrayList<Alarm>, context: Context) {
+    //use WeakReference if the activity is no longer alive
+    val wContext: WeakReference<Context> =
+        WeakReference(context)
+    // sort the list of events by date in descending
+    val alarms = java.util.ArrayList(alarms.sortedWith(compareByDescending { it.timeInMillis }))
+    if (alarms != null) {
+        val alarmsJsonStr = convertToAlarmsGson(alarms)
+        setStringInPreference(wContext.get(), ALARM_LIST_KEY_PREF, alarmsJsonStr)
+    }
+}
+
