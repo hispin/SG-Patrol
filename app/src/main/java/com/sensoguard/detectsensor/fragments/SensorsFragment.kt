@@ -46,6 +46,7 @@ private const val ARG_PARAM2 = "param2"
 class SensorsFragment : ParentFragment(), OnAdapterListener {
 
 
+    private var sensors: ArrayList<Sensor>? = null
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -55,10 +56,10 @@ class SensorsFragment : ParentFragment(), OnAdapterListener {
     var bs: StringBuilder? = null
 
     //private var floatAddSensor: FloatingActionButton? = null
-    private var ibSendCommand: ImageButton? = null
+    //private var ibSendCommand: ImageButton? = null
     //private var floatSendCommand: FloatingActionButton? = null
 
-    private var sensors: ArrayList<Sensor>? = null
+
     private var rvSensor: RecyclerView? = null
     private var sensorsAdapter: SensorsAdapter? = null
     private val listenerPref: SharedPreferences.OnSharedPreferenceChangeListener? = null
@@ -177,10 +178,10 @@ class SensorsFragment : ParentFragment(), OnAdapterListener {
         dialog.setCancelable(false)
         dialog.setContentView(R.layout.dialog_new_sensor)
 
-        val etId = dialog.findViewById(R.id.etId) as EditText
+        val etId: EditText = dialog.findViewById(R.id.etId)
 
 
-        val btnOk = dialog.findViewById(R.id.btnOk) as Button
+        val btnOk: Button = dialog.findViewById(R.id.btnOk)
 
         btnOk.setOnClickListener {
 
@@ -231,7 +232,7 @@ class SensorsFragment : ParentFragment(), OnAdapterListener {
             }
         }
 
-        val btnCancel = dialog.findViewById(R.id.btncn) as Button
+        val btnCancel: Button = dialog.findViewById(R.id.btncn)
         btnCancel.setOnClickListener { dialog.dismiss() }
 
         dialog.show()
@@ -327,20 +328,6 @@ class SensorsFragment : ParentFragment(), OnAdapterListener {
         rvSensor = view.findViewById(R.id.rvDetector)
 
 
-        ibSendCommand = view.findViewById(R.id.ibSendCommand)
-        ibSendCommand?.setOnClickListener {
-            val isConnected = getBooleanInPreference(activity, USB_DEVICE_CONNECT_STATUS, false)
-            //if the usb is connected then open dialog of commands
-            //if (isConnected) {
-
-            //For testing
-            openCommands()
-            //configureSystemTimeCmd()
-
-//            } else {
-//                showToast(activity, resources.getString(R.string.usb_is_disconnect))
-//            }
-        }
         bs = StringBuilder()
         return view
     }
@@ -461,45 +448,6 @@ class SensorsFragment : ParentFragment(), OnAdapterListener {
             }
     }
 
-    //open fragment dialog to make commands
-    private fun openCommands() {
-
-        val sensorsIds = getSensorsIds()
-
-        val fr = CommandsFragment()
-
-        if (sensorsIds.size > 0) {
-            val bnd = Bundle()
-            bnd.putStringArrayList(SENSORS_IDS, sensorsIds)
-            fr.arguments = bnd
-        }
-//        //deliver selected camera to continue add data
-//
-        val fm = activity?.supportFragmentManager
-//        fm?.addOnBackStackChangedListener {
-//            //if the dialog is close then the add button is visible
-//            if (fm.backStackEntryCount == 0) {
-//                floatSendCommand?.visibility = View.VISIBLE
-//            } else {
-//                floatSendCommand?.visibility = View.INVISIBLE
-//            }
-//        }
-        val fragmentTransaction = fm?.beginTransaction()
-        fragmentTransaction?.addToBackStack(fr.tag)
-        fragmentTransaction?.add(R.id.flCommands, fr, "CommandsFragment")
-        fragmentTransaction?.commit()
-    }
-
-    //get sensors id
-    private fun getSensorsIds(): ArrayList<String> {
-        val sensorsIds = ArrayList<String>()
-        val iteratorList = sensors?.listIterator()
-        while (iteratorList != null && iteratorList.hasNext()) {
-            val sensorItem = iteratorList.next()
-            sensorsIds.add(sensorItem.getId())
-        }
-        return sensorsIds
-    }
 
     //show dialog to edit sensor info
     private fun showEditSensorDialog(sensor: Sensor) {

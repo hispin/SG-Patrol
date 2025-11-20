@@ -23,7 +23,21 @@
             app:layout_constraintHorizontal_bias="0.054"
     />
 
-<tools:ToggleButton
+    <ImageButton
+            android:id="@+id/ibSendCommand"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:scaleType="centerInside"
+            android:background="@drawable/circle_view"
+            android:contentDescription="@string/des"
+            android:src="@drawable/send_command"
+            android:visibility="visible"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    <tools:ToggleButton
         android:id="@+id/togChangeStatus"
         android:text="ToggleButton"
         android:layout_width="25dp"

@@ -42,6 +42,21 @@ fun getSensorsFromLocally(context: Context): ArrayList<Sensor>? {
     return sensors
 }
 
+/*
+   get the sensors from locally
+ */
+fun populateSensorsFromLocally(context: Context): java.util.ArrayList<Sensor>? {
+    val detectors: java.util.ArrayList<Sensor>?
+    val detectorListStr = getStringInPreference(context, DETECTORS_LIST_KEY_PREF, ERROR_RESP)
+
+    detectors = if (detectorListStr.equals(ERROR_RESP)) {
+        java.util.ArrayList()
+    } else {
+        detectorListStr?.let { convertJsonToSensorList(it) }
+    }
+    return detectors
+}
+
 //get the alarms from locally
 fun populateAlarmsFromLocally(context: Context): ArrayList<Alarm>? {
     val alarms: ArrayList<Alarm>?

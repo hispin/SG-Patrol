@@ -18,6 +18,7 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.View.OnTouchListener
+import android.widget.ImageButton
 import android.widget.ToggleButton
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
@@ -35,6 +36,7 @@ import com.sensoguard.detectsensor.classes.GeneralItemMenu
 import com.sensoguard.detectsensor.classes.NonSwipeAbleViewPager
 import com.sensoguard.detectsensor.controler.ViewModelListener
 import com.sensoguard.detectsensor.fragments.AlarmsLogFragment
+import com.sensoguard.detectsensor.fragments.CommandsFragment
 import com.sensoguard.detectsensor.fragments.ConfigurationFragment
 import com.sensoguard.detectsensor.fragments.MapmobFragment
 import com.sensoguard.detectsensor.fragments.SensorsFragment
@@ -49,6 +51,7 @@ import com.sensoguard.detectsensor.global.MAP_SHOW_SATELLITE_VALUE
 import com.sensoguard.detectsensor.global.MAP_SHOW_VIEW_TYPE_KEY
 import com.sensoguard.detectsensor.global.PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION
 import com.sensoguard.detectsensor.global.SELECTED_NOTIFICATION_SOUND_KEY
+import com.sensoguard.detectsensor.global.SENSORS_IDS
 import com.sensoguard.detectsensor.global.STOP_ALARM_SOUND
 import com.sensoguard.detectsensor.global.STOP_READ_DATA_KEY
 import com.sensoguard.detectsensor.global.USB_DEVICES_EMPTY
@@ -59,6 +62,7 @@ import com.sensoguard.detectsensor.global.getBooleanInPreference
 import com.sensoguard.detectsensor.global.getIntInPreference
 import com.sensoguard.detectsensor.global.getLongInPreference
 import com.sensoguard.detectsensor.global.getStringInPreference
+import com.sensoguard.detectsensor.global.populateSensorsFromLocally
 import com.sensoguard.detectsensor.global.setAppLanguage
 import com.sensoguard.detectsensor.global.setBooleanInPreference
 import com.sensoguard.detectsensor.global.setIntInPreference
@@ -95,6 +99,7 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, Observer {
     private var currentItemTopMenu = 0
     private var togChangeStatus: ToggleButton? = null
     private var consMyActionBar: ConstraintLayout? = null
+    private var ibSendCommand: ImageButton? = null
 
 
     val TAG = "MyScreensActivity"
@@ -358,6 +363,14 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, Observer {
             R.id.togChangeStatus
         )
 
+        ibSendCommand = findViewById(
+            R.id.ibSendCommand
+        )
+        ibSendCommand?.setOnClickListener {
+            //vPager?.visibility=View.GONE
+            openCommands()
+        }
+
         consMyActionBar = findViewById(
             R.id.consMyActionBar
         )
@@ -620,6 +633,44 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, Observer {
 
         }
     }
+
+    /**
+     * open fragment dialog to make commands
+     */
+    private fun openCommands() {
+
+        val sensorsIds = getSensorsIds()
+
+        val fr = CommandsFragment()
+
+        if (sensorsIds.size > 0) {
+            val bnd = Bundle()
+            bnd.putStringArrayList(SENSORS_IDS, sensorsIds)
+            fr.arguments = bnd
+        }
+        //deliver selected camera to continue add data
+        val fm = supportFragmentManager
+        val fragmentTransaction = fm.beginTransaction()
+        fragmentTransaction.addToBackStack(fr.tag)
+        fragmentTransaction.add(R.id.flCommands1, fr, "CommandsFragment")
+        fragmentTransaction.commit()
+    }
+
+    /**
+     * get sensors id
+     */
+    private fun getSensorsIds(): ArrayList<String> {
+        val sensors = populateSensorsFromLocally(this)
+        val sensorsIds = ArrayList<String>()
+        val iteratorList = sensors?.listIterator()
+        while (iteratorList != null && iteratorList.hasNext()) {
+            val sensorItem = iteratorList.next()
+            sensorsIds.add(sensorItem.getId())
+        }
+        return sensorsIds
+    }
+
+
 
 }
 

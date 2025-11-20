@@ -133,8 +133,13 @@ class AlarmsLogFragment : ParentFragment(), OnAdapterListener {
         btnCsv = view.findViewById(R.id.btnCsv)
 
         btnCsv?.setOnClickListener {
-            val alarms = populateAlarmsFromLocally()
-            //val csvFile=CsvFile()
+            val alarms: ArrayList<Alarm>? =
+                if (typeOfSorted == DATE_SORTED || typeOfSorted == CAMERA_SORTED) {
+                    mySortedAlarms
+                } else {
+                    myAlarms
+                }
+
             this.context?.let { it1 ->
 
                 val alarmsStr = alarmsListToCsvFile(alarms, it1)
