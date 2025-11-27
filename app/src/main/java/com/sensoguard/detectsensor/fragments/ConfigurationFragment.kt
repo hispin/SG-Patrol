@@ -19,6 +19,7 @@ import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ListPopupWindow
 import android.widget.RadioGroup
+import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import android.widget.ToggleButton
@@ -26,6 +27,7 @@ import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.text.isDigitsOnly
 import com.sensoguard.detectsensor.R
 import com.sensoguard.detectsensor.activities.DownloadOfflineTilesActivity
 import com.sensoguard.detectsensor.adapters.GeneralItemMenuAdapter
@@ -72,7 +74,6 @@ open class ConfigurationFragment : ParentFragment(), CallToParentInterface {
     private var isPasswordVisible: Boolean = false
     private var listPopupWindow: ListPopupWindow? = null
     private var generalItemMenuAdapter: GeneralItemMenuAdapter? = null
-    private var etSensorValue: AppCompatEditText? = null
     private var btnSaveSensors: AppCompatButton? = null
     private var togChangeAlarmVibrate: ToggleButton? = null
     private var ibSatelliteMode: AppCompatButton? = null
@@ -92,6 +93,8 @@ open class ConfigurationFragment : ParentFragment(), CallToParentInterface {
     private var togIsSensorAlwaysShow: ToggleButton? = null
     private var ibSetEmailDetails: AppCompatImageButton? = null
     private var togForwardSensorEmail: ToggleButton? = null
+    private var spSensorValueFrom: Spinner? = null
+    private var spSensorValueTo: Spinner? = null
 
 
     override fun onAttach(context: Context) {
@@ -110,12 +113,6 @@ open class ConfigurationFragment : ParentFragment(), CallToParentInterface {
     ): View? {
 
         val view = inflater.inflate(R.layout.fragment_configuration, container, false)
-
-        etSensorValue = view.findViewById(R.id.etSensorValue)
-        val currentNumSensors = getCurrentNumSensorsFromLocally()
-        if (currentNumSensors != null) {
-            etSensorValue?.setText(currentNumSensors.toString())
-        }
 
         btnSaveSensors = view.findViewById(R.id.btnSaveSensors)
         btnSaveSensors?.setOnClickListener {
@@ -251,6 +248,13 @@ open class ConfigurationFragment : ParentFragment(), CallToParentInterface {
         }
 
 
+        spSensorValueFrom = view.findViewById(R.id.spSensorValueFrom)
+        spSensorValueTo = view.findViewById(R.id.spSensorValueTo)
+
+        val currentNumSensors = getCurrentNumSensorsFromLocally()
+        spSensorValueFrom?.setSelection(currentNumSensors[1] - 1)
+        spSensorValueTo?.setSelection(currentNumSensors[0] - 1)
+
         return view
     }
 
@@ -333,17 +337,42 @@ open class ConfigurationFragment : ParentFragment(), CallToParentInterface {
         setIntInPreference(activity, MAP_SHOW_VIEW_TYPE_KEY, MAP_SHOW_NORMAL_VALUE)
     }
 
-    //get the current size of sensors
-    private fun getCurrentNumSensorsFromLocally(): Int? {
+    /*
+    get the max & min of ids of sensors
+     */
+    private fun getCurrentNumSensorsFromLocally(): IntArray {
         val sensors= activity?.let { getSensorsFromLocally(it) }
-        return sensors?.size
+
+        var max = sensors?.get(0)?.getId()?.toInt()
+        var min = sensors?.get(0)?.getId()?.toInt()
+        val items = sensors?.listIterator()
+        while (items != null && items.hasNext()) {
+            val item = items.next()
+            if (max != null && max < item.getId().toInt()) {
+                max = item.getId().toInt()
+            }
+            if (min != null && min > item.getId().toInt()) {
+                min = item.getId().toInt()
+            }
+        }
+        val maxMin: IntArray = intArrayOf(max!!, min!!)
+        return maxMin
     }
 
 
     //add sensors according to the number that get from user
     private fun addSensors(){
 
-        var numSensorsRequest:Int?=null
+
+        val numSensorsRequestFrom = spSensorValueFrom?.selectedItem.toString().toInt()
+        val numSensorsRequestTo = spSensorValueTo?.selectedItem.toString().toInt()
+
+        if (numSensorsRequestFrom > numSensorsRequestTo) {
+            (spSensorValueTo?.selectedView as TextView).error = "Error message"
+            return
+        }
+
+
 
         val sensors= activity?.let { getSensorsFromLocally(it) }
 
@@ -374,15 +403,18 @@ open class ConfigurationFragment : ParentFragment(), CallToParentInterface {
                 .setPositiveButton(activity?.resources?.getString(R.string.yes)) { dialog, _ ->
 
                     //remove extra sensors
-                    if(numSensorsRequest!=null) {
+                    if (numSensorsRequestTo != null) {
                         val items=sensors?.listIterator()
                         while (items != null && items.hasNext()) {
                             val item = items.next()
 
                             val id = item.getId()
                             try {
-                                if (id.toInt() > numSensorsRequest!!) {
-                                    items.remove()
+                                if (id.isDigitsOnly()) {
+                                    val idNum = id.toInt()
+                                    if (idNum < numSensorsRequestFrom || idNum > numSensorsRequestTo) {
+                                        items.remove()
+                                    }
                                 }
                             } catch (ex: NumberFormatException) {
                                 //do nothing
@@ -407,15 +439,9 @@ open class ConfigurationFragment : ParentFragment(), CallToParentInterface {
         }
 
 
-        try{
-            numSensorsRequest=etSensorValue?.text.toString().toInt()
-        }catch (ex: NumberFormatException){
-            Toast.makeText(this.context, "exception ${ex.message}", Toast.LENGTH_LONG).show()
-            return
-        }
-
-        if(numSensorsRequest!=null
-            && numSensorsRequest >254) {
+        if (numSensorsRequestFrom != null && numSensorsRequestTo != null
+            && numSensorsRequestTo - numSensorsRequestFrom > 254
+        ) {
             Toast.makeText(
                 this.context,
                 resources.getString(R.string.invalid_mum_sensors),
@@ -425,9 +451,9 @@ open class ConfigurationFragment : ParentFragment(), CallToParentInterface {
         }
 
 
-        if(numSensorsRequest!=null) {
+        if (numSensorsRequestFrom != null && numSensorsRequestTo != null) {
             //add numSensors sensors
-            for (sensorId in 1 until numSensorsRequest + 1) {
+            for (sensorId in numSensorsRequestFrom until numSensorsRequestTo + 1) {
                 //add it just if not exist
                 if (sensors?.let { it1 -> !isIdExist(it1, sensorId.toString()) }!!) {
                     sensors.add(Sensor(sensorId.toString()))
@@ -437,8 +463,8 @@ open class ConfigurationFragment : ParentFragment(), CallToParentInterface {
 
         //check if the request of sensors number is smaller then the number of exist
         if(sensors?.size!=null
-            && numSensorsRequest!=null
-            && numSensorsRequest < sensors.size){
+            && numSensorsRequestTo - numSensorsRequestFrom < sensors.size
+        ) {
             askBeforeDeleteExtraSensor()
         }else if(activity!=null) {
             sensors?.let { sen -> storeSensorsToLocally(sen, requireActivity()) }

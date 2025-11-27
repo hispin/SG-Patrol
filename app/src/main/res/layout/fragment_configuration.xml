@@ -49,30 +49,61 @@
                 android:ems="9"
                 />
 
-        <androidx.appcompat.widget.AppCompatEditText
-                android:id="@+id/etSensorValue"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintWidth_default="percent"
-                app:layout_constraintHorizontal_bias="0.690"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintWidth_percent=".151"
-                android:inputType="number"
-                android:gravity="center"
-                android:hint="0"
-                android:background="@drawable/shape_bottom_border"
 
-        />
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/from"
+
+                    app:layout_constraintBottom_toTopOf="@+id/spSensorValueFrom"
+                    app:layout_constraintStart_toStartOf="@+id/spSensorValueFrom" />
+
+            <androidx.appcompat.widget.AppCompatSpinner
+                    android:id="@+id/spSensorValueFrom"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintEnd_toStartOf="@+id/spSensorValueTo"
+                    app:layout_constraintTop_toTopOf="@+id/spSensorValueTo"
+                    app:layout_constraintBottom_toBottomOf="@+id/spSensorValueTo"
+                    app:layout_constraintWidth_percent=".110"
+                    android:inputType="number"
+                    android:gravity="center"
+                    android:entries="@array/sensor_ids"
+                    android:background="@drawable/shape_bottom_border"
+                    android:layout_marginEnd="3dp" />
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/to"
+
+                    app:layout_constraintBottom_toTopOf="@+id/spSensorValueTo"
+                    app:layout_constraintStart_toStartOf="@+id/spSensorValueTo" />
+
+            <androidx.appcompat.widget.AppCompatSpinner
+                    android:id="@+id/spSensorValueTo"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintWidth_default="percent"
+                    app:layout_constraintHorizontal_bias="0.690"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintWidth_percent=".110"
+                    android:inputType="number"
+                    android:gravity="center"
+                    android:entries="@array/sensor_ids"
+                    android:background="@drawable/shape_bottom_border"
+
+                    />
         <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnSaveSensors"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
-                app:layout_constraintTop_toTopOf="@+id/etSensorValue"
-                app:layout_constraintBottom_toBottomOf="@+id/etSensorValue"
-                app:layout_constraintStart_toEndOf="@+id/etSensorValue"
+                app:layout_constraintTop_toTopOf="@+id/spSensorValueTo"
+                app:layout_constraintBottom_toBottomOf="@+id/spSensorValueTo"
+                app:layout_constraintStart_toEndOf="@+id/spSensorValueTo"
                 android:background="@color/turquoise_blue"
                 android:text="@string/save"
                 android:textColor="@color/gray2"
