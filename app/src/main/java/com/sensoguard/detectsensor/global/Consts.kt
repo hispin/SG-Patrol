@@ -137,6 +137,7 @@ const val IS_FORWARD_ALARM_EMAIL = "isForwardAlarmEmail"
 
 //key to deliver ids of sensors to command dialog
 const val SENSORS_IDS = "sensorsIds"
+const val SENSORS_TYPES = "sensorsTypes"
 
 const val CURRENT_COMMAND = "currentCommand"
 

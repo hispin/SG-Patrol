@@ -52,6 +52,7 @@ import com.sensoguard.detectsensor.global.MAP_SHOW_VIEW_TYPE_KEY
 import com.sensoguard.detectsensor.global.PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION
 import com.sensoguard.detectsensor.global.SELECTED_NOTIFICATION_SOUND_KEY
 import com.sensoguard.detectsensor.global.SENSORS_IDS
+import com.sensoguard.detectsensor.global.SENSORS_TYPES
 import com.sensoguard.detectsensor.global.STOP_ALARM_SOUND
 import com.sensoguard.detectsensor.global.STOP_READ_DATA_KEY
 import com.sensoguard.detectsensor.global.USB_DEVICES_EMPTY
@@ -640,12 +641,14 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, Observer {
     private fun openCommands() {
 
         val sensorsIds = getSensorsIds()
+        val sensorsTypes = getSensorsTypes()
 
         val fr = CommandsFragment()
 
         if (sensorsIds.size > 0) {
             val bnd = Bundle()
             bnd.putStringArrayList(SENSORS_IDS, sensorsIds)
+            bnd.putStringArrayList(SENSORS_TYPES, sensorsTypes)
             fr.arguments = bnd
         }
         //deliver selected camera to continue add data
@@ -668,6 +671,21 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, Observer {
             sensorsIds.add(sensorItem.getId())
         }
         return sensorsIds
+    }
+
+
+    /**
+     * get sensors types
+     */
+    private fun getSensorsTypes(): ArrayList<String> {
+        val sensors = populateSensorsFromLocally(this)
+        val sensorsTypes = ArrayList<String>()
+        val iteratorList = sensors?.listIterator()
+        while (iteratorList != null && iteratorList.hasNext()) {
+            val sensorItem = iteratorList.next()
+            sensorItem.getType()?.let { sensorsTypes.add(it) }
+        }
+        return sensorsTypes
     }
 
 

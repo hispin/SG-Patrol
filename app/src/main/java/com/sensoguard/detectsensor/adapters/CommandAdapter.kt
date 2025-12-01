@@ -12,6 +12,7 @@ import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatSpinner
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
@@ -119,6 +120,7 @@ class CommandAdapter(
         private var etCarDuration: AppCompatEditText? = null
         private var etIntruderCount: AppCompatEditText? = null
         private var etIntruderDuration: AppCompatEditText? = null
+        private var tvSuspend: AppCompatTextView? = null
 
 
         init {
@@ -171,6 +173,7 @@ class CommandAdapter(
             etCarDuration = _itemView.findViewById(R.id.etCarDuration)
             etIntruderCount = _itemView.findViewById(R.id.etIntruderCount)
             etIntruderDuration = _itemView.findViewById(R.id.etIntruderDuration)
+            tvSuspend = _itemView.findViewById(R.id.tvSuspend)
 
             //set the last selection as long as the command of update sens is open
 
@@ -268,6 +271,7 @@ class CommandAdapter(
                     }
 
                     context.resources.getString(R.string.set_logic_param) -> {
+                        tvSuspend?.visibility = View.VISIBLE
                         spCarSens?.visibility = View.GONE
                         etCarSnr?.visibility = View.GONE
                         etCarSnr?.focusable = View.NOT_FOCUSABLE
@@ -326,7 +330,8 @@ class CommandAdapter(
                             || command.sensorType == PIR_TYPE
                             || command.sensorType == VIBRATION_TYPE
                         ) {
-                            llCarLogicParam?.visibility = View.GONE
+                            llCarLogicParam?.visibility = View.VISIBLE
+                            llIntruderLogicParam?.visibility = View.GONE
                             tvSelectCar?.text =
                                 context.resources.getString(R.string.select_logic_param)
                             tvSelectIntruder?.text = ""
@@ -336,14 +341,14 @@ class CommandAdapter(
                                     SET_LOGIC_COUNT_RADAR_VALUE,
                                     "1"
                                 )?.let {
-                                    etIntruderCount?.setText(it)
+                                    etCarCount?.setText(it)
                                 }
                                 getStringInPreference(
                                     context,
                                     SET_LOGIC_DURATION_RADAR_VALUE,
                                     "4"
                                 )?.let {
-                                    etIntruderDuration?.setText(it)
+                                    etCarDuration?.setText(it)
                                 }
                                 getStringInPreference(
                                     context,
@@ -358,14 +363,14 @@ class CommandAdapter(
                                     SET_LOGIC_COUNT_PIR_VALUE,
                                     "1"
                                 )?.let {
-                                    etIntruderCount?.setText(it)
+                                    etCarCount?.setText(it)
                                 }
                                 getStringInPreference(
                                     context,
                                     SET_LOGIC_DURATION_PIR_VALUE,
                                     "4"
                                 )?.let {
-                                    etIntruderDuration?.setText(it)
+                                    etCarDuration?.setText(it)
                                 }
                                 getStringInPreference(
                                     context,
@@ -380,14 +385,14 @@ class CommandAdapter(
                                     SET_LOGIC_COUNT_VIB_VALUE,
                                     "1"
                                 )?.let {
-                                    etIntruderCount?.setText(it)
+                                    etCarCount?.setText(it)
                                 }
                                 getStringInPreference(
                                     context,
                                     SET_LOGIC_DURATION_VIB_VALUE,
                                     "4"
                                 )?.let {
-                                    etIntruderDuration?.setText(it)
+                                    etCarDuration?.setText(it)
                                 }
                                 getStringInPreference(
                                     context,
@@ -443,6 +448,7 @@ class CommandAdapter(
                 conExpand?.visibility = View.GONE
             }
 
+            //ONCLICK
             btnSendCmd?.setOnClickListener {
 
                 if (myPos != null) {
@@ -604,9 +610,9 @@ class CommandAdapter(
                                         etSeconds?.error =
                                             context.getString(R.string.value_out_of_range_15_256)
                                     } else {
-                                        val countIntruder = etIntruderCount?.text.toString().toInt()
+                                        val countIntruder = etCarCount?.text.toString().toInt()
                                         val durationIntruder =
-                                            etIntruderDuration?.text.toString().toInt()
+                                            etCarDuration?.text.toString().toInt()
 
                                         commands[adapterPosition].logicCountIntruder = countIntruder
                                         commands[adapterPosition].logicdurationIntruder =

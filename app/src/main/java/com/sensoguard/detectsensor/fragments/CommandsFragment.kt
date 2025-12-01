@@ -18,6 +18,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatSpinner
@@ -60,11 +61,13 @@ class CommandsFragment : DialogFragment() {
 
     //private var myCommand: Command? = null
     private var sensorsIds = ArrayList<String>()
+    private var sensorsTypes = ArrayList<String>()
     private var spSensorsIds: AppCompatSpinner? = null
     private var commandsAdapter: CommandAdapter? = null
     private var rvCommands: RecyclerView? = null
     private var btnConnect: Button? = null
     private var btnDisconnect: Button? = null
+    private var tvSensorType: TextView? = null
     //private var tvTest: TextView? = null
 
     var selectedSensor: Sensor? = null
@@ -75,6 +78,9 @@ class CommandsFragment : DialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
+            if (it.getStringArrayList(SENSORS_TYPES) != null) {
+                sensorsTypes = it.getStringArrayList(SENSORS_TYPES)!!
+            }
             if (it.getStringArrayList(SENSORS_IDS) != null) {
                 sensorsIds.add(resources.getString(R.string.select_sensor))
                 sensorsIds.addAll(it.getStringArrayList(SENSORS_IDS)!!)
@@ -100,6 +106,8 @@ class CommandsFragment : DialogFragment() {
             R.anim.flickering
         )
 
+        tvSensorType = view.findViewById(R.id.tvSensorType)
+
         spSensorsIds = view.findViewById(R.id.spSensorsIds)
 
         //listener for gender selection
@@ -116,6 +124,10 @@ class CommandsFragment : DialogFragment() {
             ) {
                 activity?.sendBroadcast(Intent(STOP_TIMER))
                 val item = parent?.getItemAtPosition(position) as String
+                if (position > 0) {
+                    val type = sensorsTypes[position - 1]
+                    tvSensorType?.text = type.toString()
+                }
                 getSelectedSensor(item)
                 refreshCommandsAdapter()
             }
