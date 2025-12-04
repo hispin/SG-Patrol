@@ -606,7 +606,7 @@ class CommandAdapter(
                                 ) {
 
                                     val seconds = etSeconds?.text.toString().toInt()
-                                    if (seconds < 256 && seconds < 15) {
+                                    if (seconds < 15 || seconds > 256) {
                                         etSeconds?.error =
                                             context.getString(R.string.value_out_of_range_15_256)
                                     } else {
@@ -636,12 +636,12 @@ class CommandAdapter(
                                             setStringInPreference(
                                                 context,
                                                 SET_LOGIC_COUNT_RADAR_VALUE,
-                                                etIntruderCount?.text.toString()
+                                                etCarCount?.text.toString()
                                             )
                                             setStringInPreference(
                                                 context,
                                                 SET_LOGIC_DURATION_RADAR_VALUE,
-                                                etIntruderDuration?.text.toString()
+                                                etCarDuration?.text.toString()
                                             )
                                             setStringInPreference(
                                                 context,
@@ -652,12 +652,12 @@ class CommandAdapter(
                                             setStringInPreference(
                                                 context,
                                                 SET_LOGIC_COUNT_PIR_VALUE,
-                                                etIntruderCount?.text.toString()
+                                                etCarCount?.text.toString()
                                             )
                                             setStringInPreference(
                                                 context,
                                                 SET_LOGIC_DURATION_PIR_VALUE,
-                                                etIntruderDuration?.text.toString()
+                                                etCarDuration?.text.toString()
                                             )
                                             setStringInPreference(
                                                 context,
@@ -672,15 +672,15 @@ class CommandAdapter(
                             } else if (command.sensorType == VIBRATION_TYPE
                             ) {
 
-                                if (validIsEmpty(etSeconds) && validIsEmpty(etIntruderCount)
-                                    && validIsEmpty(etIntruderDuration)
+                                if (validIsEmpty(etSeconds) && validIsEmpty(etCarCount)
+                                    && validIsEmpty(etCarDuration)
                                 ) {
 
                                     var seconds = etSeconds?.text.toString().toInt()
 
-                                    var countIntruder = etIntruderCount?.text.toString().toInt()
+                                    var countIntruder = etCarCount?.text.toString().toInt()
                                     var durationIntruder =
-                                        etIntruderDuration?.text.toString().toInt()
+                                        etCarDuration?.text.toString().toInt()
 
                                     commands[adapterPosition].logicCountIntruder = countIntruder
                                     commands[adapterPosition].logicdurationIntruder =
@@ -703,12 +703,12 @@ class CommandAdapter(
                                     setStringInPreference(
                                         context,
                                         SET_LOGIC_COUNT_VIB_VALUE,
-                                        etIntruderCount?.text.toString()
+                                        etCarCount?.text.toString()
                                     )
                                     setStringInPreference(
                                         context,
                                         SET_LOGIC_DURATION_VIB_VALUE,
-                                        etIntruderDuration?.text.toString()
+                                        etCarDuration?.text.toString()
                                     )
                                     setStringInPreference(
                                         context,
@@ -728,7 +728,12 @@ class CommandAdapter(
                                 || command.sensorType == VIBRATION_TYPE
                             ) {
                                 if (validIsEmpty(etCarSnr)) {
-                                    var minPower = etCarSnr?.text.toString().toInt()
+                                    val minPower = etCarSnr?.text.toString().toInt()
+                                    if (minPower <= 0) {
+                                        etCarSnr?.error =
+                                            context.getString(R.string.value_cannot_be_zero)
+                                        return@setOnClickListener
+                                    }
                                     if (minPower <= 256) {
                                         commands[adapterPosition].minPower = minPower
                                         commands[adapterPosition].commandContent?.set(
@@ -774,7 +779,7 @@ class CommandAdapter(
                             ) {
                                 if (validIsEmpty(etCarSnr)) {
                                     var minPower = etCarSnr?.text.toString().toInt()
-                                    if (minPower in 0..7) {
+                                    if (minPower in 1..7) {
                                         commands[adapterPosition].minPower = minPower
                                         commands[adapterPosition].commandContent?.set(
                                             4,

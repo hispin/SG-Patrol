@@ -136,7 +136,7 @@
     <string name="set_min_power" translatable="false">Set Min Power</string>
     <string name="get_min_power" translatable="false">Get Min Power</string>
     <string name="min_power" translatable="false">Min Power</string>
-    <string name="value_out_of_range" translatable="false">The value is out of range (0-7)</string>
+    <string name="value_out_of_range" translatable="false">The value is out of range (1-7)</string>
     <string name="value_out_of_range_15_256" translatable="false">The value is out of range (15-256)</string>
     <string name="tile_download_complete" translatable="false">Tile download complete:</string>
     <string name="remove_tile_regin_successfully" translatable="false">Remove tile regin has been complete</string>
@@ -156,6 +156,7 @@
     <string name="selected_alarms" translatable="false">selected alarm</string>
     <string name="do_you_realy_want_delete_selected_alarm" translatable="false">Do you realy want to delete selected alarms?</string>
     <string name="suspend" translatable="false">Suspend</string>
+    <string name="value_cannot_be_zero" translatable="false">The value cannot be zero</string>
 
     <string-array name="car_ids">
         <item>0</item>

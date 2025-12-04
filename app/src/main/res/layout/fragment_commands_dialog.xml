@@ -81,7 +81,7 @@
 
         <androidx.appcompat.widget.AppCompatSpinner
                 android:id="@+id/spSensorsIds"
-                android:layout_width="140dp"
+                android:layout_width="130dp"
                 android:layout_height="30dp"
                 android:layout_centerVertical="true"
                 android:layout_gravity="center"
@@ -104,7 +104,7 @@
                 app:layout_constraintBottom_toBottomOf="@+id/spSensorsIds"
                 app:layout_constraintEnd_toStartOf="@+id/btnConnect"
                 android:textColor="@color/white"
-                android:textSize="16sp" />
+                android:textSize="12sp" />
 
 
         <androidx.appcompat.widget.AppCompatTextView
@@ -124,9 +124,10 @@
 
         <Button
                 android:id="@+id/btnConnect"
-                android:layout_width="140dp"
+                android:layout_width="125dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="5dp"
+                android:textSize="14sp"
                 android:text="@string/connect"
                 android:textColor="@color/turquoise_blue"
                 app:layout_constraintBottom_toBottomOf="parent"
