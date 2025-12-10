@@ -584,6 +584,13 @@ class ServiceConnectSensor : ParentService() {
         //prevent using arr by two processes in the same time
         synchronized(this) {
 
+
+//            val h = Handler(applicationContext.mainLooper)
+//
+//            h.post {
+//                Toast.makeText(applicationContext,"response command",Toast.LENGTH_SHORT).show()
+//            }
+
             //Log.d("testMulti","start")
             if (bytesArray != null && bytesArray.isNotEmpty()) {
                 for (element in bytesArray) {

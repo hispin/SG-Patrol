@@ -406,6 +406,7 @@ class CommandAdapter(
 
 
                     }
+                    //Min power
                     context.resources.getString(R.string.set_min_power) -> {
                         spCarSens?.visibility = View.GONE
                         etCarSnr?.visibility = View.VISIBLE
@@ -425,7 +426,11 @@ class CommandAdapter(
                         tvSelectIntruder?.visibility = View.GONE
                         if (command.sensorType == SEISMIC_TYPE
                         ) {
-                            getStringInPreference(context, SET_MIN_POWER_SEISMIC_VALUE, "70")?.let {
+                            getStringInPreference(
+                                context,
+                                SET_MIN_POWER_SEISMIC_VALUE,
+                                "100"
+                            )?.let {
                                 etCarSnr?.setText(it)
                             }
                         } else if (command.sensorType == VIBRATION_TYPE) {
@@ -528,6 +533,7 @@ class CommandAdapter(
                                 itemClick.invoke(commands[adapterPosition])
                             }
                         }
+                        //set logic param
                         context.resources.getString(R.string.set_logic_param) -> {
                             if (command.sensorType == SEISMIC_TYPE) {
                                 if (validIsEmpty(etCarCount) && validIsEmpty(etIntruderCount)
@@ -601,8 +607,8 @@ class CommandAdapter(
                                 || command.sensorType == PIR_TYPE
                             ) {
 
-                                if (validIsEmpty(etSeconds) && validIsEmpty(etIntruderCount)
-                                    && validIsEmpty(etIntruderDuration)
+                                if (validIsEmpty(etSeconds) && validIsEmpty(etCarCount)
+                                    && validIsEmpty(etCarDuration)
                                 ) {
 
                                     val seconds = etSeconds?.text.toString().toInt()
@@ -610,23 +616,23 @@ class CommandAdapter(
                                         etSeconds?.error =
                                             context.getString(R.string.value_out_of_range_15_256)
                                     } else {
-                                        val countIntruder = etCarCount?.text.toString().toInt()
-                                        val durationIntruder =
+                                        val countCar = etCarCount?.text.toString().toInt()
+                                        val durationCar =
                                             etCarDuration?.text.toString().toInt()
 
-                                        commands[adapterPosition].logicCountIntruder = countIntruder
+                                        commands[adapterPosition].logicCountIntruder = countCar
                                         commands[adapterPosition].logicdurationIntruder =
-                                            durationIntruder
+                                            durationCar
                                         commands[adapterPosition].logicSecomds = seconds
 
 
                                         commands[adapterPosition].commandContent?.set(
                                             6,
-                                            countIntruder
+                                            countCar
                                         )
                                         commands[adapterPosition].commandContent?.set(
                                             7,
-                                            durationIntruder
+                                            durationCar
                                         )
                                         commands[adapterPosition].commandContent?.set(
                                             8,
@@ -676,25 +682,25 @@ class CommandAdapter(
                                     && validIsEmpty(etCarDuration)
                                 ) {
 
-                                    var seconds = etSeconds?.text.toString().toInt()
+                                    val seconds = etSeconds?.text.toString().toInt()
 
-                                    var countIntruder = etCarCount?.text.toString().toInt()
-                                    var durationIntruder =
+                                    val countCar = etCarCount?.text.toString().toInt()
+                                    val durationCar =
                                         etCarDuration?.text.toString().toInt()
 
-                                    commands[adapterPosition].logicCountIntruder = countIntruder
+                                    commands[adapterPosition].logicCountIntruder = countCar
                                     commands[adapterPosition].logicdurationIntruder =
-                                        durationIntruder
+                                        durationCar
                                     commands[adapterPosition].logicSecomds = seconds
 
 
                                     commands[adapterPosition].commandContent?.set(
                                         4,
-                                        countIntruder
+                                        countCar
                                     )
                                     commands[adapterPosition].commandContent?.set(
                                         5,
-                                        durationIntruder
+                                        durationCar
                                     )
                                     commands[adapterPosition].commandContent?.set(
                                         8,

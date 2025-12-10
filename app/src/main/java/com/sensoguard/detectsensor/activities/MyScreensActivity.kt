@@ -20,6 +20,7 @@ import android.view.View
 import android.view.View.OnTouchListener
 import android.widget.ImageButton
 import android.widget.ToggleButton
+import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -113,6 +114,8 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, Observer {
         startTimerListener()
 
         setContentView(R.layout.activity_my_screens)
+
+        onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
 
         vPager = findViewById(R.id.vPager)
 
@@ -576,20 +579,38 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, Observer {
     }
 
 
-    override fun onBackPressed() {
-        //back press when the command fragment is showed
-        val prev = supportFragmentManager.findFragmentByTag("CommandsFragment")
-        if (prev != null && prev.isAdded) {
-            val df: DialogFragment = prev as DialogFragment
-            df.dismiss()
+    private val onBackPressedCallback: OnBackPressedCallback =
+        object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                //back press when the command fragment is showed
+                val prev = supportFragmentManager.findFragmentByTag("CommandsFragment")
+                if (prev != null && prev.isAdded) {
+                    val df: DialogFragment = prev as DialogFragment
+                    df.dismiss()
 
-        } else {//normal
-            super.onBackPressed()
-            sendBroadcast(Intent(STOP_ALARM_SOUND))
-            //start activity for loading new language if it has been changed
-            startActivity(Intent(this, MainActivity::class.java))
+                } else {//normal
+                    sendBroadcast(Intent(STOP_ALARM_SOUND))
+                    //start activity for loading new language if it has been changed
+                    startActivity(Intent(this@MyScreensActivity, MainActivity::class.java))
+                }
+            }
         }
-    }
+
+
+//    override fun onBackPressed() {
+//        //back press when the command fragment is showed
+//        val prev = supportFragmentManager.findFragmentByTag("CommandsFragment")
+//        if (prev != null && prev.isAdded) {
+//            val df: DialogFragment = prev as DialogFragment
+//            df.dismiss()
+//
+//        } else {//normal
+//            super.onBackPressed()
+//            sendBroadcast(Intent(STOP_ALARM_SOUND))
+//            //start activity for loading new language if it has been changed
+//            startActivity(Intent(this, MainActivity::class.java))
+//        }
+//    }
 
     //set the language of the app (calling  from activity)
     override fun updateLanguage() {

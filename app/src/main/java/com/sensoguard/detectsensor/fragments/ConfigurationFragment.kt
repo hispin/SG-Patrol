@@ -18,8 +18,8 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ListPopupWindow
+import android.widget.NumberPicker
 import android.widget.RadioGroup
-import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import android.widget.ToggleButton
@@ -93,8 +93,11 @@ open class ConfigurationFragment : ParentFragment(), CallToParentInterface {
     private var togIsSensorAlwaysShow: ToggleButton? = null
     private var ibSetEmailDetails: AppCompatImageButton? = null
     private var togForwardSensorEmail: ToggleButton? = null
-    private var spSensorValueFrom: Spinner? = null
-    private var spSensorValueTo: Spinner? = null
+
+    //    private var spSensorValueFrom: Spinner? = null
+//    private var spSensorValueTo: Spinner? = null
+    private var npSensorValueFrom: NumberPicker? = null
+    private var npSensorValueTo: NumberPicker? = null
 
 
     override fun onAttach(context: Context) {
@@ -247,13 +250,18 @@ open class ConfigurationFragment : ParentFragment(), CallToParentInterface {
             openSetEmailDetails()
         }
 
-
-        spSensorValueFrom = view.findViewById(R.id.spSensorValueFrom)
-        spSensorValueTo = view.findViewById(R.id.spSensorValueTo)
+        npSensorValueFrom = view.findViewById(R.id.npSensorValueFrom)
+        npSensorValueFrom?.maxValue = 31
+        npSensorValueFrom?.minValue = 1
+        //spSensorValueFrom = view.findViewById(R.id.spSensorValueFrom)
+        npSensorValueTo = view.findViewById(R.id.npSensorValueTo)
+        npSensorValueTo?.maxValue = 31
+        npSensorValueTo?.minValue = 1
+        //spSensorValueTo = view.findViewById(R.id.spSensorValueTo)
 
         val currentNumSensors = getCurrentNumSensorsFromLocally()
-        spSensorValueFrom?.setSelection(currentNumSensors[1] - 1)
-        spSensorValueTo?.setSelection(currentNumSensors[0] - 1)
+        npSensorValueFrom?.value = currentNumSensors[1]
+        npSensorValueTo?.value = currentNumSensors[0]
 
         return view
     }
@@ -364,12 +372,18 @@ open class ConfigurationFragment : ParentFragment(), CallToParentInterface {
     private fun addSensors(){
 
 
-        val numSensorsRequestFrom = spSensorValueFrom?.selectedItem.toString().toInt()
-        val numSensorsRequestTo = spSensorValueTo?.selectedItem.toString().toInt()
+        val numSensorsRequestFrom =
+            npSensorValueFrom?.value//spSensorValueFrom?.selectedItem.toString().toInt()
 
-        if (numSensorsRequestFrom > numSensorsRequestTo) {
-            (spSensorValueTo?.selectedView as TextView).error = "Error message"
-            return
+        val numSensorsRequestTo =
+            npSensorValueTo?.value//spSensorValueTo?.selectedItem.toString().toInt()
+
+        if (numSensorsRequestFrom != null && numSensorsRequestTo != null) {
+            if (numSensorsRequestFrom > numSensorsRequestTo) {
+                showToast(requireActivity(), resources.getString(R.string.invalid_mum_sensors))
+                //(npSensorValueTo?.er.selectedView as TextView).error = "Error message"
+                return
+            }
         }
 
 
@@ -412,7 +426,7 @@ open class ConfigurationFragment : ParentFragment(), CallToParentInterface {
                             try {
                                 if (id.isDigitsOnly()) {
                                     val idNum = id.toInt()
-                                    if (idNum < numSensorsRequestFrom || idNum > numSensorsRequestTo) {
+                                    if (numSensorsRequestFrom != null && idNum < numSensorsRequestFrom || idNum > numSensorsRequestTo) {
                                         items.remove()
                                     }
                                 }
@@ -463,6 +477,8 @@ open class ConfigurationFragment : ParentFragment(), CallToParentInterface {
 
         //check if the request of sensors number is smaller then the number of exist
         if(sensors?.size!=null
+            && numSensorsRequestFrom != null
+            && numSensorsRequestTo != null
             && numSensorsRequestTo - numSensorsRequestFrom < sensors.size
         ) {
             askBeforeDeleteExtraSensor()

@@ -104,7 +104,7 @@
                 app:layout_constraintBottom_toBottomOf="@+id/spSensorsIds"
                 app:layout_constraintEnd_toStartOf="@+id/btnConnect"
                 android:textColor="@color/white"
-                android:textSize="12sp" />
+                android:textSize="18sp" />
 
 
         <androidx.appcompat.widget.AppCompatTextView

@@ -10,6 +10,7 @@ import android.os.Build
 import android.os.Bundle
 import android.view.WindowManager
 import android.widget.TextView
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.AppCompatButton
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
@@ -59,6 +60,8 @@ class MainActivity : ParentActivity() {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_main)
+
+        onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
 
         //hide unwanted badge of app icon
         hideBudgetNotification()
@@ -111,9 +114,17 @@ class MainActivity : ParentActivity() {
 
     }
 
-    override fun onBackPressed() {
-        showConformDialog()
-    }
+
+    private val onBackPressedCallback: OnBackPressedCallback =
+        object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                showConformDialog()
+            }
+        }
+
+//    override fun onBackPressed() {
+//        showConformDialog()
+//    }
 
     //show confirm dialog before stop usb process
     private fun showConformDialog() {
@@ -125,7 +136,8 @@ class MainActivity : ParentActivity() {
             .setCancelable(false)
         builder.setPositiveButton(yes) { dialog, which ->
 
-            super.onBackPressed()
+            //super.onBackPressed()
+            onBackPressedDispatcher.onBackPressed()
             //disconnect usb device and stop the process
             //sendBroadcast(Intent(DISCONNECT_USB_PROCESS_KEY))
             setBooleanInPreference(this@MainActivity, USB_DEVICE_CONNECT_STATUS, false)
