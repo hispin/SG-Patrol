@@ -66,7 +66,7 @@
                     app:layout_constraintStart_toEndOf="@+id/tvTitle"
                     app:layout_constraintEnd_toStartOf="@+id/npSensorValueTo"
                     app:layout_constraintTop_toTopOf="@+id/npSensorValueTo"
-                    app:layout_constraintBottom_toBottomOf="@+id/npSensorValueTo" />
+                    app:layout_constraintBottom_toBottomOf="@+id/npSensorValueTo"></NumberPicker>
 
             <!--            <androidx.appcompat.widget.AppCompatSpinner-->
             <!--                    android:id="@+id/spSensorValueFrom"-->
@@ -117,7 +117,7 @@
                     app:layout_constraintStart_toEndOf="@+id/npSensorValueFrom"
                     app:layout_constraintTop_toTopOf="parent"
                     android:layout_marginStart="5dp"
-                    app:layout_constraintVertical_bias="0.483" />
+                    app:layout_constraintVertical_bias="0.483"></NumberPicker>
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnSaveSensors"

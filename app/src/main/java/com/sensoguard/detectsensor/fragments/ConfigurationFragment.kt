@@ -30,6 +30,7 @@ import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.core.text.isDigitsOnly
 import com.sensoguard.detectsensor.R
 import com.sensoguard.detectsensor.activities.DownloadOfflineTilesActivity
@@ -263,7 +264,7 @@ open class ConfigurationFragment : ParentFragment(), CallToParentInterface {
         npSensorValueTo?.maxValue = 30
         npSensorValueTo?.minValue = 1
         npSensorValueTo?.wrapSelectorWheel = true
-        setNumberPickerTypeface(picker = npSensorValueFrom!!)
+        setNumberPickerTypeface(picker = npSensorValueTo!!)
 
         val currentNumSensors = getCurrentNumSensorsFromLocally()
         npSensorValueFrom?.value = currentNumSensors[1]
@@ -734,7 +735,12 @@ open class ConfigurationFragment : ParentFragment(), CallToParentInterface {
             var child = picker.getChildAt(i)
             if (child is EditText) {
                 try {
-                    //child.setTextColor(ContextCompat.getColor(requireActivity(), R.color.red))
+                    child.setTextColor(
+                        ContextCompat.getColor(
+                            requireActivity(),
+                            R.color.turquoise_blue
+                        )
+                    )
                     child.setTypeface(null, Typeface.BOLD)
                     picker.performClick()
                     return
