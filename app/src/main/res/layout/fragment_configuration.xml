@@ -19,7 +19,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 app:layout_constraintHeight_default="percent"
-                app:layout_constraintHeight_percent=".15"
+                app:layout_constraintHeight_percent=".2"
             app:layout_constraintTop_toTopOf="parent"
     >
         <androidx.appcompat.widget.AppCompatImageView
@@ -61,8 +61,8 @@
 
             <NumberPicker
                     android:id="@+id/npSensorValueFrom"
-                    android:layout_width="45dp"
-                    android:layout_height="50dp"
+                    android:layout_width="85dp"
+                    android:layout_height="90dp"
                     app:layout_constraintStart_toEndOf="@+id/tvTitle"
                     app:layout_constraintEnd_toStartOf="@+id/npSensorValueTo"
                     app:layout_constraintTop_toTopOf="@+id/npSensorValueTo"
@@ -110,13 +110,13 @@
 
             <NumberPicker
                     android:id="@+id/npSensorValueTo"
-                    android:layout_width="45dp"
-                    android:layout_height="50dp"
+                    android:layout_width="85dp"
+                    android:layout_height="90dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/btnSaveSensors"
                     app:layout_constraintStart_toEndOf="@+id/npSensorValueFrom"
                     app:layout_constraintTop_toTopOf="parent"
-
+                    android:layout_marginStart="5dp"
                     app:layout_constraintVertical_bias="0.483" />
 
             <androidx.appcompat.widget.AppCompatButton

@@ -5,13 +5,16 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
+import android.graphics.Typeface
 import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Bundle
 import android.text.InputType
 import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
+import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
@@ -251,17 +254,43 @@ open class ConfigurationFragment : ParentFragment(), CallToParentInterface {
         }
 
         npSensorValueFrom = view.findViewById(R.id.npSensorValueFrom)
-        npSensorValueFrom?.maxValue = 31
+        npSensorValueFrom?.maxValue = 30
         npSensorValueFrom?.minValue = 1
+        npSensorValueFrom?.wrapSelectorWheel = true
+        setNumberPickerTypeface(picker = npSensorValueFrom!!)
         //spSensorValueFrom = view.findViewById(R.id.spSensorValueFrom)
         npSensorValueTo = view.findViewById(R.id.npSensorValueTo)
-        npSensorValueTo?.maxValue = 31
+        npSensorValueTo?.maxValue = 30
         npSensorValueTo?.minValue = 1
-        //spSensorValueTo = view.findViewById(R.id.spSensorValueTo)
+        npSensorValueTo?.wrapSelectorWheel = true
+        setNumberPickerTypeface(picker = npSensorValueFrom!!)
 
         val currentNumSensors = getCurrentNumSensorsFromLocally()
         npSensorValueFrom?.value = currentNumSensors[1]
         npSensorValueTo?.value = currentNumSensors[0]
+
+
+        npSensorValueFrom?.setOnTouchListener(object : View.OnTouchListener {
+            override fun onTouch(v: View?, event: MotionEvent?): Boolean {
+                when (event?.action) {
+                    MotionEvent.ACTION_DOWN -> {
+                        setNumberPickerTypeface(v as NumberPicker)
+                    }
+                }
+                return v?.onTouchEvent(event) ?: true
+            }
+        })
+
+        npSensorValueTo?.setOnTouchListener(object : View.OnTouchListener {
+            override fun onTouch(v: View?, event: MotionEvent?): Boolean {
+                when (event?.action) {
+                    MotionEvent.ACTION_DOWN -> {
+                        setNumberPickerTypeface(v as NumberPicker)
+                    }
+                }
+                return v?.onTouchEvent(event) ?: true
+            }
+        })
 
         return view
     }
@@ -696,16 +725,27 @@ open class ConfigurationFragment : ParentFragment(), CallToParentInterface {
         setBooleanInPreference(requireContext(), IS_SSL_MAIL, myEmailAccount.isUseSSL)
     }
 
-//    private fun sendEmailBakground() {
-//        val auth = EmailService.UserPassAuthenticator("sg-patrol@sgsmtp.com", "SensoGuard1234")//sg-patrol@sgsmtp.com
-//        val to = listOf(InternetAddress("hag.swead@gmail.com"))
-//        val from = InternetAddress("sg-patrol@sgsmtp.com")
-//        val email = EmailService.Email(auth, to, from, "Test Subject to haggay", "Hello Haggay")
-//        val emailService = EmailService("mail.sgsmtp.com", 587)
-//        //TODO ssl=0
-//        //use CoroutineScope to prevent blocking main thread
-//        GlobalScope.launch { // or however you do background threads
-//            emailService.send(email)
-//        }
-//    }
+    /**
+     * Set typeface of selected number for NumberPicker
+     */
+    fun setNumberPickerTypeface(picker: NumberPicker) {
+        val count = picker.childCount
+        for (i in 0..count - 1) {
+            var child = picker.getChildAt(i)
+            if (child is EditText) {
+                try {
+                    //child.setTextColor(ContextCompat.getColor(requireActivity(), R.color.red))
+                    child.setTypeface(null, Typeface.BOLD)
+                    picker.performClick()
+                    return
+                } catch (e: NoSuchFieldException) {
+                    Log.w("NumberPicker", "Setting typeface failed: " + e.message)
+                } catch (e: IllegalAccessException) {
+                    Log.w("NumberPicker", "Setting typeface failed: " + e.message)
+                } catch (e: IllegalArgumentException) {
+                    Log.w("NumberPicker", "Setting typeface failed: " + e.message)
+                }
+            }
+        }
+    }
 }
