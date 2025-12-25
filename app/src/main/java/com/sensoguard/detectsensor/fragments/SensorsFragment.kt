@@ -369,8 +369,19 @@ class SensorsFragment : ParentFragment(), OnAdapterListener {
                 temp?.let { tmp -> sensors?.addAll(tmp) } }
         }
 
+        //sort the alarm before show it
+        sensors = sortByIdAlarm()?.let { ArrayList(it) }
+
         sensorsAdapter?.setSensors(sensors)
         sensorsAdapter?.notifyDataSetChanged()
+    }
+
+    /**
+     * sort the alarm by id
+     */
+    private fun sortByIdAlarm(): List<Sensor>? {
+        return sensors?.sortedBy { it.getId().toInt() }
+
     }
 
     override fun onStop() {

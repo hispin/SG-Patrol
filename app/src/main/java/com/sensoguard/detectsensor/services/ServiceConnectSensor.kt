@@ -14,6 +14,7 @@ import android.media.Ringtone
 import android.os.Build
 import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -898,6 +899,20 @@ class ServiceConnectSensor : ParentService() {
         if (appCode == NONE_VALIDATE_BITS) {
             Log.d("testMulti", "the bits are failed")
             return
+        }
+
+        var sensorId = -1
+        if (appCode == SIX_SEVEN_FOTMAT_BITS) {
+            sensorId = bit[1].toUByte().toInt()
+        } else if (appCode == TEN_FOTMAT_BITS) {
+            sensorId = bit[4].toUByte().toInt()
+        }
+        Handler(Looper.getMainLooper()).post {
+            Toast.makeText(
+                applicationContext,
+                "sensorId $sensorId",
+                Toast.LENGTH_LONG
+            ).show()
         }
 
         var typeIdx = -1

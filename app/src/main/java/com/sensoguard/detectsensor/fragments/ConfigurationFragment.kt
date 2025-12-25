@@ -14,7 +14,6 @@ import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
@@ -258,40 +257,18 @@ open class ConfigurationFragment : ParentFragment(), CallToParentInterface {
         npSensorValueFrom?.maxValue = 30
         npSensorValueFrom?.minValue = 1
         npSensorValueFrom?.wrapSelectorWheel = true
-        setNumberPickerTypeface(picker = npSensorValueFrom!!)
+
         //spSensorValueFrom = view.findViewById(R.id.spSensorValueFrom)
         npSensorValueTo = view.findViewById(R.id.npSensorValueTo)
         npSensorValueTo?.maxValue = 30
         npSensorValueTo?.minValue = 1
         npSensorValueTo?.wrapSelectorWheel = true
-        setNumberPickerTypeface(picker = npSensorValueTo!!)
 
         val currentNumSensors = getCurrentNumSensorsFromLocally()
         npSensorValueFrom?.value = currentNumSensors[1]
         npSensorValueTo?.value = currentNumSensors[0]
 
 
-        npSensorValueFrom?.setOnTouchListener(object : View.OnTouchListener {
-            override fun onTouch(v: View?, event: MotionEvent?): Boolean {
-                when (event?.action) {
-                    MotionEvent.ACTION_DOWN -> {
-                        setNumberPickerTypeface(v as NumberPicker)
-                    }
-                }
-                return v?.onTouchEvent(event) ?: true
-            }
-        })
-
-        npSensorValueTo?.setOnTouchListener(object : View.OnTouchListener {
-            override fun onTouch(v: View?, event: MotionEvent?): Boolean {
-                when (event?.action) {
-                    MotionEvent.ACTION_DOWN -> {
-                        setNumberPickerTypeface(v as NumberPicker)
-                    }
-                }
-                return v?.onTouchEvent(event) ?: true
-            }
-        })
 
         return view
     }
