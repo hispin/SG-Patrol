@@ -75,6 +75,14 @@ class CommandsFragment : DialogFragment() {
     // Animation
     var animBlink: Animation? = null
 
+    /**
+     * sort the alarm by id
+     */
+    private fun sortByIdAlarm(temp: ArrayList<String>): List<String> {
+        return temp.sortedBy { it.toInt() }
+
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -82,8 +90,10 @@ class CommandsFragment : DialogFragment() {
                 sensorsTypes = it.getStringArrayList(SENSORS_TYPES)!!
             }
             if (it.getStringArrayList(SENSORS_IDS) != null) {
+                var temp = it.getStringArrayList(SENSORS_IDS)!!
+                temp = sortByIdAlarm(temp)?.let { ArrayList(it) }!!
                 sensorsIds.add(resources.getString(R.string.select_sensor))
-                sensorsIds.addAll(it.getStringArrayList(SENSORS_IDS)!!)
+                sensorsIds.addAll(temp)
             }
             //Log.d("", "")
         }
