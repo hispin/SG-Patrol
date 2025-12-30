@@ -14,7 +14,6 @@ import android.media.Ringtone
 import android.os.Build
 import android.os.Handler
 import android.os.IBinder
-import android.os.Looper
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -37,6 +36,7 @@ import com.sensoguard.detectsensor.global.ALARM_MOTION
 import com.sensoguard.detectsensor.global.CHECK_AVAILABLE_KEY
 import com.sensoguard.detectsensor.global.CHECK_USB_CONN_SW
 import com.sensoguard.detectsensor.global.COMMAND_TYPE
+import com.sensoguard.detectsensor.global.COUNTER_ALARM_SENSOR_ID_PREF
 import com.sensoguard.detectsensor.global.CREATE_ALARM_ID_KEY
 import com.sensoguard.detectsensor.global.CREATE_ALARM_IS_ARMED
 import com.sensoguard.detectsensor.global.CREATE_ALARM_KEY
@@ -54,6 +54,8 @@ import com.sensoguard.detectsensor.global.GET_SENS_LEVEL
 import com.sensoguard.detectsensor.global.GET_SNR_SYSTEM
 import com.sensoguard.detectsensor.global.HANDLE_ALARM_KEY
 import com.sensoguard.detectsensor.global.HANDLE_READ_DATA_EXCEPTION
+import com.sensoguard.detectsensor.global.LAST_ALARM_SENSOR_ID_PREF
+import com.sensoguard.detectsensor.global.LAST_ALARM_TIME_PREF
 import com.sensoguard.detectsensor.global.NONE_VALIDATE_BITS
 import com.sensoguard.detectsensor.global.PIR_TYPE
 import com.sensoguard.detectsensor.global.RADAR_TYPE
@@ -80,8 +82,12 @@ import com.sensoguard.detectsensor.global.VIBRATION_TYPE
 import com.sensoguard.detectsensor.global.convertJsonToAlarmList
 import com.sensoguard.detectsensor.global.convertJsonToSensorList
 import com.sensoguard.detectsensor.global.convertToAlarmsGson
+import com.sensoguard.detectsensor.global.getIntInPreference
+import com.sensoguard.detectsensor.global.getLongInPreference
 import com.sensoguard.detectsensor.global.getStringInPreference
 import com.sensoguard.detectsensor.global.setBooleanInPreference
+import com.sensoguard.detectsensor.global.setIntInPreference
+import com.sensoguard.detectsensor.global.setLongInPreference
 import com.sensoguard.detectsensor.global.setStringInPreference
 import java.text.SimpleDateFormat
 import java.util.*
@@ -907,14 +913,36 @@ class ServiceConnectSensor : ParentService() {
         } else if (appCode == TEN_FOTMAT_BITS) {
             sensorId = bit[4].toUByte().toInt()
         }
-        Handler(Looper.getMainLooper()).post {
-            Toast.makeText(
-                applicationContext,
-                "sensorId $sensorId",
-                Toast.LENGTH_LONG
-            ).show()
-        }
+        if (checkIfLastAlarmSensorIdSameId(sensorId)) {
 
+            if (checkIntervalLess4Seconds()) {
+                if (checkIfCounterBiggerEqualThan3()) {
+                    //restart the connection
+                    stopConnectConfiguration()
+//                    Handler(Looper.getMainLooper()).post {
+//                        Toast.makeText(
+//                            applicationContext,
+//                            "restart the connection",
+//                            Toast.LENGTH_LONG
+//                        ).show()
+//                    }
+                    //////////////////////
+                    setAlarmCounter(0)
+                    return
+                } else {
+                    incAlarmCounter()
+                }
+            } else {
+                initAlarmSensorId(sensorId)
+                initAlarmTimer()
+                setAlarmCounter(1)
+            }
+
+        } else {
+            initAlarmSensorId(sensorId)
+            initAlarmTimer()
+            setAlarmCounter(1)
+        }
         var typeIdx = -1
         if (appCode == SIX_SEVEN_FOTMAT_BITS) {
             typeIdx = 4
@@ -1034,6 +1062,14 @@ class ServiceConnectSensor : ParentService() {
             sendBroadcast(inn)
         }
         sendBroadcast(Intent(HANDLE_ALARM_KEY))
+    }
+
+    /**
+     * init alarm timer
+     */
+    private fun initAlarmTimer() {
+        val cal = Calendar.getInstance()
+        setLongInPreference(this@ServiceConnectSensor, LAST_ALARM_TIME_PREF, cal.timeInMillis)
     }
 
 
@@ -1216,6 +1252,71 @@ class ServiceConnectSensor : ParentService() {
 
         UserSession.instance.commandContent = command.commandContent
 
+    }
+
+    /**
+     * check if the interval less 4 seconds
+     */
+    private fun checkIntervalLess4Seconds(): Boolean {
+        val currentCalendar = Calendar.getInstance()
+        //val lastAlarmTime:Calendar=Calendar.getInstance()
+
+        val lastmilis: Long? =
+            getLongInPreference(this@ServiceConnectSensor, LAST_ALARM_TIME_PREF, -1)
+
+        if (lastmilis != null) {
+
+            val interval = (currentCalendar.timeInMillis - lastmilis) / 1000
+
+            return interval < 4
+        }
+        return false
+    }
+
+    /**
+     * check if the last alarm sensor id same id
+     */
+    private fun checkIfLastAlarmSensorIdSameId(sensorId: Int): Boolean {
+        val lastAlarmSensorId =
+            getIntInPreference(this@ServiceConnectSensor, LAST_ALARM_SENSOR_ID_PREF, -1)
+        return lastAlarmSensorId == sensorId
+    }
+
+
+    /*
+     * save the new id
+     */
+    private fun initAlarmSensorId(sensorId: Int) {
+        setIntInPreference(this@ServiceConnectSensor, LAST_ALARM_SENSOR_ID_PREF, sensorId)
+    }
+
+
+    /**
+     * save counter 1
+     */
+    private fun setAlarmCounter(n: Int) {
+        setIntInPreference(this@ServiceConnectSensor, COUNTER_ALARM_SENSOR_ID_PREF, n)
+    }
+
+    /**
+     * check if the counter bigger then 3
+     */
+    private fun checkIfCounterBiggerEqualThan3(): Boolean {
+        val counter = getIntInPreference(this@ServiceConnectSensor, COUNTER_ALARM_SENSOR_ID_PREF, 0)
+        if (counter != null) {
+            return counter >= 3
+        }
+        return false
+    }
+
+    /**
+     * add 1 to counter
+     */
+    private fun incAlarmCounter() {
+        val counter = getIntInPreference(this@ServiceConnectSensor, COUNTER_ALARM_SENSOR_ID_PREF, 0)
+        if (counter != null) {
+            setIntInPreference(this@ServiceConnectSensor, COUNTER_ALARM_SENSOR_ID_PREF, counter + 1)
+        }
     }
 
 }

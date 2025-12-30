@@ -1162,11 +1162,21 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
 //        refreshMarkers()
 //    }
 
+
+    /**
+     * sort the alarm by id
+     */
+    private fun sortByIdAlarm(sensors: ArrayList<Sensor>?): List<Sensor>? {
+        return sensors?.sortedBy { it.getId().toInt() }
+
+    }
+
     private fun showDialogSensorsList() {
 
         //TODO to separate the adapters
 
-        val sensors = activity?.let { getSensorsFromLocally(it) }
+        var sensors = activity?.let { getSensorsFromLocally(it) }
+        sensors = sortByIdAlarm(sensors)?.let { ArrayList(it) }
 
         if (dialog != null && dialog?.isShowing!!) {
             sensorsDialogAdapter?.setDetects(sensors)
