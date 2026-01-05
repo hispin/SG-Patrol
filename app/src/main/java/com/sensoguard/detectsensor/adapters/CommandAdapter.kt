@@ -196,7 +196,7 @@ class CommandAdapter(
             if (command.state == PROCESS_STATE) {
                 pbTimer?.visibility = View.VISIBLE
             } else {
-                pbTimer?.visibility = View.INVISIBLE
+                pbTimer?.visibility = View.GONE
             }
             //show x when time out without response
             if (command.state == TIMEOUT_STATE) {
@@ -208,7 +208,7 @@ class CommandAdapter(
                 ivTimeout?.visibility = View.VISIBLE
                 command.state = NORMAL_STATE
             } else {
-                ivTimeout?.visibility = View.INVISIBLE
+                ivTimeout?.visibility = View.GONE
             }
 
             if (command.isExpand) {

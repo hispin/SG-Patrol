@@ -157,6 +157,7 @@
     <string name="do_you_realy_want_delete_selected_alarm" translatable="false">Do you realy want to delete selected alarms?</string>
     <string name="suspend" translatable="false">Suspend</string>
     <string name="value_cannot_be_zero" translatable="false">The value cannot be zero</string>
+    <string name="the_sensor_is_not_connected" translatable="false">The sensor is not connected please press connect</string>
 
     <string-array name="car_ids">
         <item>0</item>

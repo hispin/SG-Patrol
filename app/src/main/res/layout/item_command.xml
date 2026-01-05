@@ -110,7 +110,7 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/conExpand"
                     android:layout_width="match_parent"
-                    android:layout_height="180dp"
+                    android:layout_height="200dp"
                     android:visibility="gone"
                     app:layout_constraintTop_toBottomOf="@+id/consMain">
 
@@ -121,10 +121,11 @@
                         android:text="@string/car"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintHorizontal_bias="0.08"
+                        app:layout_constraintHorizontal_bias="0.16"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintVertical_bias="0.20"
+                        app:layout_constraintVertical_bias="0.09"
+                        android:textStyle="bold"
                         android:textSize="14sp"
                         android:gravity="start" />
 
@@ -134,7 +135,7 @@
                         android:layout_height="30dp"
                         app:layout_constraintStart_toStartOf="@+id/tvSelectCar"
                         app:layout_constraintTop_toBottomOf="@+id/tvSelectCar"
-                        android:layout_marginTop="5dp"
+                        android:layout_marginTop="2dp"
                         android:layout_centerVertical="true">
 
                 <androidx.appcompat.widget.AppCompatSpinner
@@ -226,7 +227,8 @@
                         android:id="@+id/tvSelectIntruder"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
+                        android:layout_marginTop="8dp"
+                        android:textStyle="bold"
                         android:text="@string/intruder"
                         app:layout_constraintStart_toStartOf="@+id/tvSelectCar"
                         app:layout_constraintTop_toBottomOf="@+id/frCarSens"
@@ -237,10 +239,9 @@
                         android:id="@+id/frIntruderSens"
                         android:layout_width="180dp"
                         android:layout_height="30dp"
-                        app:layout_constraintStart_toStartOf="@+id/frCarSens"
+                        app:layout_constraintStart_toStartOf="@+id/tvSelectIntruder"
                         app:layout_constraintTop_toBottomOf="@+id/tvSelectIntruder"
-                        android:layout_centerVertical="true"
-                        android:layout_marginTop="5dp">
+                        android:layout_marginTop="2dp">
 
                 <androidx.appcompat.widget.AppCompatSpinner
                         android:id="@+id/spIntruderSens"
@@ -281,7 +282,6 @@
                             app:layout_constraintTop_toBottomOf="@+id/tvSelectIntruder"
                             android:orientation="horizontal"
                             android:visibility="gone"
-
                             >
 
                         <androidx.appcompat.widget.AppCompatTextView
@@ -290,7 +290,7 @@
                                 android:layout_height="wrap_content"
                                 android:visibility="visible"
                                 android:textSize="11dp"
-                                android:layout_marginStart="5dp"
+                                android:layout_marginStart="0dp"
                                 android:text="@string/count" />
                         <androidx.appcompat.widget.AppCompatEditText
                                 android:id="@+id/etIntruderCount"
@@ -336,15 +336,15 @@
                         android:layout_height="wrap_content"
                         android:visibility="gone"
                         android:textSize="11dp"
-                        app:layout_constraintTop_toTopOf="@+id/frCarSens"
-                        app:layout_constraintBottom_toBottomOf="@+id/frCarSens"
-                        app:layout_constraintStart_toStartOf="@+id/btnSendCmd"
+                        app:layout_constraintTop_toBottomOf="@+id/frIntruderSens"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="@+id/frCarSens"
                         android:text="@string/suspend" />
                 <androidx.appcompat.widget.AppCompatEditText
                         android:id="@+id/etSeconds"
                         android:layout_width="40dp"
                         android:layout_height="30dp"
-                        android:visibility="gone"
+                        android:visibility="invisible"
                         android:layout_marginEnd="16dp"
                         android:background="@drawable/shape_bg_subjects_spinner"
                         android:inputType="number"
@@ -359,7 +359,7 @@
                 <androidx.appcompat.widget.AppCompatButton
                         android:id="@+id/btnSendCmd"
                         android:layout_width="wrap_content"
-                        android:layout_height="0dp"
+                        android:layout_height="40dp"
                         android:layout_marginEnd="24dp"
                         android:layout_marginBottom="16dp"
                         android:background="@color/turquoise_blue"

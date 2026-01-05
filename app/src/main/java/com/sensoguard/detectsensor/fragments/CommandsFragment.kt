@@ -91,7 +91,7 @@ class CommandsFragment : DialogFragment() {
             }
             if (it.getStringArrayList(SENSORS_IDS) != null) {
                 var temp = it.getStringArrayList(SENSORS_IDS)!!
-                temp = sortByIdAlarm(temp)?.let { ArrayList(it) }!!
+                temp = sortByIdAlarm(temp).let { ArrayList(it) }
                 sensorsIds.add(resources.getString(R.string.select_sensor))
                 sensorsIds.addAll(temp)
             }
@@ -600,7 +600,7 @@ class CommandsFragment : DialogFragment() {
 
                 //check if sensor has been responded and it has been awake
                 if (statusAwake != OK_AWAKE) {
-                    showToast(activity, resources.getString(R.string.no_response_sensor))
+                    showToast(activity, resources.getString(R.string.the_sensor_is_not_connected))
                     return@CommandAdapter
                 }
 
