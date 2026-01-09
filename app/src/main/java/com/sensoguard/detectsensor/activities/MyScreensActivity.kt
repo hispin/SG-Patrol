@@ -47,6 +47,7 @@ import com.sensoguard.detectsensor.global.ALARM_FLICKERING_DURATION_KEY
 import com.sensoguard.detectsensor.global.CREATE_ALARM_KEY
 import com.sensoguard.detectsensor.global.CURRENT_ITEM_TOP_MENU_KEY
 import com.sensoguard.detectsensor.global.IS_VIBRATE_WHEN_ALARM_KEY
+import com.sensoguard.detectsensor.global.LAST_ATTACH_TIME_PREF
 import com.sensoguard.detectsensor.global.MAIN_MENU_NUM_ITEM
 import com.sensoguard.detectsensor.global.MAP_SHOW_SATELLITE_VALUE
 import com.sensoguard.detectsensor.global.MAP_SHOW_VIEW_TYPE_KEY
@@ -223,6 +224,7 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, Observer {
             setStringInPreference(this, SELECTED_NOTIFICATION_SOUND_KEY, uri.toString())
         }
     }
+    var alert: AlertDialog? = null
 
     private val usbReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, arg1: Intent) {
@@ -245,14 +247,23 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, Observer {
 
                 }
                 arg1.action == UsbManager.ACTION_USB_DEVICE_ATTACHED -> {
-
+                    saveLatAttachTime()
                 }
                 //when disconnect the device from USB
                 arg1.action == UsbManager.ACTION_USB_DEVICE_DETACHED -> {
-                    //Toast.makeText(this@MyScreensActivity, "detach", Toast.LENGTH_SHORT).show()
-                    showUsbReadDisconnection()
-                    playVibrate()
-                    showDisconnectUsbDialog()
+                    //sometime after attach accept detached event with no reason
+                    if (!checkIFAttachedLessthen4()) {
+
+                        //this event sometimes happened also when the port is busy and not because the USB physically disconnected
+                        if (!findUsbDevices()) {
+                            //Toast.makeText(this@MyScreensActivity, "physically disconnected", Toast.LENGTH_SHORT).show()
+                            showUsbReadDisconnection()
+                            playVibrate()
+                            showDisconnectUsbDialog()
+                        } else {
+                            //Toast.makeText(this@MyScreensActivity, "physically connected", Toast.LENGTH_SHORT).show()
+                        }
+                    }
                 }
                 arg1.action == CREATE_ALARM_KEY -> {
                     //startTimer()
@@ -281,8 +292,13 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, Observer {
 
                 dialog.dismiss()
             }
-            val alert = builder.create()
-            alert.show()
+            if (alert == null) {
+                alert = builder.create()
+                alert?.show()
+            } else if (!(alert?.isShowing)!!) {
+                alert = builder.create()
+                alert?.show()
+            }
         }
 
         //execute vibrate
@@ -312,6 +328,56 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, Observer {
     }
 
 
+    /**
+     * check if the interval less 4 seconds
+     */
+    private fun checkIFAttachedLessthen4(): Boolean {
+        val currentCalendar = Calendar.getInstance()
+        //val lastAlarmTime:Calendar=Calendar.getInstance()
+
+        val lastmilis: Long? =
+            getLongInPreference(this, LAST_ATTACH_TIME_PREF, -1)
+
+        if (lastmilis != null) {
+
+            val interval = (currentCalendar.timeInMillis - lastmilis) / 1000
+
+            return interval < 10
+        }
+        return false
+    }
+
+    /**
+     * init alarm timer
+     */
+    private fun saveLatAttachTime() {
+        val cal = Calendar.getInstance()
+        setLongInPreference(this, LAST_ATTACH_TIME_PREF, cal.timeInMillis)
+    }
+
+
+    /**
+     * check if the usb is really disconnected
+     */
+    fun findUsbDevices(): Boolean {
+        // Find all available drivers from attached devices.
+        val manager = getSystemService(Context.USB_SERVICE) as UsbManager
+        try {
+            val usbDevices = manager.deviceList
+
+            if (usbDevices != null) {
+
+                val usbDevice = usbDevices.values.first()
+
+                return usbDevice != null
+            } else {
+                return false
+            }
+        } catch (ex: Exception) {
+            return false
+        }
+    }
+
     //show usb read disconnection
     private fun showUsbReadDisconnection() {
         //setBooleanInPreference(this@MyScreensActivity, USB_DEVICE_CONNECT_STATUS, false)
@@ -322,7 +388,7 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, Observer {
 
     private fun setFilter() {
         val filter = IntentFilter(USB_DEVICES_EMPTY)
-        //filter.addAction("android.hardware.usb.action.USB_STATE")
+        filter.addAction("android.hardware.usb.action.USB_STATE")
         filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED)
         filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED)
         filter.addAction(USB_DEVICES_NOT_EMPTY)

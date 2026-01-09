@@ -88,6 +88,7 @@ const val ALARM_LIST_KEY_PREF = "AlarmsList"
 const val LAST_ALARM_SENSOR_ID_PREF = "last_alarm_sensor_id_pref"
 const val LAST_ALARM_TIME_PREF = "last_alarm_time_pref"
 const val COUNTER_ALARM_SENSOR_ID_PREF = "counter_alarm_sensor_id_pref"
+const val LAST_ATTACH_TIME_PREF = "last_attach_time_pref"
 
 const val PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 0
 const val PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 1
