@@ -67,7 +67,7 @@
     <string name="do_you_really_want_delete_all_alarm">Do you really want to delete all alarms</string>
     <string name="receiver_disconnected">Receiver Disconnected</string>
     <string name="OK">OK</string>
-    <string name="mapbox_access_token" translatable="false">pk.eyJ1IjoidG9tZXJjaG9lbiIsImEiOiJja2psYWJ0M201N3ZuMnJucW4zNWZqYzNvIn0.fZ3nmtGLC2X-PKfuNY5wfQ</string>
+    <!--    <string name="mapbox_access_token" translatable="false">pk.eyJ1IjoidG9tZXJjaG9lbiIsImEiOiJja2psYWJ0M201N3ZuMnJucW4zNWZqYzNvIn0.fZ3nmtGLC2X-PKfuNY5wfQ</string>-->
     <string name="simple_offline_end_progress_success">simple offline end progress success</string>
     <string name="no_selected_location">No places selected</string>
     <string name="sensor_details">Sensor details</string>
