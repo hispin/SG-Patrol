@@ -269,7 +269,7 @@ class ServiceConnectSensor : ParentService() {
                         }
                     }
 
-                    manager = getSystemService(Context.USB_SERVICE) as UsbManager
+                    manager = getSystemService(USB_SERVICE) as UsbManager
 
 
                     //check if find devices via USB
@@ -363,7 +363,7 @@ class ServiceConnectSensor : ParentService() {
         filter.addAction(DISCONNECTED_INTERNET_SENSOR)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(usbReceiver, filter, AppCompatActivity.RECEIVER_EXPORTED)
+            registerReceiver(usbReceiver, filter, RECEIVER_EXPORTED)
         } else {
             registerReceiver(usbReceiver, filter)
         }
@@ -374,7 +374,7 @@ class ServiceConnectSensor : ParentService() {
     fun findUsbDevices() {
 
         // Find all available drivers from attached devices.
-        manager = getSystemService(Context.USB_SERVICE) as UsbManager
+        manager = getSystemService(USB_SERVICE) as UsbManager
 
 
         val usbDevices = manager?.deviceList
@@ -436,7 +436,7 @@ class ServiceConnectSensor : ParentService() {
 
    //request usb permission
     private fun registerUsbPermission(usbDevice: UsbDevice) {
-       val usbManager = getSystemService(Context.USB_SERVICE) as UsbManager
+       val usbManager = getSystemService(USB_SERVICE) as UsbManager
        val mPermissionIntent = PendingIntent.getBroadcast(
            this,
            0,
@@ -560,7 +560,7 @@ class ServiceConnectSensor : ParentService() {
                 NotificationManager.IMPORTANCE_DEFAULT
             )
 
-            val `object` = getSystemService(Context.NOTIFICATION_SERVICE)
+            val `object` = getSystemService(NOTIFICATION_SERVICE)
             if (`object` != null && `object` is NotificationManager) {
                 `object`.createNotificationChannel(channel)
             }
@@ -581,7 +581,7 @@ class ServiceConnectSensor : ParentService() {
     //define timer delay to clear the buffer
     private val mHandler = Handler()
     val runnable: Runnable = Runnable {
-        arr = ArrayList()
+        arr = ArrayList<Int>()
     }
 
     //runnable
@@ -598,10 +598,12 @@ class ServiceConnectSensor : ParentService() {
 //                Toast.makeText(applicationContext,"response command",Toast.LENGTH_SHORT).show()
 //            }
 
-            //Log.d("testMulti","start")
-            if (bytesArray != null && bytesArray.isNotEmpty()) {
+            //Bug fixed: from Singapore
+            if (arr != null && bytesArray != null && bytesArray.isNotEmpty()) {
                 for (element in bytesArray) {
-                    arr.add(element.toInt())
+                    if (element != null) {
+                        arr.add(element.toInt())
+                    }
                 }
             }
 

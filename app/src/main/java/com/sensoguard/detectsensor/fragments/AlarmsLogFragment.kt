@@ -35,7 +35,6 @@ import com.sensoguard.detectsensor.global.DATE_SORTED
 import com.sensoguard.detectsensor.global.ERROR_RESP
 import com.sensoguard.detectsensor.global.FROM_CALENDAR
 import com.sensoguard.detectsensor.global.HANDLE_ALARM_KEY
-import com.sensoguard.detectsensor.global.HOUR_OFFSET
 import com.sensoguard.detectsensor.global.NO_SORTED
 import com.sensoguard.detectsensor.global.RESULT_CODE
 import com.sensoguard.detectsensor.global.SORT_BY_DATETIME_KEY
@@ -411,26 +410,28 @@ class AlarmsLogFragment : ParentFragment(), OnAdapterListener {
                         } else {
                             bundle.getSerializable(FROM_CALENDAR) as Calendar
                         }
-                        fromCalendar?.add(Calendar.HOUR, HOUR_OFFSET)//to sort UTC
+                        //Bug fixed: remove UTC:
+                        // fromCalendar?.add(Calendar.HOUR, HOUR_OFFSET)//to sort UTC
                         toCalendar = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                             bundle.getSerializable(TO_CALENDAR, Calendar::class.java)
                         } else {
                             bundle.getSerializable(TO_CALENDAR) as Calendar
                         }
-                        toCalendar?.add(Calendar.HOUR, HOUR_OFFSET)//to sort UTC
+                        //Bug fixed: remove UTC:
+                        // toCalendar?.add(Calendar.HOUR, HOUR_OFFSET)//to sort UTC
                         //toCalendar?.timeZone=TimeZone.getTimeZone("GMT+3")
                         if (fromCalendar != null && toCalendar != null) {
                             typeOfSorted = DATE_SORTED
                             refreshAlarmsFromPref()
                         }
-                        val fromDateStr = activity?.let { it1 ->
+                        activity?.let { it1 ->
                             getStringFromCalendar(
                                 fromCalendar!!,
                                 "dd/MM/yy kk:mm:ss",
                                 it1
                             )
                         }
-                        val toDateStr = activity?.let { it1 ->
+                        activity?.let { it1 ->
                             getStringFromCalendar(
                                 toCalendar!!,
                                 "dd/MM/yy kk:mm:ss",
