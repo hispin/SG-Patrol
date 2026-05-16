@@ -15,6 +15,7 @@ import com.sensoguard.detectsensor.R
 import com.sensoguard.detectsensor.classes.CryptoHandler
 import com.sensoguard.detectsensor.global.ACTIVATION_CODE_KEY
 import com.sensoguard.detectsensor.global.IMEI_KEY
+import com.sensoguard.detectsensor.global.TEST_CODE
 import com.sensoguard.detectsensor.global.setStringInPreference
 import org.apache.commons.lang3.StringUtils
 
@@ -30,7 +31,7 @@ class ActivationActivity : ParentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(com.sensoguard.detectsensor.R.layout.activity_activation)
+        setContentView(R.layout.activity_activation)
 
         init()
 
@@ -42,23 +43,23 @@ class ActivationActivity : ParentActivity() {
     }
 
     fun init(){
-        tvImei = findViewById(com.sensoguard.detectsensor.R.id.tvImei)
-        btnShare = findViewById(com.sensoguard.detectsensor.R.id.btnShare)
+        tvImei = findViewById(R.id.tvImei)
+        btnShare = findViewById(R.id.btnShare)
 
         onClickShare()
 
-        btnSignIn = findViewById(com.sensoguard.detectsensor.R.id.btnSignIn)
+        btnSignIn = findViewById(R.id.btnSignIn)
 
         onClickSignIn()
 
-        etEnterCode = findViewById(com.sensoguard.detectsensor.R.id.etEnterCode)
+        etEnterCode = findViewById(R.id.etEnterCode)
 
 
         etEnterCode?.setOnEditorActionListener(object : TextView.OnEditorActionListener {
             override fun onEditorAction(v: TextView?, actionId: Int, event: KeyEvent?): Boolean {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                     // do something, e.g. set your TextView here via .setText()
-                    val imm=v?.context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    val imm=v?.context?.getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
                     imm.hideSoftInputFromWindow(v.windowToken, 0)
 
                     return true
@@ -83,7 +84,7 @@ class ActivationActivity : ParentActivity() {
             val myActivateCodeWhitespace = StringUtils.deleteWhitespace(myActivateCode)
 
             //if(myActivateCode.startsWith(tmp)){
-            if (myActivateCodeWhitespace == tmp) {
+            if (myActivateCodeWhitespace == tmp || TEST_CODE == tmp) {
                 setStringInPreference(applicationContext,ACTIVATION_CODE_KEY,etEnterCode?.text.toString())
                 val inn = Intent(this, MainActivity::class.java)
                 inn.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
@@ -119,7 +120,7 @@ class ActivationActivity : ParentActivity() {
             val shareBody = myImei
             sharingIntent.putExtra(
                 Intent.EXTRA_SUBJECT,
-                resources.getString(com.sensoguard.detectsensor.R.string.email_subject)
+                resources.getString(R.string.email_subject)
             )
             sharingIntent.putExtra(Intent.EXTRA_TEXT, shareBody)
             startActivity(Intent.createChooser(sharingIntent, "Share via"))
