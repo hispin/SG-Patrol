@@ -16,8 +16,9 @@ import android.os.Handler
 import android.os.IBinder
 import android.util.Log
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
+import androidx.core.text.isDigitsOnly
 import com.felhr.usbserial.UsbSerialDevice
 import com.felhr.usbserial.UsbSerialInterface
 import com.sensoguard.detectsensor.R
@@ -72,6 +73,7 @@ import com.sensoguard.detectsensor.global.SIX_SEVEN_FOTMAT_BITS
 import com.sensoguard.detectsensor.global.STOP_GENERAL_TIMER
 import com.sensoguard.detectsensor.global.STOP_READ_DATA_KEY
 import com.sensoguard.detectsensor.global.STOP_TIMER
+import com.sensoguard.detectsensor.global.SUBNET_STATUS
 import com.sensoguard.detectsensor.global.TEN_FOTMAT_BITS
 import com.sensoguard.detectsensor.global.USB_CACHE_RESPONSE_KEY
 import com.sensoguard.detectsensor.global.USB_DEVICES_EMPTY
@@ -82,6 +84,7 @@ import com.sensoguard.detectsensor.global.VIBRATION_TYPE
 import com.sensoguard.detectsensor.global.convertJsonToAlarmList
 import com.sensoguard.detectsensor.global.convertJsonToSensorList
 import com.sensoguard.detectsensor.global.convertToAlarmsGson
+import com.sensoguard.detectsensor.global.getBooleanInPreference
 import com.sensoguard.detectsensor.global.getIntInPreference
 import com.sensoguard.detectsensor.global.getLongInPreference
 import com.sensoguard.detectsensor.global.getStringInPreference
@@ -365,7 +368,12 @@ class ServiceConnectSensor : ParentService() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             registerReceiver(usbReceiver, filter, RECEIVER_EXPORTED)
         } else {
-            registerReceiver(usbReceiver, filter)
+            ContextCompat.registerReceiver(
+                this,
+                usbReceiver,
+                filter,
+                ContextCompat.RECEIVER_NOT_EXPORTED
+            )
         }
 
     }
@@ -963,7 +971,15 @@ class ServiceConnectSensor : ParentService() {
         }
 
 
-        val alarmSensorId = bit[1].toUByte().toString()
+        var alarmSensorId = bit[1].toUByte().toString()
+
+        val subnet = getSubnetById(alarmSensorId)
+
+        val originId = alarmSensorId
+
+        // check subnet status
+        alarmSensorId = checkSubnetStatus(alarmSensorId)
+        //showToast(this@ServiceConnectSensor,"alarmSensorId:"+alarmSensorId)
 
         //get locally sensor that match to sensor of alarm
         val currentSensorLocally = getLocallySensorAlarm(alarmSensorId)
@@ -1008,7 +1024,9 @@ class ServiceConnectSensor : ParentService() {
                 "undefined",
                 isArmed = false,
                 alarmSensorId = alarmSensorId,
-                type = type
+                type = type,
+                subnet,
+                originId
             )
         } else if (!currentSensorLocally.isArmed()) {
             sendBroadcast(Intent(RESET_MARKERS_KEY))
@@ -1017,7 +1035,12 @@ class ServiceConnectSensor : ParentService() {
             currentSensorLocally.getName()?.let {
                 addAlarmToHistory(
                     true,
-                    it, isArmed = false, alarmSensorId = alarmSensorId, type = type
+                    it,
+                    isArmed = false,
+                    alarmSensorId = alarmSensorId,
+                    type = type,
+                    subnet = subnet,
+                    originId = originId
                 )
             }
             // the sensor id exist but is not located
@@ -1030,11 +1053,16 @@ class ServiceConnectSensor : ParentService() {
             currentSensorLocally.getName()?.let {
                 addAlarmToHistory(
                     true,
-                    it, isArmed = false, alarmSensorId = alarmSensorId, type = type
+                    it,
+                    isArmed = false,
+                    alarmSensorId = alarmSensorId,
+                    type = type,
+                    subnet = subnet,
+                    originId = originId
                 )
             }
         } else {
-            type?.let { addAlarmToHistory(currentSensorLocally, it) }
+            type?.let { addAlarmToHistory(currentSensorLocally, it, subnet, originId) }
 
 
             //////////////add alarm to queue
@@ -1064,6 +1092,62 @@ class ServiceConnectSensor : ParentService() {
             sendBroadcast(inn)
         }
         sendBroadcast(Intent(HANDLE_ALARM_KEY))
+    }
+
+    /**
+     * get subnet by id
+     */
+    private fun getSubnetById(alarmSensorId: String): Int {
+
+        val alarmId = alarmSensorId.toInt()
+        when {
+            alarmId in 1..30 -> {
+                return 0
+            }
+
+            alarmId in 33..62 -> {
+                return 1
+            }
+
+            alarmId in 65..94 -> {
+                return 2
+            }
+
+            alarmId in 97..126 -> {
+                return 3
+            }
+
+            alarmId in 129..158 -> {
+                return 4
+            }
+
+            alarmId in 161..190 -> {
+                return 5
+            }
+
+            alarmId in 193..222 -> {
+                return 6
+            }
+
+            alarmId in 225..254 -> {
+                return 7
+            }
+
+            else ->
+                return 0
+        }
+    }
+
+
+    /**
+     * check subnet status
+     */
+    private fun checkSubnetStatus(alarmSensorId: String): String {
+        val status = getBooleanInPreference(this@ServiceConnectSensor, SUBNET_STATUS, false)
+        if (status && alarmSensorId.isDigitsOnly() && alarmSensorId.toInt() > 30 && alarmSensorId.toInt() < 255) {
+            return (alarmSensorId.toInt() % 32).toString()
+        }
+        return alarmSensorId
     }
 
     /**
@@ -1146,7 +1230,9 @@ class ServiceConnectSensor : ParentService() {
         alarmSensorName: String,
         isArmed: Boolean,
         alarmSensorId: String,
-        type: String?
+        type: String?,
+        subnet: Int,
+        originId: String
     ) {
 //        Handler(Looper.getMainLooper()).post {
 //            Toast.makeText(
@@ -1167,7 +1253,16 @@ class ServiceConnectSensor : ParentService() {
 
 
         val alarm =
-            Alarm(alarmSensorId, alarmSensorName, type, dateString, isArmed, tmp.timeInMillis)
+            Alarm(
+                alarmSensorId,
+                alarmSensorName,
+                type,
+                dateString,
+                isArmed,
+                tmp.timeInMillis,
+                subnet,
+                originId
+            )
         alarm.isLocallyDefined = isLocallyDefined
 
         val alarms = populateAlarmsFromLocally()
@@ -1199,7 +1294,12 @@ class ServiceConnectSensor : ParentService() {
     }
 
     //add active alarm to history
-    private fun addAlarmToHistory(currentSensorLocally: Sensor, type: String) {
+    private fun addAlarmToHistory(
+        currentSensorLocally: Sensor,
+        type: String,
+        subnet: Int,
+        originId: String
+    ) {
         val tmp = Calendar.getInstance()
         val resources = this.resources
 
@@ -1225,7 +1325,9 @@ class ServiceConnectSensor : ParentService() {
             type,
             dateString,
             currentSensorLocally.isArmed(),
-            tmp.timeInMillis
+            tmp.timeInMillis,
+            subnet,
+            originId
         )
         alarm.latitude = currentSensorLocally.getLatitude()
         alarm.longitude = currentSensorLocally.getLongtitude()

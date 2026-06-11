@@ -138,6 +138,7 @@ const val PORT_MAIL = "portMail"
 const val RECIPIENT_MAIL = "recipientail"
 const val IS_SSL_MAIL = "isSSLMail"
 const val IS_FORWARD_ALARM_EMAIL = "isForwardAlarmEmail"
+const val SUBNET_STATUS = "subnetStatus"
 
 //key to deliver ids of sensors to command dialog
 const val SENSORS_IDS = "sensorsIds"
@@ -263,6 +264,6 @@ const val PWA_URL = "https://outwatch.sensoguard.com/pwa"//"https://outwatchpwa.
 
 const val IS_SETTINGS_NOTIFICATION_LAUNCHER = "isSettingsNotificationLauncher"
 
-6
+
 const val TEST_CODE = "Pr6/d+q5iK3e4hWjcW31I0VQ7ylHvqDHsazj0MIhcvA="
 /////////

@@ -157,6 +157,7 @@
     <string name="suspend" translatable="false">Suspend</string>
     <string name="value_cannot_be_zero" translatable="false">The value cannot be zero</string>
     <string name="the_sensor_is_not_connected" translatable="false">The sensor is not connected please press connect</string>
+    <string name="subnet_enable" translatable="false">Subnet Enable</string>
 
     <string-array name="car_ids">
         <item>0</item>

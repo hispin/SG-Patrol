@@ -111,6 +111,7 @@
     <string name="edit_sensor">Edit Sensor</string>
     <string name="connected">מחובר</string>
     <string name="set_system_time">הגדר זמן מערכת</string>
+    <string name="subnet_enable">הפעלת רשת משנה</string>
 
     <string-array name="car_ids">
         <item>0</item>

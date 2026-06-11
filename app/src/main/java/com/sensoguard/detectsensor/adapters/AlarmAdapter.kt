@@ -43,8 +43,6 @@ class AlarmAdapter (private var alarms: ArrayList<Alarm>, val context: Context, 
         private var tvId:TextView? = null
         private var tvName:TextView?=null
         private var tvDate:TextView? = null
-        private var tvTime:TextView? = null
-        //TODO press twice
         private var tvType: TextView? = null
 
 
@@ -70,7 +68,6 @@ class AlarmAdapter (private var alarms: ArrayList<Alarm>, val context: Context, 
             tvName = _itemView.findViewById(R.id.tvName)
             tvDate = _itemView.findViewById(R.id.tvDate)
             tvType = _itemView.findViewById(R.id.tvType)
-            tvTime = _itemView.findViewById(R.id.tvTime)
 
 
             if (alarm.isArmed != null
@@ -82,21 +79,36 @@ class AlarmAdapter (private var alarms: ArrayList<Alarm>, val context: Context, 
                 tvDate?.setTextColor(ContextCompat.getColor(context, R.color.red))
                 tvId?.setTextColor(ContextCompat.getColor(context, R.color.red))
                 tvType?.setTextColor(ContextCompat.getColor(context, R.color.red))
-                tvTime?.setTextColor(ContextCompat.getColor(context, R.color.red))
             } else {
                 tvName?.setTextColor(ContextCompat.getColor(context, R.color.black))
                 tvDate?.setTextColor(ContextCompat.getColor(context, R.color.black))
                 tvId?.setTextColor(ContextCompat.getColor(context, R.color.black))
                 tvType?.setTextColor(ContextCompat.getColor(context, R.color.black))
-                tvTime?.setTextColor(ContextCompat.getColor(context, R.color.black))
             }
 
 
-            tvDate?.text =
-                alarm.timeInMillis?.let { getStrDateTimeByMilliSeconds(it, "dd/MM/yy", context) }
-            tvTime?.text =
-                alarm.timeInMillis?.let { getStrDateTimeByMilliSeconds(it, "kk:mm:ss", context) }
+            if (alarm.timeInMillis != null) {
+                val tmp = getStrDateTimeByMilliSeconds(
+                    alarm.timeInMillis!!,
+                    "dd/MM/yy",
+                    context
+                ) + "\n" + alarm.timeInMillis?.let {
+                    getStrDateTimeByMilliSeconds(
+                        it,
+                        "kk:mm:ss",
+                        context
+                    )
+                }
+                tvDate?.text = tmp
+            }
+
+
             tvId?.text = alarm.id
+
+            val str = alarm.id + "\n" + "NET " + alarm.subnet + "(" + alarm.originId + ")"
+            tvId?.text = str
+
+
 
             tvType?.text = alarm.type
             tvName?.text = alarm.name

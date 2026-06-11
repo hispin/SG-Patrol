@@ -9,8 +9,9 @@ import android.content.IntentFilter
 import android.os.Build
 import android.util.Log
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
+import androidx.core.text.isDigitsOnly
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import com.sensoguard.detectsensor.R
@@ -46,6 +47,7 @@ import com.sensoguard.detectsensor.global.SENSOR_TYPE_INDEX_KEY
 import com.sensoguard.detectsensor.global.SERVER_MAIL
 import com.sensoguard.detectsensor.global.SIX_SEVEN_FOTMAT_BITS
 import com.sensoguard.detectsensor.global.STOP_ALARM_SOUND
+import com.sensoguard.detectsensor.global.SUBNET_STATUS
 import com.sensoguard.detectsensor.global.TEN_FOTMAT_BITS
 import com.sensoguard.detectsensor.global.UPDATE_MEDIA
 import com.sensoguard.detectsensor.global.USER_NAME_MAIL
@@ -109,9 +111,14 @@ class ServiceHandleAlarms : ParentService() {
         filter.addAction(CREATE_ALARM_KEY)
         filter.addAction(CREATE_ALARM_NOT_DEFINED_KEY)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(usbReceiver, filter, AppCompatActivity.RECEIVER_EXPORTED)
+            registerReceiver(usbReceiver, filter, RECEIVER_EXPORTED)
         } else {
-            registerReceiver(usbReceiver, filter)
+            ContextCompat.registerReceiver(
+                this,
+                usbReceiver,
+                filter,
+                ContextCompat.RECEIVER_NOT_EXPORTED
+            )
         }
     }
 
@@ -246,7 +253,16 @@ class ServiceHandleAlarms : ParentService() {
 
                     val type = typeIndex?.let { stateTypes?.get(it) }
                     //Log.d("testIconAlarm", type)
-                    val alarmSensorId = bit?.get(1)?.toUByte().toString()
+                    var alarmSensorId = bit?.get(1)?.toUByte().toString()
+
+                    val subnet = getSubnetById(alarmSensorId)
+
+                    val originId = alarmSensorId
+
+                    // check subnet status
+                    alarmSensorId = checkSubnetStatus(alarmSensorId)
+                    //showToast(this@ServiceConnectSensor,"alarmSensorId:"+alarmSensorId)
+
 
                     //get locally sensor that match to sensor of alarm
                     val currentSensorLocally = getLocallySensorAlarm(alarmSensorId)
@@ -274,14 +290,21 @@ class ServiceHandleAlarms : ParentService() {
                             "undefined",
                             isArmed = false,
                             alarmSensorId = alarmSensorId,
-                            type = type
+                            type = type,
+                            subnet,
+                            originId
                         )
                     } else if (!currentSensorLocally.isArmed()) {
                         sendBroadcast(Intent(RESET_MARKERS_KEY))
                         currentSensorLocally.getName()?.let {
                             addAlarmToHistory(
                                 true,
-                                it, isArmed = false, alarmSensorId = alarmSensorId, type = type
+                                it,
+                                isArmed = false,
+                                alarmSensorId = alarmSensorId,
+                                type = type,
+                                subnet,
+                                originId
                             )
                         }
                         // the sensor id exist but is not located
@@ -292,20 +315,39 @@ class ServiceHandleAlarms : ParentService() {
                         currentSensorLocally.getName()?.let {
                             addAlarmToHistory(
                                 true,
-                                it, isArmed = false, alarmSensorId = alarmSensorId, type = type
+                                it,
+                                isArmed = false,
+                                alarmSensorId = alarmSensorId,
+                                type = type,
+                                subnet,
+                                originId
                             )
                         }
                     } else {
                         //Bug fixed:set car or intruder when the type of sensor is Seismic
                         if (currentSensorLocally.getTypeID() == SEISMIC_TYPE) {
-                            type?.let { addAlarmToHistory(currentSensorLocally, it) }
+                            type?.let {
+                                addAlarmToHistory(
+                                    currentSensorLocally,
+                                    it,
+                                    subnet,
+                                    originId
+                                )
+                            }
                             //otherwise set the type of sensor as type of alarm
                         } else if (currentSensorLocally.getTypeID() == PIR_TYPE
                             || currentSensorLocally.getTypeID() == RADAR_TYPE
                             || currentSensorLocally.getTypeID() == VIBRATION_TYPE
                         ) {
                             currentSensorLocally.getType()
-                                ?.let { addAlarmToHistory(currentSensorLocally, it) }
+                                ?.let {
+                                    addAlarmToHistory(
+                                        currentSensorLocally,
+                                        it,
+                                        subnet,
+                                        originId
+                                    )
+                                }
                         }
 
 
@@ -326,7 +368,9 @@ class ServiceHandleAlarms : ParentService() {
                         /// end add to queue
 
                         //send to create alarm :map,sound ect...
-                        val inn = Intent(CREATE_ALARM_KEY)
+                        val inn = Intent(CREATE_ALARM_KEY).setPackage(
+                            packageName
+                        )
                         inn.putExtra(CREATE_ALARM_ID_KEY, currentSensorLocally.getId())
                         inn.putExtra(CREATE_ALARM_NAME_KEY, currentSensorLocally.getName())
                         inn.putExtra(CREATE_ALARM_IS_ARMED, currentSensorLocally.isArmed())
@@ -397,7 +441,12 @@ class ServiceHandleAlarms : ParentService() {
     }
 
     //add active alarm to history
-    private fun addAlarmToHistory(currentSensorLocally: Sensor,type:String) {
+    private fun addAlarmToHistory(
+        currentSensorLocally: Sensor,
+        type: String,
+        sunet: Int,
+        origin: String
+    ) {
         val tmp = Calendar.getInstance()
         val resources = this.resources
         val locale =
@@ -414,7 +463,9 @@ class ServiceHandleAlarms : ParentService() {
             type,
             dateString,
             currentSensorLocally.isArmed(),
-            tmp.timeInMillis
+            tmp.timeInMillis,
+            sunet,
+            origin
         )
         alarm.latitude = currentSensorLocally.getLatitude()
         alarm.longitude = currentSensorLocally.getLongtitude()
@@ -433,7 +484,9 @@ class ServiceHandleAlarms : ParentService() {
         alarmSensorName: String,
         isArmed: Boolean,
         alarmSensorId: String,
-        type: String?
+        type: String?,
+        subnet: Int,
+        originId: String
     ) {
         val tmp = Calendar.getInstance()
         val resources = this.resources
@@ -447,7 +500,16 @@ class ServiceHandleAlarms : ParentService() {
 
 
         val alarm =
-            Alarm(alarmSensorId, alarmSensorName, type, dateString, isArmed, tmp.timeInMillis)
+            Alarm(
+                alarmSensorId,
+                alarmSensorName,
+                type,
+                dateString,
+                isArmed,
+                tmp.timeInMillis,
+                subnet,
+                originId
+            )
         alarm.isLocallyDefined = isLocallyDefined
 
         val alarms = populateAlarmsFromLocally()
@@ -589,7 +651,7 @@ class ServiceHandleAlarms : ParentService() {
                     NotificationManager.IMPORTANCE_DEFAULT
                 )
 
-                val `object` = getSystemService(Context.NOTIFICATION_SERVICE)
+                val `object` = getSystemService(NOTIFICATION_SERVICE)
                 if (`object` != null && `object` is NotificationManager) {
                     `object`.createNotificationChannel(channel)
                 }
@@ -614,5 +676,61 @@ class ServiceHandleAlarms : ParentService() {
             }
         }
     }
+
+    /**
+     * get subnet by id
+     */
+    private fun getSubnetById(alarmSensorId: String): Int {
+
+        val alarmId = alarmSensorId.toInt()
+        when {
+            alarmId in 1..30 -> {
+                return 0
+            }
+
+            alarmId in 33..62 -> {
+                return 1
+            }
+
+            alarmId in 65..94 -> {
+                return 2
+            }
+
+            alarmId in 97..126 -> {
+                return 3
+            }
+
+            alarmId in 129..158 -> {
+                return 4
+            }
+
+            alarmId in 161..190 -> {
+                return 5
+            }
+
+            alarmId in 193..222 -> {
+                return 6
+            }
+
+            alarmId in 225..254 -> {
+                return 7
+            }
+
+            else ->
+                return 0
+        }
+    }
+
+    /**
+     * check subnet status
+     */
+    private fun checkSubnetStatus(alarmSensorId: String): String {
+        val status = getBooleanInPreference(this@ServiceHandleAlarms, SUBNET_STATUS, false)
+        if (status && alarmSensorId.isDigitsOnly() && alarmSensorId.toInt() > 30 && alarmSensorId.toInt() < 255) {
+            return (alarmSensorId.toInt() % 32).toString()
+        }
+        return alarmSensorId
+    }
+
 
 }

@@ -53,6 +53,7 @@ import com.sensoguard.detectsensor.global.PORT_MAIL
 import com.sensoguard.detectsensor.global.RECIPIENT_MAIL
 import com.sensoguard.detectsensor.global.SELECTED_NOTIFICATION_SOUND_KEY
 import com.sensoguard.detectsensor.global.SERVER_MAIL
+import com.sensoguard.detectsensor.global.SUBNET_STATUS
 import com.sensoguard.detectsensor.global.USER_NAME_MAIL
 import com.sensoguard.detectsensor.global.getBooleanInPreference
 import com.sensoguard.detectsensor.global.getIntInPreference
@@ -96,6 +97,7 @@ open class ConfigurationFragment : ParentFragment(), CallToParentInterface {
     private var togIsSensorAlwaysShow: ToggleButton? = null
     private var ibSetEmailDetails: AppCompatImageButton? = null
     private var togForwardSensorEmail: ToggleButton? = null
+    private var togSubnetStatus: ToggleButton? = null
 
     //    private var spSensorValueFrom: Spinner? = null
 //    private var spSensorValueTo: Spinner? = null
@@ -209,6 +211,16 @@ open class ConfigurationFragment : ParentFragment(), CallToParentInterface {
             }
         }
 
+        //check subnet status
+        togSubnetStatus = view.findViewById(R.id.togSubnetStatus)
+        togSubnetStatus?.isChecked =
+            getBooleanInPreference(activity, SUBNET_STATUS, false)
+        togSubnetStatus?.setOnCheckedChangeListener { buttonView, isChecked ->
+            //update the status of the alarm vibrate : on/off
+            setBooleanInPreference(activity, SUBNET_STATUS, isChecked)
+
+        }
+
         togIsSensorAlwaysShow = view.findViewById(R.id.togIsSensorAlwaysShow)
         togIsSensorAlwaysShow?.isChecked =
             getBooleanInPreference(activity, IS_SENSOR_NAME_ALWAYS_KEY, false)
@@ -280,7 +292,7 @@ open class ConfigurationFragment : ParentFragment(), CallToParentInterface {
         val recipient = getStringInPreference(activity, RECIPIENT_MAIL, "-1")
         val server = getStringInPreference(activity, SERVER_MAIL, "-1")
         val port = getIntInPreference(activity, PORT_MAIL, -1)
-        val isSSL = getBooleanInPreference(activity, IS_SSL_MAIL, false)
+        getBooleanInPreference(activity, IS_SSL_MAIL, false)
 
         //check if the account mail has been filled
         if (userName.equals("-1") || password.equals("-1")

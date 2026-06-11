@@ -629,17 +629,18 @@
                 app:layout_constraintBottom_toBottomOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <!--Sensor name always show-->
+        <!--Subnet status-->
         <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/IsForwardSensorEmail"
+                android:id="@+id/IsSubnetStatus"
                 android:layout_width="match_parent"
-                android:visibility="invisible"
+                android:visibility="visible"
                 android:layout_height="0dp"
                 app:layout_constraintHeight_default="percent"
                 app:layout_constraintHeight_percent=".1"
                 app:layout_constraintTop_toBottomOf="@+id/IsSensorAlwaysShow">
 
             <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/ivSubnetStatus"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -654,9 +655,77 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:ems="14"
-                    android:text="@string/forward_email"
+                    android:text="@string/subnet_enable"
                     app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/ivSubnetStatus"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            <!--            <androidx.appcompat.widget.AppCompatImageButton-->
+            <!--                    android:id="@+id/ibSubnetStatus"-->
+            <!--                    android:layout_width="wrap_content"-->
+            <!--                    android:layout_height="wrap_content"-->
+            <!--                    android:background="@color/transparent"-->
+            <!--                    android:padding="16dp"-->
+            <!--                    app:layout_constraintBottom_toBottomOf="parent"-->
+            <!--                    app:layout_constraintEnd_toStartOf="@+id/togSubnetStatus"-->
+            <!--                    app:layout_constraintHorizontal_bias="0.850"-->
+            <!--                    app:layout_constraintStart_toStartOf="parent"-->
+            <!--                    app:layout_constraintTop_toTopOf="parent"-->
+            <!--                    app:srcCompat="@drawable/ic_settings" />-->
+
+            <tools:ToggleButton
+                    android:id="@+id/togSubnetStatus"
+                    android:layout_width="44dp"
+                    android:layout_height="25dp"
+                    android:background="@color/transparent"
+                    android:button="@drawable/toggle_selector_active"
+                    android:text="ToggleButton"
+                    android:textOff=""
+                    android:textOn=""
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.954"
                     app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.7dp"
+                    android:layout_marginStart="10.7dp"
+                    android:layout_marginEnd="10.7dp"
+                    android:background="@color/gray4"
+                    app:layout_constraintBottom_toBottomOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <!--Email-->
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/IsForwardSensorEmail"
+                android:layout_width="match_parent"
+                android:visibility="invisible"
+                android:layout_height="0dp"
+                app:layout_constraintHeight_default="percent"
+                app:layout_constraintHeight_percent=".1"
+                app:layout_constraintTop_toBottomOf="@+id/IsSensorAlwaysShow">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/ivSubnetEnable"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.041"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/config_ic_load_export" />
+
+            <TextView
+                    style="@style/configContentItem"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ems="14"
+                    android:text="@string/subnet_enable"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/ivSubnetEnable"
                     app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.appcompat.widget.AppCompatImageButton

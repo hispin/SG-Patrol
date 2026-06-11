@@ -147,6 +147,7 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
     private var pointAnnotationManager: PointAnnotationManager? = null
     private var annotationApi: AnnotationPlugin? = null
     private var pointAnnotation: PointAnnotation? = null
+    private var pointAnnotationOptions: PointAnnotationOptions? = null
     //////////////
 
     private var currentLocationMarker: Feature? = null
@@ -349,7 +350,7 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
 
         //remove all markers
         pointAnnotationManager?.deleteAll()
-        pointAnnotation = null
+        //pointAnnotation = null
 
         //clear the markers
         markersList = ArrayList<Feature>()
@@ -671,7 +672,7 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
 
             if (pointAnnotation == null) {
                 // Set options for the resulting symbol layer.
-                val pointAnnotationOptions: PointAnnotationOptions = PointAnnotationOptions()
+                pointAnnotationOptions = PointAnnotationOptions()
                     // Define a geographic coordinate.
                     .withPoint(Point.fromLngLat(myLocate?.longitude!!, myLocate?.latitude!!))
                     // Specify the bitmap you assigned to the point annotation
@@ -682,7 +683,7 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
                         )
                     )
                 // Add the resulting pointAnnotation to the map.
-                pointAnnotation = pointAnnotationManager?.create(pointAnnotationOptions)
+                pointAnnotation = pointAnnotationOptions?.let { pointAnnotationManager?.create(it) }
             } else {
                 //if pointAnnotation is already exist then update the current markers location
                 pointAnnotation?.point =
@@ -1266,7 +1267,12 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             activity?.registerReceiver(usbReceiver, filter, AppCompatActivity.RECEIVER_EXPORTED)
         } else {
-            activity?.registerReceiver(usbReceiver, filter)
+            ContextCompat.registerReceiver(
+                requireActivity(),
+                usbReceiver,
+                filter,
+                ContextCompat.RECEIVER_NOT_EXPORTED
+            )
         }
     }
 
