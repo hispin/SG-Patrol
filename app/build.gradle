@@ -2,28 +2,15 @@ apply plugin: 'com.android.application'
 
 apply plugin: 'kotlin-android'
 
-//apply plugin: 'com.google.gms.google-services'
-
-//apply plugin: 'kotlin-android-extensions'
-
-//apply plugin: 'com.google.firebase.crashlytics'
-
-//apply plugin: 'io.fabric'
-
-repositories {
-    maven { url 'https://maven.fabric.io/public' }
-}
-
 android {
     compileSdkVersion 36
     defaultConfig {
         applicationId "com.sensoguard.detectsensor"
         minSdkVersion 26
         targetSdkVersion 36
-        versionCode 157
-        versionName "1.157"
+        versionCode 158
+        versionName "1.158"
         vectorDrawables.useSupportLibrary = true
-        //testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
     signingConfigs {
@@ -45,26 +32,18 @@ android {
 
     buildTypes {
         release {
-            //debuggable true
-            //signingConfig signingConfigs.debug
             signingConfig signingConfigs.release
-            //ext.enableCrashlytics = true
 
             //bug fixed:the email (javax) is not been sent when minifyEnabled = true
             minifyEnabled false
-            //buildConfigField "Boolean", "REPORT_CRASH", 'true'
-            //minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             ndk.debugSymbolLevel = "FULL"
         }
         debug {
             ext.alwaysUpdateBuildId = false
-//            //ext.enableCrashlytics = false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 
-            //buildConfigField "Boolean", "REPORT_CRASH", 'false'
             debuggable true
-//            minifyEnabled false
         }
     }
 
@@ -96,20 +75,14 @@ configurations {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'com.android.support:appcompat-v7:34.1.1'
-    implementation 'com.android.support.constraint:constraint-layout:2.0.4'
-    implementation 'com.android.support:support-v4:34.0.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.navigation:navigation-fragment-ktx:2.9.6'
     implementation 'androidx.navigation:navigation-ui-ktx:2.9.6'
     implementation 'androidx.activity:activity:1.12.2'
     testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation 'com.google.android.things:androidthings:1.0'
     implementation 'com.google.android.gms:play-services-maps:19.2.0'
     implementation 'com.github.kai-morich:usb-serial-for-android:1.7.0'
-    implementation 'com.android.support:design:34.0.0'
     implementation 'com.google.code.gson:gson:2.13.2'
     implementation 'com.google.android.gms:play-services-location:21.3.0'
     implementation 'com.google.android.material:material:1.13.0'
@@ -123,17 +96,7 @@ dependencies {
 
     //map box
     implementation 'com.mapbox.maps:android-ndk27:11.14.4'
-    //implementation 'com.mapbox.maps:android:11.14.4'
 
-    //implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-locationlayer:0.11.0'
-    //implementation 'com.mapbox.mapboxsdk:mapbox-sdk-services:5.8.0'
-
-
-//    implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:9.5.0'
-    //implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-offline-v9:0.7.0'
-    //implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-building-v9:0.7.0'
-    //implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-annotation-v9:0.9.0'
-    //implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-markerview-v7:0.2.0'
     implementation 'com.mapbox.mapboxsdk:mapbox-sdk-geojson:6.9.0'
 
 

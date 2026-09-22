@@ -914,7 +914,7 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
                         )
                     )
                     allowOverlap(false)
-                    annotationAnchor { anchor(ViewAnnotationAnchor.BOTTOM) }
+                    annotationAnchor { anchor(ViewAnnotationAnchor.CENTER) }
                     //visible(false)
                 }
 
