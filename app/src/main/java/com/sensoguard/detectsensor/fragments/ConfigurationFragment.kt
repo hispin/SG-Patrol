@@ -8,6 +8,7 @@ import android.content.Intent
 import android.graphics.Typeface
 import android.media.RingtoneManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.text.InputType
 import android.text.method.HideReturnsTransformationMethod
@@ -338,7 +339,15 @@ open class ConfigurationFragment : ParentFragment(), CallToParentInterface {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?) {
         if (resultCode == Activity.RESULT_OK && requestCode == 5) {
-            val uri = intent!!.getParcelableExtra<Uri>(RingtoneManager.EXTRA_RINGTONE_PICKED_URI)
+            val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                intent!!.getParcelableExtra(
+                    RingtoneManager.EXTRA_RINGTONE_PICKED_URI,
+                    Uri::class.java
+                )
+            } else {
+                @Suppress("DEPRECATION")
+                intent!!.getParcelableExtra<Uri>(RingtoneManager.EXTRA_RINGTONE_PICKED_URI)
+            }
 
             if (uri != null) {
                 val ringtone = RingtoneManager.getRingtone(activity, uri)
@@ -549,9 +558,7 @@ open class ConfigurationFragment : ParentFragment(), CallToParentInterface {
         if (item is GeneralItemMenu) {
             if (listPopupWindow != null && listPopupWindow!!.isShowing) {
                 listPopupWindow?.dismiss()
-                if (item != null) {
-                    showCurrentLanguage(item)
-                }
+                showCurrentLanguage(item)
                 listener?.updateLanguage()
             }
         }

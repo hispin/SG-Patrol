@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.sensoguard.detectsensor.R
 import com.sensoguard.detectsensor.classes.Sensor
 import com.sensoguard.detectsensor.interfaces.OnAdapterListener
-import java.util.*
 
 
 class SensorsDialogAdapter (private var sensors: ArrayList<Sensor>, val context: Context, val onAdapterListener: OnAdapterListener, var itemClick: (Sensor) -> Unit) : RecyclerView.Adapter<SensorsDialogAdapter.ViewHolder>() {
@@ -69,7 +68,7 @@ class SensorsDialogAdapter (private var sensors: ArrayList<Sensor>, val context:
 
         init {
             itemView.setOnClickListener {
-                //itemClick.invoke(sensors[adapterPosition])
+                //itemClick.invoke(sensors[bindingAdapterPosition])
             }
         }
 

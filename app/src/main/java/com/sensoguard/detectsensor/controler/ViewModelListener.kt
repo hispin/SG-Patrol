@@ -73,10 +73,9 @@ class ViewModelListener(application: Application) : AndroidViewModel(application
                     //stop the timer
                     shutDownTimer()
                     //stop the sound alarm
-                    getApplication<Application>().applicationContext.sendBroadcast(
-                        Intent(
-                            STOP_ALARM_SOUND
-                        )
+                    val appContext = getApplication<Application>().applicationContext
+                    appContext.sendBroadcast(
+                        Intent(STOP_ALARM_SOUND).setPackage(appContext.packageName)
                     )
                 }
                 // update screen if showed

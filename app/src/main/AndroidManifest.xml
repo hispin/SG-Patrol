@@ -17,9 +17,6 @@
     <uses-permission
             android:name="android.permission.WRITE_EXTERNAL_STORAGE"
             tools:ignore="ScopedStorage" />
-    <uses-permission
-            android:name="android.permission.READ_MEDIA_IMAGES"
-            tools:node="remove" />
     <uses-feature android:name="android.hardware.location.gps" />
 
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />

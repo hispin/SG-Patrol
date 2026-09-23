@@ -3,9 +3,6 @@ package com.sensoguard.detectsensor.global
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.os.Build
-import android.os.Environment
-import android.util.Log
 import androidx.core.content.FileProvider
 import com.opencsv.CSVWriter
 import com.sensoguard.detectsensor.R
@@ -26,7 +23,7 @@ const val mfileName="SG-AlarmLog.csv"
 private fun alarmTitlesToCsvString(context: Context): String {
 
     var res = context.resources
-    val placeHolderBitmap = "Bitmap"
+    "Bitmap"
 
     //val mySeparator=";"
     val sb = StringBuilder()
@@ -49,7 +46,7 @@ private fun alarmTitlesToCsvString(context: Context): String {
 private fun alarmToCsvString(alarm: Alarm?, context: Context): String {
 
 
-    val placeHolderBitmap="Bitmap"
+    "Bitmap"
 
     //val mySeparator=";"
     val sb=StringBuilder()
@@ -93,7 +90,7 @@ fun writeCsvFile(mCsvAlarms: ArrayList<String>,context:Context): Boolean {
 
         val iteratorList = mCsvAlarms.listIterator()
 
-        while (iteratorList != null && iteratorList.hasNext()) {
+        while (iteratorList.hasNext()) {
             val item = iteratorList.next()
 
             val strArr = item.split(mySeparator)
@@ -133,11 +130,9 @@ fun shareCsv(activity: Activity) {
     sendIntent.putExtra(Intent.EXTRA_EMAIL, "")
 
     val resources = activity.resources
-    val locale =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) resources.configuration.locales.getFirstMatch(
-            resources.assets.locales
-        )
-        else resources.configuration.locale
+    val locale = resources.configuration.locales.getFirstMatch(
+        resources.assets.locales
+    )
     val dateFormat = SimpleDateFormat("dd/MM/yy", locale)
     val dateString = dateFormat.format(Calendar.getInstance().time)
 
@@ -163,7 +158,7 @@ fun alarmsListToCsvFile(alarms: ArrayList<Alarm>?, context: Context): ArrayList<
     val csvString= alarmTitlesToCsvString(context)
     SyncProcesses.getInstance().syncAddItemToList(mCsvAlarms, csvString)
 
-    while (iteratorList != null && iteratorList.hasNext()) {
+    while (iteratorList?.hasNext() == true) {
         val item=iteratorList.next()
         val csvString= alarmToCsvString(item, context)
         SyncProcesses.getInstance().syncAddItemToList(mCsvAlarms, csvString)
@@ -196,7 +191,7 @@ fun alarmsListToCsvFile(alarms: ArrayList<Alarm>?, context: Context): ArrayList<
 //            val sb=StringBuilder()
 //            val iteratorList=alarms?.listIterator()
 //
-//            while (iteratorList != null && iteratorList.hasNext()) {
+//            while (iteratorList.hasNext()) {
 //                val item=iteratorList.next()
 //                sb.append(item.toString())
 //                sb.append(mySeparator)

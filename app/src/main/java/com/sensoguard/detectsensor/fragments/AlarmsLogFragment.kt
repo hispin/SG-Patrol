@@ -18,7 +18,6 @@ import android.widget.CheckBox
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -315,19 +314,20 @@ class AlarmsLogFragment : ParentFragment(), OnAdapterListener {
     private fun storeAlarmsToLocally(alarms: ArrayList<Alarm>) {
         // sort the list of events by date in descending
         val alarms = ArrayList(alarms.sortedWith(compareByDescending { it.timeInMillis }))
-        if (alarms != null) {
-            val alarmsJsonStr = convertToAlarmsGson(alarms)
-            setStringInPreference(activity, ALARM_LIST_KEY_PREF, alarmsJsonStr)
-        }
+        val alarmsJsonStr = convertToAlarmsGson(alarms)
+        setStringInPreference(activity, ALARM_LIST_KEY_PREF, alarmsJsonStr)
     }
 
 
     private fun setFilter() {
         val filter = IntentFilter(HANDLE_ALARM_KEY)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            activity?.registerReceiver(usbReceiver, filter, AppCompatActivity.RECEIVER_EXPORTED)
-        } else {
-            activity?.registerReceiver(usbReceiver, filter)
+        activity?.let {
+            ContextCompat.registerReceiver(
+                it,
+                usbReceiver,
+                filter,
+                ContextCompat.RECEIVER_NOT_EXPORTED
+            )
         }
     }
 
@@ -408,6 +408,7 @@ class AlarmsLogFragment : ParentFragment(), OnAdapterListener {
                         fromCalendar = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                             bundle.getSerializable(FROM_CALENDAR, Calendar::class.java)
                         } else {
+                            @Suppress("DEPRECATION")
                             bundle.getSerializable(FROM_CALENDAR) as Calendar
                         }
                         //Bug fixed: remove UTC:
@@ -415,6 +416,7 @@ class AlarmsLogFragment : ParentFragment(), OnAdapterListener {
                         toCalendar = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                             bundle.getSerializable(TO_CALENDAR, Calendar::class.java)
                         } else {
+                            @Suppress("DEPRECATION")
                             bundle.getSerializable(TO_CALENDAR) as Calendar
                         }
                         //Bug fixed: remove UTC:
@@ -507,7 +509,7 @@ class AlarmsLogFragment : ParentFragment(), OnAdapterListener {
     //toggle selected/unselected alarms
     private fun toggleItemSelected(alarms: ArrayList<Alarm>, isSelected: Boolean) {
         val iteratorList = alarms.listIterator()
-        while (iteratorList != null && iteratorList.hasNext()) {
+        while (iteratorList.hasNext()) {
             val item = iteratorList.next()
             item.isReadyToDelete = isSelected
             alarmAdapter?.setDetects(alarms)
@@ -522,7 +524,7 @@ class AlarmsLogFragment : ParentFragment(), OnAdapterListener {
         }
         mySortedAlarms = ArrayList()
         val iteratorList = myAlarms?.listIterator()
-        while (iteratorList != null && iteratorList.hasNext()) {
+        while (iteratorList?.hasNext() == true) {
             val item = iteratorList.next()
             if (item.timeInMillis != null
                 && item.timeInMillis!! <= toCalendar!!.timeInMillis
@@ -540,7 +542,7 @@ class AlarmsLogFragment : ParentFragment(), OnAdapterListener {
 
         mySortedAlarms = ArrayList()
         val iteratorList = myAlarms?.listIterator()
-        while (iteratorList != null && iteratorList.hasNext()) {
+        while (iteratorList?.hasNext() == true) {
             val item = iteratorList.next()
             if (isAlarmSorted(item, mySortedCameras))
                 mySortedAlarms?.add(item)
@@ -554,7 +556,7 @@ class AlarmsLogFragment : ParentFragment(), OnAdapterListener {
     ): Boolean {
 
         val iteratorList = mySystemSort?.listIterator()
-        while (iteratorList != null && iteratorList.hasNext()) {
+        while (iteratorList?.hasNext() == true) {
             val item = iteratorList.next()
             if (itemP.name.equals(item.cameraName) && item.isSorted != null && item.isSorted!!) {
                 return true
@@ -567,7 +569,7 @@ class AlarmsLogFragment : ParentFragment(), OnAdapterListener {
     private fun getCountItemSelected(alarms: ArrayList<Alarm>): Int {
         val iteratorList = alarms.listIterator()
         var counter = 0
-        while (iteratorList != null && iteratorList.hasNext()) {
+        while (iteratorList.hasNext()) {
             val item = iteratorList.next()
             if (item.isReadyToDelete) {
                 counter++
@@ -615,7 +617,7 @@ class AlarmsLogFragment : ParentFragment(), OnAdapterListener {
     private fun deleteItemSelected(alarms: ArrayList<Alarm>): Int {
         val iteratorList = alarms.listIterator()
         var counter = 0
-        while (iteratorList != null && iteratorList.hasNext()) {
+        while (iteratorList.hasNext()) {
             val item = iteratorList.next()
             if (item.isReadyToDelete) {
                 iteratorList.remove()

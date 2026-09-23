@@ -10,7 +10,7 @@ import java.lang.ref.WeakReference
 fun storeSensorsToLocally(sensors:ArrayList<Sensor>,context: Context){
 
     var detectorsJsonStr:String?=""
-    if(sensors!=null && sensors.size>0){
+    if (sensors.size > 0) {
         detectorsJsonStr= convertToGson(sensors)
     }
     setStringInPreference(context,DETECTORS_LIST_KEY_PREF,detectorsJsonStr)
@@ -77,9 +77,7 @@ fun storeAlarmsToLocally(alarms: java.util.ArrayList<Alarm>, context: Context) {
         WeakReference(context)
     // sort the list of events by date in descending
     val alarms = java.util.ArrayList(alarms.sortedWith(compareByDescending { it.timeInMillis }))
-    if (alarms != null) {
-        val alarmsJsonStr = convertToAlarmsGson(alarms)
-        setStringInPreference(wContext.get(), ALARM_LIST_KEY_PREF, alarmsJsonStr)
-    }
+    val alarmsJsonStr = convertToAlarmsGson(alarms)
+    setStringInPreference(wContext.get(), ALARM_LIST_KEY_PREF, alarmsJsonStr)
 }
 

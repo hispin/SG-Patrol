@@ -2,9 +2,9 @@
 
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!--    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">-->
-        <!-- Status bar stuff. -->
-        <item name="android:statusBarColor">@color/colorPrimaryDark</item>
-        <item name="android:windowLightStatusBar">true</item>
+        <!-- Status bar appearance is now set programmatically in ParentActivity via
+             enableEdgeToEdge(), since android:statusBarColor/windowLightStatusBar are
+             deprecated for edge-to-edge on Android 15+. -->
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>

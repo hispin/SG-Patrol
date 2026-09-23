@@ -2,7 +2,6 @@ package com.sensoguard.detectsensor.global
 
 import android.content.Context
 import android.content.res.Configuration
-import android.os.Build
 import com.sensoguard.detectsensor.classes.GeneralItemMenu
 import com.sensoguard.detectsensor.classes.LanguageManager
 import java.util.*
@@ -30,7 +29,7 @@ fun configurationLanguage(context: Context) {
 //
 //set language for the application
 fun setAppLanguage(c: Context, lang: String) {
-    val localeNew = Locale(lang)
+    val localeNew = Locale.Builder().setLanguage(lang).build()
     Locale.setDefault(localeNew)
 
     val res = c.resources
@@ -40,11 +39,7 @@ fun setAppLanguage(c: Context, lang: String) {
     newConfig.setLayoutDirection(localeNew)
 
     res.updateConfiguration(newConfig, res.displayMetrics)
-
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-        newConfig.setLocale(localeNew)
-        c.createConfigurationContext(newConfig)
-    }
+    c.createConfigurationContext(newConfig)
 }
 
 

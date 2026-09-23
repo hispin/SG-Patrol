@@ -72,7 +72,7 @@ class CommandAdapter(
         myRv = recyclerView
     }
 
-    override fun onBindViewHolder(holder: CommandAdapter.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bindReservation((commands[position]))
         holder.setIsRecyclable(false)
         myPos = position
@@ -82,7 +82,7 @@ class CommandAdapter(
         return this.commands.size
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, p1: Int): CommandAdapter.ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, p1: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_command, parent, false)
 
 
@@ -126,22 +126,25 @@ class CommandAdapter(
         init {
             itemView.setOnClickListener {
 
-                if (commands[adapterPosition].commandName == context.resources.getString(R.string.set_sens_level)
-                    || commands[adapterPosition].commandName == context.resources.getString(R.string.set_snr)
-                    || commands[adapterPosition].commandName == context.resources.getString(R.string.set_logic_param)
-                    || commands[adapterPosition].commandName == context.resources.getString(R.string.set_min_power)
+                if (commands[bindingAdapterPosition].commandName == context.resources.getString(R.string.set_sens_level)
+                    || commands[bindingAdapterPosition].commandName == context.resources.getString(R.string.set_snr)
+                    || commands[bindingAdapterPosition].commandName == context.resources.getString(R.string.set_logic_param)
+                    || commands[bindingAdapterPosition].commandName == context.resources.getString(R.string.set_min_power)
                 ) {
-                    commands[adapterPosition].isExpand = !commands[adapterPosition].isExpand
+                    commands[bindingAdapterPosition].isExpand =
+                        !commands[bindingAdapterPosition].isExpand
                     //Bug fixed:when expand the command ,zero the car and intruder selection (for update ses command)
-                    if (commands[adapterPosition].isExpand
-                        && commands[adapterPosition].commandName == context.resources.getString(R.string.set_sens_level)
+                    if (commands[bindingAdapterPosition].isExpand
+                        && commands[bindingAdapterPosition].commandName == context.resources.getString(
+                            R.string.set_sens_level
+                        )
                     ) {
-                        commands[adapterPosition].sensCar = 4
-                        commands[adapterPosition].sensIntruder = 4
+                        commands[bindingAdapterPosition].sensCar = 4
+                        commands[bindingAdapterPosition].sensIntruder = 4
                     }
                     notifyDataSetChanged()
-                } else if (adapterPosition >= 0) {
-                    itemClick.invoke(commands[adapterPosition])
+                } else if (bindingAdapterPosition >= 0) {
+                    itemClick.invoke(commands[bindingAdapterPosition])
                 }
             }
         }
@@ -177,9 +180,9 @@ class CommandAdapter(
 
             //set the last selection as long as the command of update sens is open
 
-            if (commands[adapterPosition].commandName == context.resources.getString(R.string.set_sens_level)) {
-                spCarSens?.setSelection(commands[adapterPosition].sensCar)
-                spIntruderSens?.setSelection(commands[adapterPosition].sensIntruder)
+            if (commands[bindingAdapterPosition].commandName == context.resources.getString(R.string.set_sens_level)) {
+                spCarSens?.setSelection(commands[bindingAdapterPosition].sensCar)
+                spIntruderSens?.setSelection(commands[bindingAdapterPosition].sensIntruder)
             }
 
             btnSendCmd = _itemView.findViewById(R.id.btnSendCmd)
@@ -472,17 +475,17 @@ class CommandAdapter(
                 ) {
 
                 } else {
-                    when (commands[adapterPosition].commandName) {
+                    when (commands[bindingAdapterPosition].commandName) {
                         context.resources.getString(R.string.set_sens_level) -> {
-                            commands[adapterPosition].sensCar =
+                            commands[bindingAdapterPosition].sensCar =
                                 spCarSens?.selectedItem.toString().toInt()
-                            commands[adapterPosition].sensIntruder =
+                            commands[bindingAdapterPosition].sensIntruder =
                                 spIntruderSens?.selectedItem.toString().toInt()
-                            commands[adapterPosition].commandContent?.set(
+                            commands[bindingAdapterPosition].commandContent?.set(
                                 4,
                                 spCarSens?.selectedItem.toString().toInt()
                             )
-                            commands[adapterPosition].commandContent?.set(
+                            commands[bindingAdapterPosition].commandContent?.set(
                                 5,
                                 spIntruderSens?.selectedItem.toString().toInt()
                             )
@@ -496,7 +499,7 @@ class CommandAdapter(
                                 SET_SENS_INTRUDER_VALUE,
                                 spIntruderSens?.selectedItem.toString().toInt()
                             )
-                            itemClick.invoke(commands[adapterPosition])
+                            itemClick.invoke(commands[bindingAdapterPosition])
                         }
 
                         context.resources.getString(R.string.set_snr) -> {
@@ -506,17 +509,17 @@ class CommandAdapter(
                                 val intruderSrn: Float = etIntruderSnr?.text.toString().toFloat()
                                 val intruderFirst: Int = intruderSrn.toInt()
                                 val intruderSecond: Float = 10 * (intruderSrn - intruderFirst)
-                                commands[adapterPosition].snrCar = carSrn
-                                commands[adapterPosition].snrIntruder = intruderSrn
-                                commands[adapterPosition].commandContent?.set(
+                                commands[bindingAdapterPosition].snrCar = carSrn
+                                commands[bindingAdapterPosition].snrIntruder = intruderSrn
+                                commands[bindingAdapterPosition].commandContent?.set(
                                     4,
                                     intruderFirst
                                 )
-                                commands[adapterPosition].commandContent?.set(
+                                commands[bindingAdapterPosition].commandContent?.set(
                                     5,
                                     intruderSecond.toInt()
                                 )
-                                commands[adapterPosition].commandContent?.set(
+                                commands[bindingAdapterPosition].commandContent?.set(
                                     6,
                                     carSrn
                                 )
@@ -530,7 +533,7 @@ class CommandAdapter(
                                     SET_SNR_INTRUDER_VALUE,
                                     etIntruderSnr?.text.toString()
                                 )
-                                itemClick.invoke(commands[adapterPosition])
+                                itemClick.invoke(commands[bindingAdapterPosition])
                             }
                         }
                         //set logic param
@@ -548,31 +551,32 @@ class CommandAdapter(
                                     val durationIntruder =
                                         etIntruderDuration?.text.toString().toInt()
                                     val seconds = etSeconds?.text.toString().toInt()
-                                    commands[adapterPosition].logicCountCar = countCar
-                                    commands[adapterPosition].logicdurationCar = durationCar
-                                    commands[adapterPosition].logicCountIntruder = countIntruder
-                                    commands[adapterPosition].logicdurationIntruder =
+                                    commands[bindingAdapterPosition].logicCountCar = countCar
+                                    commands[bindingAdapterPosition].logicdurationCar = durationCar
+                                    commands[bindingAdapterPosition].logicCountIntruder =
+                                        countIntruder
+                                    commands[bindingAdapterPosition].logicdurationIntruder =
                                         durationIntruder
-                                    commands[adapterPosition].logicSecomds = seconds
+                                    commands[bindingAdapterPosition].logicSecomds = seconds
 
 
-                                    commands[adapterPosition].commandContent?.set(
+                                    commands[bindingAdapterPosition].commandContent?.set(
                                         4,
                                         countCar
                                     )
-                                    commands[adapterPosition].commandContent?.set(
+                                    commands[bindingAdapterPosition].commandContent?.set(
                                         5,
                                         durationCar
                                     )
-                                    commands[adapterPosition].commandContent?.set(
+                                    commands[bindingAdapterPosition].commandContent?.set(
                                         6,
                                         countIntruder
                                     )
-                                    commands[adapterPosition].commandContent?.set(
+                                    commands[bindingAdapterPosition].commandContent?.set(
                                         7,
                                         durationIntruder
                                     )
-                                    commands[adapterPosition].commandContent?.set(
+                                    commands[bindingAdapterPosition].commandContent?.set(
                                         8,
                                         seconds
                                     )
@@ -601,7 +605,7 @@ class CommandAdapter(
                                         SET_LOGIC_SUSPEND_SEISMIC_VALUE,
                                         etSeconds?.text.toString()
                                     )
-                                    itemClick.invoke(commands[adapterPosition])
+                                    itemClick.invoke(commands[bindingAdapterPosition])
                                 }
                             } else if (command.sensorType == RADAR_TYPE
                                 || command.sensorType == PIR_TYPE
@@ -620,21 +624,22 @@ class CommandAdapter(
                                         val durationCar =
                                             etCarDuration?.text.toString().toInt()
 
-                                        commands[adapterPosition].logicCountIntruder = countCar
-                                        commands[adapterPosition].logicdurationIntruder =
+                                        commands[bindingAdapterPosition].logicCountIntruder =
+                                            countCar
+                                        commands[bindingAdapterPosition].logicdurationIntruder =
                                             durationCar
-                                        commands[adapterPosition].logicSecomds = seconds
+                                        commands[bindingAdapterPosition].logicSecomds = seconds
 
 
-                                        commands[adapterPosition].commandContent?.set(
+                                        commands[bindingAdapterPosition].commandContent?.set(
                                             6,
                                             countCar
                                         )
-                                        commands[adapterPosition].commandContent?.set(
+                                        commands[bindingAdapterPosition].commandContent?.set(
                                             7,
                                             durationCar
                                         )
-                                        commands[adapterPosition].commandContent?.set(
+                                        commands[bindingAdapterPosition].commandContent?.set(
                                             8,
                                             seconds
                                         )
@@ -671,7 +676,7 @@ class CommandAdapter(
                                                 etSeconds?.text.toString()
                                             )
                                         }
-                                        itemClick.invoke(commands[adapterPosition])
+                                        itemClick.invoke(commands[bindingAdapterPosition])
                                     }
                                 }
                                 //vibration
@@ -688,21 +693,21 @@ class CommandAdapter(
                                     val durationCar =
                                         etCarDuration?.text.toString().toInt()
 
-                                    commands[adapterPosition].logicCountIntruder = countCar
-                                    commands[adapterPosition].logicdurationIntruder =
+                                    commands[bindingAdapterPosition].logicCountIntruder = countCar
+                                    commands[bindingAdapterPosition].logicdurationIntruder =
                                         durationCar
-                                    commands[adapterPosition].logicSecomds = seconds
+                                    commands[bindingAdapterPosition].logicSecomds = seconds
 
 
-                                    commands[adapterPosition].commandContent?.set(
+                                    commands[bindingAdapterPosition].commandContent?.set(
                                         4,
                                         countCar
                                     )
-                                    commands[adapterPosition].commandContent?.set(
+                                    commands[bindingAdapterPosition].commandContent?.set(
                                         5,
                                         durationCar
                                     )
-                                    commands[adapterPosition].commandContent?.set(
+                                    commands[bindingAdapterPosition].commandContent?.set(
                                         8,
                                         seconds
                                     )
@@ -721,7 +726,7 @@ class CommandAdapter(
                                         SET_LOGIC_SUSPEND_VIB_VALUE,
                                         etSeconds?.text.toString()
                                     )
-                                    itemClick.invoke(commands[adapterPosition])
+                                    itemClick.invoke(commands[bindingAdapterPosition])
                                 }
 
                             }
@@ -741,23 +746,23 @@ class CommandAdapter(
                                         return@setOnClickListener
                                     }
                                     if (minPower <= 256) {
-                                        commands[adapterPosition].minPower = minPower
-                                        commands[adapterPosition].commandContent?.set(
+                                        commands[bindingAdapterPosition].minPower = minPower
+                                        commands[bindingAdapterPosition].commandContent?.set(
                                             4,
                                             minPower
                                         )
-                                        commands[adapterPosition].commandContent?.set(
+                                        commands[bindingAdapterPosition].commandContent?.set(
                                             5,
                                             0
                                         )
                                     } else {
                                         val promote = minPower / 256
                                         val reminder = minPower % 256
-                                        commands[adapterPosition].commandContent?.set(
+                                        commands[bindingAdapterPosition].commandContent?.set(
                                             4,
                                             reminder
                                         )
-                                        commands[adapterPosition].commandContent?.set(
+                                        commands[bindingAdapterPosition].commandContent?.set(
                                             5,
                                             promote
                                         )
@@ -778,7 +783,7 @@ class CommandAdapter(
                                         )
                                     }
 
-                                    itemClick.invoke(commands[adapterPosition])
+                                    itemClick.invoke(commands[bindingAdapterPosition])
                                 }
                             } else if (command.sensorType == RADAR_TYPE
                                 || command.sensorType == PIR_TYPE
@@ -786,8 +791,8 @@ class CommandAdapter(
                                 if (validIsEmpty(etCarSnr)) {
                                     var minPower = etCarSnr?.text.toString().toInt()
                                     if (minPower in 1..7) {
-                                        commands[adapterPosition].minPower = minPower
-                                        commands[adapterPosition].commandContent?.set(
+                                        commands[bindingAdapterPosition].minPower = minPower
+                                        commands[bindingAdapterPosition].commandContent?.set(
                                             4,
                                             minPower
                                         )
@@ -805,7 +810,7 @@ class CommandAdapter(
                                             )
                                         }
 
-                                        itemClick.invoke(commands[adapterPosition])
+                                        itemClick.invoke(commands[bindingAdapterPosition])
                                     } else {
                                         etCarSnr?.error =
                                             context.getString(R.string.value_out_of_range)

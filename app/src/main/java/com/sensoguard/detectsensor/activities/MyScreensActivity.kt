@@ -14,6 +14,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.VibrationEffect
 import android.os.Vibrator
+import android.os.VibratorManager
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
@@ -24,6 +25,9 @@ import androidx.activity.OnBackPressedCallback
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -77,7 +81,7 @@ import com.sensoguard.detectsensor.services.ServiceHandleAlarms
 import java.util.*
 
 
-class MyScreensActivity : ParentActivity(), OnFragmentListener, Observer {
+class MyScreensActivity : ParentActivity(), OnFragmentListener {
 
     var vPager: NonSwipeAbleViewPager? = null
 
@@ -116,6 +120,20 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, Observer {
 
         setContentView(R.layout.activity_my_screens)
 
+        //let the toolbar's background extend behind the status bar (so its icons stay
+        //visible against it), while the rest of the screen is padded away from the
+        //left/right/bottom system bars
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(android.R.id.content)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, 0, systemBars.right, systemBars.bottom)
+            insets
+        }
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.toolbar)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.updatePadding(top = systemBars.top)
+            insets
+        }
+
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
 
         vPager = findViewById(R.id.vPager)
@@ -144,7 +162,7 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, Observer {
                 //if there is no alarm in process then shut down the timer
                 if (UserSession.instance.alarmSensors == null || UserSession.instance.alarmSensors?.isEmpty()!!) {
                     ViewModelProvider(this)[ViewModelListener::class.java].shutDownTimer()
-                    sendBroadcast(Intent(STOP_ALARM_SOUND))
+                    sendBroadcast(Intent(STOP_ALARM_SOUND).setPackage(packageName))
                 }
 
             })
@@ -308,20 +326,22 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, Observer {
                 getBooleanInPreference(applicationContext, IS_VIBRATE_WHEN_ALARM_KEY, true)
             if (isVibrateWhenAlarm) {
                 // Get instance of Vibrator from current Context
-                val vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-
-                // Vibrate for 200 milliseconds
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    vibrator.vibrate(
-                        VibrationEffect.createOneShot(
-                            1000,
-                            VibrationEffect.DEFAULT_AMPLITUDE
-                        )
-                    )
+                val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    val vibratorManager =
+                        getSystemService(VIBRATOR_MANAGER_SERVICE) as VibratorManager
+                    vibratorManager.defaultVibrator
                 } else {
-                    vibrator.vibrate(1000)
+                    @Suppress("DEPRECATION")
+                    getSystemService(VIBRATOR_SERVICE) as Vibrator
                 }
 
+                // Vibrate for 1000 milliseconds
+                vibrator.vibrate(
+                    VibrationEffect.createOneShot(
+                        1000,
+                        VibrationEffect.DEFAULT_AMPLITUDE
+                    )
+                )
             }
 
         }
@@ -361,7 +381,7 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, Observer {
      */
     fun findUsbDevices(): Boolean {
         // Find all available drivers from attached devices.
-        val manager = getSystemService(Context.USB_SERVICE) as UsbManager
+        val manager = getSystemService(USB_SERVICE) as UsbManager
         try {
             val usbDevices = manager.deviceList
 
@@ -396,11 +416,12 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, Observer {
         filter.addAction(STOP_ALARM_SOUND)
         filter.addAction("not_connection")
         filter.addAction("yes_connection")
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(usbReceiver, filter, RECEIVER_EXPORTED)
-        } else {
-            registerReceiver(usbReceiver, filter)
-        }
+        ContextCompat.registerReceiver(
+            this,
+            usbReceiver,
+            filter,
+            ContextCompat.RECEIVER_NOT_EXPORTED
+        )
 
     }
 
@@ -463,9 +484,9 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, Observer {
                 startConnectionService()
             } else {
                 setBooleanInPreference(this, USB_DEVICE_CONNECT_STATUS, false)
-                sendBroadcast(Intent(STOP_READ_DATA_KEY))
+                sendBroadcast(Intent(STOP_READ_DATA_KEY).setPackage(packageName))
                 //sendBroadcast(Intent(DISCONNECT_USB_PROCESS_KEY))
-                sendBroadcast(Intent(STOP_ALARM_SOUND))
+                sendBroadcast(Intent(STOP_ALARM_SOUND).setPackage(packageName))
             }
         }
     }
@@ -655,7 +676,7 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, Observer {
                     df.dismiss()
 
                 } else {//normal
-                    sendBroadcast(Intent(STOP_ALARM_SOUND))
+                    sendBroadcast(Intent(STOP_ALARM_SOUND).setPackage(packageName))
                     //start activity for loading new language if it has been changed
                     startActivity(Intent(this@MyScreensActivity, MainActivity::class.java))
                 }
@@ -672,7 +693,7 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, Observer {
 //
 //        } else {//normal
 //            super.onBackPressed()
-//            sendBroadcast(Intent(STOP_ALARM_SOUND))
+//            sendBroadcast(Intent(STOP_ALARM_SOUND).setPackage(packageName))
 //            //start activity for loading new language if it has been changed
 //            startActivity(Intent(this, MainActivity::class.java))
 //        }
@@ -686,10 +707,6 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, Observer {
         this.startActivity(intent)
     }
 
-
-    override fun update(o: Observable?, arg: Any?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
 
     inner class ClickHandler : Runnable {
 
@@ -710,7 +727,7 @@ class MyScreensActivity : ParentActivity(), OnFragmentListener, Observer {
             }
             runOnUiThread {
                 if (count >= 3) {
-                    sendBroadcast(Intent(ACTION_TOGGLE_TEST_MODE))
+                    sendBroadcast(Intent(ACTION_TOGGLE_TEST_MODE).setPackage(packageName))
                     count = 0
                     clickHundler = null
                 }

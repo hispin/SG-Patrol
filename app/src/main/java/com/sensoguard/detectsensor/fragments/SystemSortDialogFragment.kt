@@ -161,7 +161,7 @@ class SystemSortDialogFragment : DialogFragment(),
         val tmp = Calendar.getInstance()
 
         if (myCalendar?.selectedDates?.size != null && myCalendar?.selectedDates?.size!! > 0) {
-            tmp.time = myCalendar?.selectedDates?.first()
+            tmp.time = myCalendar?.selectedDates?.first()!!
             //tmp.timeZone=TimeZone.getTimeZone("GMT+3")
             fromCalendar?.set(Calendar.YEAR, tmp.get(Calendar.YEAR))
             fromCalendar?.set(Calendar.MONTH, tmp.get(Calendar.MONTH))
@@ -169,14 +169,14 @@ class SystemSortDialogFragment : DialogFragment(),
             //fromCalendar?.time=myCalendar?.selectedDates?.first()
         }
         if (myCalendar?.selectedDates?.size != null && myCalendar?.selectedDates?.size!! > 1) {
-            tmp.time = myCalendar?.selectedDates?.last()
+            tmp.time = myCalendar?.selectedDates?.last()!!
             //tmp.timeZone=TimeZone.getTimeZone("GMT+3")
             toCalendar?.set(Calendar.YEAR, tmp.get(Calendar.YEAR))
             toCalendar?.set(Calendar.MONTH, tmp.get(Calendar.MONTH))
             toCalendar?.set(Calendar.DAY_OF_MONTH, tmp.get(Calendar.DAY_OF_MONTH))
             //toCalendar?.time=myCalendar?.selectedDates?.last()
         } else if (myCalendar?.selectedDates?.size != null && myCalendar?.selectedDates?.size!! == 1) {
-            tmp.time = myCalendar?.selectedDates?.first()
+            tmp.time = myCalendar?.selectedDates?.first()!!
             //tmp.timeZone=TimeZone.getTimeZone("GMT+3")
             toCalendar?.set(Calendar.YEAR, tmp.get(Calendar.YEAR))
             toCalendar?.set(Calendar.MONTH, tmp.get(Calendar.MONTH))
@@ -205,13 +205,13 @@ class SystemSortDialogFragment : DialogFragment(),
             val fromDateStr = activity?.let { it1 -> getStringFromCalendar(it, "dd/MM/yy", it1) }
             tvFromDate?.text = fromDateStr
             val fromTimeStr = activity?.let { it1 -> getStringFromCalendar(it, "kk:mm", it1) }
-            btnFromTime?.setText(fromTimeStr)
+            btnFromTime?.text = fromTimeStr
         }
         toCalendar?.let {
             val toDateStr = activity?.let { it1 -> getStringFromCalendar(it, "dd/MM/yy", it1) }
             tvToDate?.text = toDateStr
             val toTimeStr = activity?.let { it1 -> getStringFromCalendar(it, "kk:mm", it1) }
-            btnToTime?.setText(toTimeStr)
+            btnToTime?.text = toTimeStr
         }
     }
 
@@ -227,10 +227,6 @@ class SystemSortDialogFragment : DialogFragment(),
             return
         }
 
-
-        if (parentFragmentManager == null) {
-            return
-        }
 
         if (sortType == SORT_BY_SYSTEM_KEY) {
 

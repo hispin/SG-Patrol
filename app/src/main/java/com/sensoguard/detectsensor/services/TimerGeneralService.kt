@@ -9,8 +9,8 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
 import android.os.IBinder
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import com.sensoguard.detectsensor.R
 import com.sensoguard.detectsensor.global.CHECK_USB_CONN_SW
 import com.sensoguard.detectsensor.global.STOP_GENERAL_TIMER
@@ -67,7 +67,7 @@ class TimerGeneralService : ParentService() {
         notificationTask = object : TimerTask() {
             override fun run() {
                 //check SW usb connection
-                sendBroadcast(Intent(CHECK_USB_CONN_SW))
+                sendBroadcast(Intent(CHECK_USB_CONN_SW).setPackage(packageName))
                 //Log.d("testGeneralTimer","ok")
                 //showShortToast(this@TimerGeneralService,"generalTimer")
             }
@@ -82,11 +82,12 @@ class TimerGeneralService : ParentService() {
 
     private fun setFilter() {
         val filter = IntentFilter(STOP_GENERAL_TIMER)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(usbReceiver, filter, AppCompatActivity.RECEIVER_EXPORTED)
-        } else {
-            registerReceiver(usbReceiver, filter)
-        }
+        ContextCompat.registerReceiver(
+            this,
+            usbReceiver,
+            filter,
+            ContextCompat.RECEIVER_NOT_EXPORTED
+        )
     }
 
     private val usbReceiver = object : BroadcastReceiver() {
@@ -116,7 +117,7 @@ class TimerGeneralService : ParentService() {
                 NotificationManager.IMPORTANCE_DEFAULT
             )
 
-            val `object` = getSystemService(Context.NOTIFICATION_SERVICE)
+            val `object` = getSystemService(NOTIFICATION_SERVICE)
             if (`object` != null && `object` is NotificationManager) {
                 `object`.createNotificationChannel(channel)
             }

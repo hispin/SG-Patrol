@@ -4,7 +4,6 @@ import android.app.Application
 import android.content.Context
 import android.content.res.Configuration
 import android.content.res.Resources
-import android.os.Build
 import com.sensoguard.detectsensor.classes.GeneralItemMenu
 import com.sensoguard.detectsensor.classes.LanguageManager
 import com.sensoguard.detectsensor.global.CURRENT_LANG_KEY_PREF
@@ -27,11 +26,7 @@ class LSPatrolApp : Application() {
         val configuration: Configuration = resources.configuration
         val locale: Locale = getLocale(this)
 
-        var mCurrentLocale = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            configuration.locales[0]
-        } else {
-            configuration.locale
-        }
+        var mCurrentLocale = configuration.locales[0]
 
         if (mCurrentLocale != locale) {
             configuration.setLocale(locale)
@@ -44,7 +39,7 @@ class LSPatrolApp : Application() {
         val lang = getStringInPreference(context, CURRENT_LANG_KEY_PREF, "en")
         //var lang = sharedPreferences.getString("language", "en")
 
-        return Locale(lang)
+        return Locale.Builder().setLanguage(lang).build()
     }
 
     private fun configurationLanguage() {

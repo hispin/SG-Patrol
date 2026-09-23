@@ -10,8 +10,9 @@ import android.net.Uri
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
+import android.os.VibratorManager
 import android.util.Log
-import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.sensoguard.detectsensor.classes.AlarmSensor
@@ -53,11 +54,12 @@ class MediaWorker(val context: Context, workerParams: WorkerParameters) :
 
     private fun setFilter() {
         val filter = IntentFilter(UPDATE_MEDIA)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            context.registerReceiver(usbReceiver, filter, AppCompatActivity.RECEIVER_EXPORTED)
-        } else {
-            context.registerReceiver(usbReceiver, filter)
-        }
+        ContextCompat.registerReceiver(
+            context,
+            usbReceiver,
+            filter,
+            ContextCompat.RECEIVER_NOT_EXPORTED
+        )
     }
 
     fun startTimer() {
@@ -204,20 +206,22 @@ class MediaWorker(val context: Context, workerParams: WorkerParameters) :
             getBooleanInPreference(applicationContext, IS_VIBRATE_WHEN_ALARM_KEY, true)
         if (isVibrateWhenAlarm) {
             // Get instance of Vibrator from current Context
-            val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
-
-            // Vibrate for 200 milliseconds
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                vibrator.vibrate(
-                    VibrationEffect.createOneShot(
-                        1000,
-                        VibrationEffect.DEFAULT_AMPLITUDE
-                    )
-                )
+            val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                val vibratorManager =
+                    context.getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+                vibratorManager.defaultVibrator
             } else {
-                vibrator.vibrate(1000)
+                @Suppress("DEPRECATION")
+                context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
             }
 
+            // Vibrate for 1000 milliseconds
+            vibrator.vibrate(
+                VibrationEffect.createOneShot(
+                    1000,
+                    VibrationEffect.DEFAULT_AMPLITUDE
+                )
+            )
         }
 
     }

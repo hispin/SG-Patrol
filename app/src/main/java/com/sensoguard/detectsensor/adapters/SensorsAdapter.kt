@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.sensoguard.detectsensor.R
 import com.sensoguard.detectsensor.classes.Sensor
 import com.sensoguard.detectsensor.interfaces.OnAdapterListener
-import java.util.*
 
 
 class SensorsAdapter(
@@ -62,7 +61,7 @@ class SensorsAdapter(
 
         init {
             itemView.setOnClickListener {
-                //itemClick.invoke(sensors[adapterPosition])
+                //itemClick.invoke(sensors[bindingAdapterPosition])
             }
         }
 
@@ -99,7 +98,7 @@ class SensorsAdapter(
 
 
                ibEditName?.setOnClickListener {
-                   itemClick.invoke(sensors[adapterPosition])
+                   itemClick.invoke(sensors[bindingAdapterPosition])
 //                   tvName?.visibility = View.INVISIBLE
 //                   etName?.visibility = View.VISIBLE
 //                   etName?.requestFocus()

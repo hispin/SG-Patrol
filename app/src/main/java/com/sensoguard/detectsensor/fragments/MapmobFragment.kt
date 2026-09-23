@@ -51,7 +51,6 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -363,7 +362,7 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
 
         // scan all saved (with locations) sensors
         val iteratorList = sensorsArr?.listIterator()
-        while (iteratorList != null && iteratorList.hasNext()) {
+        while (iteratorList?.hasNext() == true) {
             val sensorItem = iteratorList.next()
             if (sensorItem.getLatitude() != null
                 && sensorItem.getLongtitude() != null
@@ -472,7 +471,7 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
      */
     private fun showSensorMarker(sensorItem: Sensor) {
 
-        if (mapView == null || sensorItem == null) {
+        if (mapView == null) {
             return
         }
 
@@ -630,7 +629,7 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
 //    private fun removeSensorAlarmById(alarmId: String) {
 //
 //        val iteratorList = UserSession.instance.alarmSensors?.listIterator()
-//        while (iteratorList != null && iteratorList.hasNext()) {
+//        while (iteratorList.hasNext()) {
 //            val sensorItem = iteratorList.next()
 //            if (sensorItem.alarmSensorId == alarmId) {
 //                iteratorList.remove()
@@ -642,7 +641,7 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
     private fun getSensorAlarmBySensor(sensor: Sensor): AlarmSensor? {
 
         val iteratorList = UserSession.instance.alarmSensors?.listIterator()
-        while (iteratorList != null && iteratorList.hasNext()) {
+        while (iteratorList?.hasNext() == true) {
             val sensorItem = iteratorList.next()
             if (sensorItem.alarmSensorId == sensor.getId()) {
                 return sensorItem
@@ -1132,7 +1131,7 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
     //remove all the time out sensors alarm and show them with regular sensor marker
 //    private fun replaceSensorAlarmTimeOutToSensorMarker() {
 //        val iteratorList = UserSession.instance.alarmSensors?.listIterator()
-//        while (iteratorList != null && iteratorList.hasNext()) {
+//        while (iteratorList.hasNext()) {
 //            val sensorItem = iteratorList.next()
 //            if (isSensorAlarmTimeout(sensorItem)) {
 //                //show regular sensor marker
@@ -1264,16 +1263,12 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
         filter.addAction(GET_CURRENT_SINGLE_LOCATION_KEY)
         filter.addAction(STOP_ALARM_SOUND)
         filter.addAction(ACTION_TOGGLE_TEST_MODE)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            activity?.registerReceiver(usbReceiver, filter, AppCompatActivity.RECEIVER_EXPORTED)
-        } else {
-            ContextCompat.registerReceiver(
-                requireActivity(),
-                usbReceiver,
-                filter,
-                ContextCompat.RECEIVER_NOT_EXPORTED
-            )
-        }
+        ContextCompat.registerReceiver(
+            requireActivity(),
+            usbReceiver,
+            filter,
+            ContextCompat.RECEIVER_NOT_EXPORTED
+        )
     }
 
     override fun onStart() {
@@ -1358,7 +1353,7 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
         if (sensorsArr != null) {
 
             val iteratorList = sensorsArr.listIterator()
-            while (iteratorList != null && iteratorList.hasNext()) {
+            while (iteratorList.hasNext()) {
                 val sensorItem = iteratorList.next()
                 if (sensorItem.getId() == sensor.getId()) {
                     sensor.getLatitude()?.let { sensorItem.setLatitude(it) }
@@ -1392,7 +1387,7 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
         if (detectorsArr != null) {
 
             val iteratorList = detectorsArr.listIterator()
-            while (iteratorList != null && iteratorList.hasNext()) {
+            while (iteratorList.hasNext()) {
                 val detectorItem = iteratorList.next()
                 if (detectorItem.getId() == detector.getId()) {
                     detector.getName()?.let { detectorItem.setName(it) }
@@ -1406,6 +1401,15 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
 
     override fun saveSensors(detector: Sensor) {}
 
+    private fun getLocationExtra(inn: Intent): Location? {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            inn.getParcelableExtra(CURRENT_LOCATION, Location::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            inn.getParcelableExtra(CURRENT_LOCATION)
+        }
+    }
+
     //reciever
     private val usbReceiver = object : BroadcastReceiver() {
         override fun onReceive(arg0: Context, inn: Intent) {
@@ -1417,7 +1421,7 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
                 }
 
             } else if (inn.action == GET_CURRENT_LOCATION_KEY) {
-                val location: Location? = inn.getParcelableExtra(CURRENT_LOCATION)
+                val location: Location? = getLocationExtra(inn)
                 if (location != null) {
                     //save locally the current location
                     setStringInPreference(
@@ -1438,7 +1442,7 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
                     Toast.makeText(activity, "error in location2", Toast.LENGTH_LONG).show()
                 }
             } else if (inn.action == GET_CURRENT_SINGLE_LOCATION_KEY) {
-                val location: Location? = inn.getParcelableExtra(CURRENT_LOCATION)
+                val location: Location? = getLocationExtra(inn)
                 if (location != null) {
                     //save locally the current location
                     setStringInPreference(

@@ -17,7 +17,7 @@ fun convertToGson(detectorsArr:ArrayList<Sensor>): String? {
     try {
         val gSon= Gson()
         val data=gSon.toJson(detectorsArr)
-        val jsonArray= JsonParser().parse(data).asJsonArray
+        val jsonArray = JsonParser.parseString(data).asJsonArray
         return gSon.toJson(jsonArray)
         //TODO : how to get response about set shared preference
 
@@ -33,7 +33,7 @@ fun convertSystemSortToGson(detectorsArr: ArrayList<SystemSort>): String? {
     try {
         val gSon = Gson()
         val data = gSon.toJson(detectorsArr)
-        val jsonArray = JsonParser().parse(data).asJsonArray
+        val jsonArray = JsonParser.parseString(data).asJsonArray
         return gSon.toJson(jsonArray)
         //TODO : how to get response about set shared preference
 
@@ -50,7 +50,7 @@ fun convertToAlarmsGson(alarmsArr:ArrayList<Alarm>): String? {
     try {
         val gSon= Gson()
         val data=gSon.toJson(alarmsArr)
-        val jsonArray= JsonParser().parse(data).asJsonArray
+        val jsonArray = JsonParser.parseString(data).asJsonArray
         return gSon.toJson(jsonArray)
         //TODO : how to get response about set shared preference
 
@@ -63,7 +63,7 @@ fun convertToAlarmsGson(alarmsArr:ArrayList<Alarm>): String? {
 }
 
 //convert json to list of uri and list of Sensors
-fun convertJsonToSensorList(inputJsonArrayString: String): ArrayList<Sensor>? {
+fun convertJsonToSensorList(inputJsonArrayString: String): ArrayList<Sensor> {
 
     //if the json string is empty, then return empty array list
     if(inputJsonArrayString.isNullOrEmpty()){
@@ -131,7 +131,7 @@ fun convertJsonToAlarmList(inputJsonArrayString: String): ArrayList<Alarm>? {
 }
 
 //convert json to list of uri and list of Sensors
-fun convertJsonToSystemSortList(inputJsonArrayString: String): ArrayList<SystemSort>? {
+fun convertJsonToSystemSortList(inputJsonArrayString: String): ArrayList<SystemSort> {
 
     //if the json string is empty, then return empty array list
     if (inputJsonArrayString.isNullOrEmpty()) {

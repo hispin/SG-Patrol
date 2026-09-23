@@ -33,7 +33,7 @@ class ServiceFindSingleLocation : Service() {
                 if (locationResult.lastLocation != null) {
                     //Log.d(TAG,"get location")
                     location = locationResult.lastLocation!!
-                    val inn = Intent(GET_CURRENT_SINGLE_LOCATION_KEY)
+                    val inn = Intent(GET_CURRENT_SINGLE_LOCATION_KEY).setPackage(packageName)
                     inn.putExtra(CURRENT_LOCATION, location)
                     sendBroadcast(inn)
                     stopSelf()
@@ -111,7 +111,7 @@ class ServiceFindSingleLocation : Service() {
                 NotificationManager.IMPORTANCE_DEFAULT
             )
 
-            val `object` = getSystemService(Context.NOTIFICATION_SERVICE)
+            val `object` = getSystemService(NOTIFICATION_SERVICE)
             if (`object` != null && `object` is NotificationManager) {
                 `object`.createNotificationChannel(channel)
             }

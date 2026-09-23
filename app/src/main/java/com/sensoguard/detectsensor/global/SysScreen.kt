@@ -2,9 +2,7 @@ package com.sensoguard.detectsensor.global
 
 import android.content.Context
 import android.content.res.Resources
-import android.util.DisplayMetrics
 import android.util.TypedValue
-import android.view.WindowManager
 import kotlin.math.roundToInt
 
 
@@ -15,13 +13,7 @@ fun getScreenWidth(context: Context?): Int {
         return -1
     }
 
-    val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
-
-    val metrics = DisplayMetrics()
-
-    wm.defaultDisplay.getMetrics(metrics)
-
-    return metrics.widthPixels
+    return context.resources.displayMetrics.widthPixels
 }
 
 fun dpToPx(dp: Int, context: Context): Int {

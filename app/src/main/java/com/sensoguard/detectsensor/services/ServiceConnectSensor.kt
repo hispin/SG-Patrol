@@ -14,6 +14,7 @@ import android.media.Ringtone
 import android.os.Build
 import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.util.Log
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
@@ -115,7 +116,7 @@ class ServiceConnectSensor : ParentService() {
         setBooleanInPreference(this@ServiceConnectSensor, USB_DEVICE_CONNECT_STATUS, false)
         serialPort?.close()
         serialPort = null
-        sendBroadcast(Intent(STOP_GENERAL_TIMER))
+        sendBroadcast(Intent(STOP_GENERAL_TIMER).setPackage(packageName))
         //serialPortIn?.syncClose()
 
         //bug fixed : the device does not accept alarm after reopen the application after kill all
@@ -284,7 +285,7 @@ class ServiceConnectSensor : ParentService() {
                     if ((usbDevices == null) || usbDevices.isEmpty()) {
                         stopConnectConfiguration()
                     } else {
-                        sendBroadcast(Intent(USB_DEVICES_NOT_EMPTY))
+                        sendBroadcast(Intent(USB_DEVICES_NOT_EMPTY).setPackage(packageName))
                         //if(connection!=null && serialPort!=null && usbDevices != null) {
                         //onConnectConfiguration()
                         //}
@@ -306,7 +307,7 @@ class ServiceConnectSensor : ParentService() {
             USB_DEVICE_CONNECT_STATUS,
             true
         )
-        sendBroadcast(Intent(USB_DEVICES_NOT_EMPTY))
+        sendBroadcast(Intent(USB_DEVICES_NOT_EMPTY).setPackage(packageName))
     }
 
     private fun stopConnectConfiguration() {
@@ -323,10 +324,10 @@ class ServiceConnectSensor : ParentService() {
         )
 
         //update UI
-        sendBroadcast(Intent(USB_DEVICES_EMPTY))
+        sendBroadcast(Intent(USB_DEVICES_EMPTY).setPackage(packageName))
 
         //bug fixed :stop timer of commands if needed
-        sendBroadcast(Intent(STOP_TIMER))
+        sendBroadcast(Intent(STOP_TIMER).setPackage(packageName))
         //serialPortIn?.syncClose()
         //this@ServiceConnectSensor.stopSelf()
     }
@@ -340,7 +341,7 @@ class ServiceConnectSensor : ParentService() {
         try {
             if (serialPort != null) {
                 serialPort!!.close()
-                sendBroadcast(Intent(STOP_GENERAL_TIMER))
+                sendBroadcast(Intent(STOP_GENERAL_TIMER).setPackage(packageName))
                 //serialPortIn?.syncClose()
             }
 
@@ -365,17 +366,12 @@ class ServiceConnectSensor : ParentService() {
         filter.addAction(CHECK_USB_CONN_SW)
         filter.addAction(DISCONNECTED_INTERNET_SENSOR)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(usbReceiver, filter, RECEIVER_EXPORTED)
-        } else {
-            ContextCompat.registerReceiver(
-                this,
-                usbReceiver,
-                filter,
-                ContextCompat.RECEIVER_NOT_EXPORTED
-            )
-        }
-
+        ContextCompat.registerReceiver(
+            this,
+            usbReceiver,
+            filter,
+            ContextCompat.RECEIVER_NOT_EXPORTED
+        )
     }
 
     //try to find devices connection to usb
@@ -427,7 +423,7 @@ class ServiceConnectSensor : ParentService() {
             connection = manager?.openDevice(usbDevice)
 
             if(connection==null) {
-                sendBroadcast(Intent(USB_DEVICES_EMPTY))
+                sendBroadcast(Intent(USB_DEVICES_EMPTY).setPackage(packageName))
                 setBooleanInPreference(
                     this@ServiceConnectSensor,
                     USB_DEVICE_CONNECT_STATUS,
@@ -485,7 +481,7 @@ class ServiceConnectSensor : ParentService() {
                     val myBytes = ByteArray(cmds.size)
                     var i = 0
                     val iteratorList = cmds.iterator()
-                    while (iteratorList != null && iteratorList.hasNext()) {
+                    while (iteratorList.hasNext()) {
                         val cmd = iteratorList.next()
                         if (i < myBytes.size) {
                             myBytes[i++] = cmd.toUByte().toByte()
@@ -587,7 +583,7 @@ class ServiceConnectSensor : ParentService() {
     var arr = ArrayList<Int>()
 
     //define timer delay to clear the buffer
-    private val mHandler = Handler()
+    private val mHandler = Handler(Looper.getMainLooper())
     val runnable: Runnable = Runnable {
         arr = ArrayList<Int>()
     }
@@ -607,11 +603,9 @@ class ServiceConnectSensor : ParentService() {
 //            }
 
             //Bug fixed: from Singapore
-            if (arr != null && bytesArray != null && bytesArray.isNotEmpty()) {
+            if (bytesArray.isNotEmpty()) {
                 for (element in bytesArray) {
-                    if (element != null) {
-                        arr.add(element.toInt())
-                    }
+                    arr.add(element.toInt())
                 }
             }
 
@@ -625,7 +619,7 @@ class ServiceConnectSensor : ParentService() {
 //            arr = ArrayList()
             //Log.d("testMulti","ServiceConnect size:"+arr.size+" appCode:"+appCode)
 
-            if (arr != null && arr.size > 0)
+            if (arr.size > 0)
 
                 if (appCode == TEN_FOTMAT_BITS && arr.size % 10 == 0) {
 
@@ -635,7 +629,7 @@ class ServiceConnectSensor : ParentService() {
                         //make queue for each ten bits
                         var i = 0
                         val iteratorList = arr.listIterator()
-                        while (iteratorList != null && iteratorList.hasNext() && i < 10) {
+                        while (iteratorList.hasNext() && i < 10) {
                             i++
                             val bitsItem = iteratorList.next()
                             arrTen.add(bitsItem)
@@ -652,7 +646,7 @@ class ServiceConnectSensor : ParentService() {
                         //make queue for each six bits
                         var i = 0
                         val iteratorList = arr.listIterator()
-                        while (iteratorList != null && iteratorList.hasNext() && i < 6) {
+                        while (iteratorList.hasNext() && i < 6) {
                             i++
                             val bitsItem = iteratorList.next()
                             arrSix.add(bitsItem)
@@ -669,7 +663,7 @@ class ServiceConnectSensor : ParentService() {
                         //make queue for each seven bits
                         var i = 0
                         val iteratorList = arr.listIterator()
-                        while (iteratorList != null && iteratorList.hasNext() && i < 7) {
+                        while (iteratorList.hasNext() && i < 7) {
                             i++
                             val bitsItem = iteratorList.next()
                             arrSeven.add(bitsItem)
@@ -684,7 +678,7 @@ class ServiceConnectSensor : ParentService() {
 
                         var i = 0
                         val iteratorList = arr.listIterator()
-                        while (iteratorList != null && iteratorList.hasNext() && i < 7) {
+                        while (iteratorList.hasNext() && i < 7) {
                             i++
                             val bitsItem = iteratorList.next()
                             arrSeven.add(bitsItem)
@@ -706,7 +700,7 @@ class ServiceConnectSensor : ParentService() {
 
                         var i = 0
                         val iteratorList = arr.listIterator()
-                        while (iteratorList != null && iteratorList.hasNext() && i < 8) {
+                        while (iteratorList.hasNext() && i < 8) {
                             i++
                             val bitsItem = iteratorList.next()
                             arrEight.add(bitsItem)
@@ -728,7 +722,7 @@ class ServiceConnectSensor : ParentService() {
 
                         var i = 0
                         val iteratorList = arr.listIterator()
-                        while (iteratorList != null && iteratorList.hasNext() && i < 7) {
+                        while (iteratorList.hasNext() && i < 7) {
                             i++
                             val bitsItem = iteratorList.next()
                             arrSeven.add(bitsItem)
@@ -750,7 +744,7 @@ class ServiceConnectSensor : ParentService() {
 
                         var i = 0
                         val iteratorList = arr.listIterator()
-                        while (iteratorList != null && iteratorList.hasNext() && i < 7) {
+                        while (iteratorList.hasNext() && i < 7) {
                             i++
                             val bitsItem = iteratorList.next()
                             arrSeven.add(bitsItem)
@@ -769,7 +763,7 @@ class ServiceConnectSensor : ParentService() {
 
                         var i = 0
                         val iteratorList = arr.listIterator()
-                        while (iteratorList != null && iteratorList.hasNext() && i < 7) {
+                        while (iteratorList.hasNext() && i < 7) {
                             i++
                             val bitsItem = iteratorList.next()
                             arrSeven.add(bitsItem)
@@ -788,7 +782,7 @@ class ServiceConnectSensor : ParentService() {
 
                         var i = 0
                         val iteratorList = arr.listIterator()
-                        while (iteratorList != null && iteratorList.hasNext() && i < 9) {
+                        while (iteratorList.hasNext() && i < 9) {
                             i++
                             val bitsItem = iteratorList.next()
                             arrNine.add(bitsItem)
@@ -810,7 +804,7 @@ class ServiceConnectSensor : ParentService() {
 
                         var i = 0
                         val iteratorList = arr.listIterator()
-                        while (iteratorList != null && iteratorList.hasNext() && i < 7) {
+                        while (iteratorList.hasNext() && i < 7) {
                             i++
                             val bitsItem = iteratorList.next()
                             arrSeven.add(bitsItem)
@@ -832,7 +826,7 @@ class ServiceConnectSensor : ParentService() {
 
                         var i = 0
                         val iteratorList = arr.listIterator()
-                        while (iteratorList != null && iteratorList.hasNext() && i < 12) {
+                        while (iteratorList.hasNext() && i < 12) {
                             i++
                             val bitsItem = iteratorList.next()
                             arrTwelve.add(bitsItem)
@@ -854,7 +848,7 @@ class ServiceConnectSensor : ParentService() {
 
                         var i = 0
                         val iteratorList = arr.listIterator()
-                        while (iteratorList != null && iteratorList.hasNext() && i < 7) {
+                        while (iteratorList.hasNext() && i < 7) {
                             i++
                             val bitsItem = iteratorList.next()
                             arrSeven.add(bitsItem)
@@ -879,7 +873,7 @@ class ServiceConnectSensor : ParentService() {
 
                         var i = 0
                         val iteratorList = arr.listIterator()
-                        while (iteratorList != null && iteratorList.hasNext() && i < 8) {
+                        while (iteratorList.hasNext() && i < 8) {
                             i++
                             val bitsItem = iteratorList.next()
                             arrEight.add(bitsItem)
@@ -899,7 +893,7 @@ class ServiceConnectSensor : ParentService() {
 
 
             //define timer delay to clear the buffer
-            mHandler.removeCallbacks { runnable }
+            mHandler.removeCallbacks(runnable)
             mHandler.postDelayed(runnable, 200)
         }
 
@@ -1008,13 +1002,13 @@ class ServiceConnectSensor : ParentService() {
 
 
         // for  toast ,that cannot showed here because it is not UI thread
-        val innAlarmNotDefined = Intent(CREATE_ALARM_NOT_DEFINED_KEY)
+        val innAlarmNotDefined = Intent(CREATE_ALARM_NOT_DEFINED_KEY).setPackage(packageName)
         innAlarmNotDefined.putExtra(CREATE_ALARM_ID_KEY, alarmSensorId)
         innAlarmNotDefined.putExtra(CREATE_ALARM_TYPE_KEY, type)
         innAlarmNotDefined.putExtra(CREATE_ALARM_TYPE_INDEX_KEY, typeIndex)
         //add alarm to history and send alarm if active
         if (currentSensorLocally == null) {
-            sendBroadcast(Intent(RESET_MARKERS_KEY))
+            sendBroadcast(Intent(RESET_MARKERS_KEY).setPackage(packageName))
             // for  toast ,that cannot showed here because it is not UI thread
             sendBroadcast(innAlarmNotDefined)
 
@@ -1029,7 +1023,7 @@ class ServiceConnectSensor : ParentService() {
                 originId
             )
         } else if (!currentSensorLocally.isArmed()) {
-            sendBroadcast(Intent(RESET_MARKERS_KEY))
+            sendBroadcast(Intent(RESET_MARKERS_KEY).setPackage(packageName))
             // for  toast ,that cannot showed here because it is not UI thread
             sendBroadcast(innAlarmNotDefined)
             currentSensorLocally.getName()?.let {
@@ -1047,7 +1041,7 @@ class ServiceConnectSensor : ParentService() {
         } else if (currentSensorLocally.getLatitude() == null
             || currentSensorLocally.getLongtitude() == null
         ) {
-            sendBroadcast(Intent(RESET_MARKERS_KEY))
+            sendBroadcast(Intent(RESET_MARKERS_KEY).setPackage(packageName))
             // for  toast ,that cannot showed here because it is not UI thread
             sendBroadcast(innAlarmNotDefined)
             currentSensorLocally.getName()?.let {
@@ -1082,7 +1076,7 @@ class ServiceConnectSensor : ParentService() {
             /// end add to queue
 
             //send to create alarm :map,sound ect...
-            val inn = Intent(CREATE_ALARM_KEY)
+            val inn = Intent(CREATE_ALARM_KEY).setPackage(packageName)
             inn.putExtra(CREATE_ALARM_ID_KEY, currentSensorLocally.getId())
             inn.putExtra(CREATE_ALARM_NAME_KEY, currentSensorLocally.getName())
             inn.putExtra(CREATE_ALARM_IS_ARMED, currentSensorLocally.isArmed())
@@ -1091,7 +1085,7 @@ class ServiceConnectSensor : ParentService() {
             inn.putExtra(SENSOR_TYPE_INDEX_KEY, currentSensorLocally.getTypeID())
             sendBroadcast(inn)
         }
-        sendBroadcast(Intent(HANDLE_ALARM_KEY))
+        sendBroadcast(Intent(HANDLE_ALARM_KEY).setPackage(packageName))
     }
 
     /**
@@ -1178,7 +1172,7 @@ class ServiceConnectSensor : ParentService() {
     //general validate of the bits and get the format
     private fun validateBitsAndGetFormat(bit: ArrayList<Int>): Int {
 
-        if (bit == null || bit.size < 4) {
+        if (bit.size < 4) {
             return NONE_VALIDATE_BITS
         }
 
@@ -1215,7 +1209,7 @@ class ServiceConnectSensor : ParentService() {
         }
 
         val iteratorList = sensors?.listIterator()
-        while (iteratorList != null && iteratorList.hasNext()) {
+        while (iteratorList?.hasNext() == true) {
             val detectorItem = iteratorList.next()
             if (alarmSensorId == detectorItem.getId()) {
                 return detectorItem
@@ -1243,11 +1237,9 @@ class ServiceConnectSensor : ParentService() {
 //        }
         val tmp = Calendar.getInstance()
         val resources = this.resources
-        val locale =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) resources.configuration.locales.getFirstMatch(
-                resources.assets.locales
-            )
-            else resources.configuration.locale
+        val locale = resources.configuration.locales.getFirstMatch(
+            resources.assets.locales
+        )
         val dateFormat = SimpleDateFormat("kk:mm dd/MM/yy", locale)
         val dateString = dateFormat.format(tmp.time)
 
@@ -1287,7 +1279,7 @@ class ServiceConnectSensor : ParentService() {
     private fun storeAlarmsToLocally(alarms: ArrayList<Alarm>) {
         // sort the list of events by date in descending
         val alarms = ArrayList(alarms.sortedWith(compareByDescending { it.timeInMillis }))
-        if (alarms != null && alarms.size > 0) {
+        if (alarms.size > 0) {
             val alarmsJsonStr = convertToAlarmsGson(alarms)
             setStringInPreference(this, ALARM_LIST_KEY_PREF, alarmsJsonStr)
         }
@@ -1311,11 +1303,9 @@ class ServiceConnectSensor : ParentService() {
 //            ).show()
 //        }
 
-        val locale =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) resources.configuration.locales.getFirstMatch(
-                resources.assets.locales
-            )
-            else resources.configuration.locale
+        val locale = resources.configuration.locales.getFirstMatch(
+            resources.assets.locales
+        )
         val dateFormat = SimpleDateFormat("kk:mm:ss dd/MM/yy", locale)
         val dateString = dateFormat.format(tmp.time)
 
@@ -1343,7 +1333,7 @@ class ServiceConnectSensor : ParentService() {
     private fun removeSensorAlarmById(alarmId: String) {
 
         val iteratorList = UserSession.instance.alarmSensors?.listIterator()
-        while (iteratorList != null && iteratorList.hasNext()) {
+        while (iteratorList?.hasNext() == true) {
             val sensorItem = iteratorList.next()
             if (sensorItem.alarmSensorId == alarmId) {
                 iteratorList.remove()

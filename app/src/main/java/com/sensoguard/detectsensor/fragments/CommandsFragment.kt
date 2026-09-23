@@ -19,7 +19,6 @@ import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatSpinner
 import androidx.appcompat.widget.AppCompatTextView
@@ -32,7 +31,47 @@ import com.sensoguard.detectsensor.R
 import com.sensoguard.detectsensor.adapters.CommandAdapter
 import com.sensoguard.detectsensor.classes.Command
 import com.sensoguard.detectsensor.classes.Sensor
-import com.sensoguard.detectsensor.global.*
+import com.sensoguard.detectsensor.global.ACTION_INTERVAL
+import com.sensoguard.detectsensor.global.ACTION_SEND_CMD
+import com.sensoguard.detectsensor.global.ACTION_USB_RESPONSE_CACHE
+import com.sensoguard.detectsensor.global.COMMAND_TYPE
+import com.sensoguard.detectsensor.global.DETECTORS_LIST_KEY_PREF
+import com.sensoguard.detectsensor.global.ERROR_RESP
+import com.sensoguard.detectsensor.global.GET_LOGIC_PARAM
+import com.sensoguard.detectsensor.global.GET_MIN_POWER
+import com.sensoguard.detectsensor.global.GET_SENS_LEVEL
+import com.sensoguard.detectsensor.global.GET_SNR_SYSTEM
+import com.sensoguard.detectsensor.global.IS_REPEATED
+import com.sensoguard.detectsensor.global.MAX_TIMEOUT
+import com.sensoguard.detectsensor.global.MAX_TIMER_RESPONSE
+import com.sensoguard.detectsensor.global.NONE_AWAKE
+import com.sensoguard.detectsensor.global.OK_AWAKE
+import com.sensoguard.detectsensor.global.PIR_TYPE
+import com.sensoguard.detectsensor.global.PROCESS_STATE
+import com.sensoguard.detectsensor.global.RADAR_TYPE
+import com.sensoguard.detectsensor.global.SEISMIC_TYPE
+import com.sensoguard.detectsensor.global.SENSORS_IDS
+import com.sensoguard.detectsensor.global.SENSORS_TYPES
+import com.sensoguard.detectsensor.global.SET_LOGIC_PARAM
+import com.sensoguard.detectsensor.global.SET_MIN_POWER
+import com.sensoguard.detectsensor.global.SET_RF_ON_TIMER
+import com.sensoguard.detectsensor.global.SET_SENS_LEVEL
+import com.sensoguard.detectsensor.global.SET_SNR_SYSTEM
+import com.sensoguard.detectsensor.global.SET_TIME_SYSTEM
+import com.sensoguard.detectsensor.global.STOP_READ_DATA_KEY
+import com.sensoguard.detectsensor.global.STOP_TIMER
+import com.sensoguard.detectsensor.global.SUCCESS_STATE
+import com.sensoguard.detectsensor.global.TIMEOUT_STATE
+import com.sensoguard.detectsensor.global.TIMER_VALUE
+import com.sensoguard.detectsensor.global.USB_CACHE_RESPONSE_KEY
+import com.sensoguard.detectsensor.global.USB_DEVICE_CONNECT_STATUS
+import com.sensoguard.detectsensor.global.UserSession
+import com.sensoguard.detectsensor.global.VIBRATION_TYPE
+import com.sensoguard.detectsensor.global.WAIT_AWAKE
+import com.sensoguard.detectsensor.global.convertJsonToSensorList
+import com.sensoguard.detectsensor.global.getBooleanInPreference
+import com.sensoguard.detectsensor.global.getStringInPreference
+import com.sensoguard.detectsensor.global.showToast
 import com.sensoguard.detectsensor.services.TimerService
 import java.util.*
 
@@ -132,7 +171,7 @@ class CommandsFragment : DialogFragment() {
                 position: Int,
                 p3: Long
             ) {
-                activity?.sendBroadcast(Intent(STOP_TIMER))
+                activity?.let { it.sendBroadcast(Intent(STOP_TIMER).setPackage(it.packageName)) }
                 val item = parent?.getItemAtPosition(position) as String
                 if (position > 0) {
                     val type = sensorsTypes[position - 1]
@@ -672,7 +711,7 @@ class CommandsFragment : DialogFragment() {
         val year = yearS.substring(yearS.length - 3).toInt(16)
         val hour = hourS.toInt(16)
         val minutes = minutesS.toInt(16)
-        val seconds = secondsS.toInt(16)
+        secondsS.toInt(16)
 
 
         return intArrayOf(
@@ -709,7 +748,7 @@ class CommandsFragment : DialogFragment() {
 
         UserSession.instance.commandContent = command.commandContent
 
-        activity?.sendBroadcast(Intent(ACTION_SEND_CMD))
+        activity?.let { it.sendBroadcast(Intent(ACTION_SEND_CMD).setPackage(it.packageName)) }
     }
 
 
@@ -731,10 +770,13 @@ class CommandsFragment : DialogFragment() {
         filter.addAction("test.brod")
         filter.addAction(STOP_READ_DATA_KEY)
         filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            activity?.registerReceiver(usbReceiver, filter, AppCompatActivity.RECEIVER_EXPORTED)
-        } else {
-            activity?.registerReceiver(usbReceiver, filter)
+        activity?.let {
+            ContextCompat.registerReceiver(
+                it,
+                usbReceiver,
+                filter,
+                ContextCompat.RECEIVER_NOT_EXPORTED
+            )
         }
     }
 
@@ -952,7 +994,7 @@ class CommandsFragment : DialogFragment() {
     private fun stopConnection() {
         statusAwake = NONE_AWAKE
         btnDisconnect?.visibility = View.GONE
-        activity?.sendBroadcast(Intent(STOP_TIMER))
+        activity?.let { it.sendBroadcast(Intent(STOP_TIMER).setPackage(it.packageName)) }
         setUIAsConnect()
         clearScreenOn()
         //stop progress bar of command

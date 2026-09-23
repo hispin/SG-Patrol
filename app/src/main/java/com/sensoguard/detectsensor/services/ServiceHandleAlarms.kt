@@ -110,16 +110,12 @@ class ServiceHandleAlarms : ParentService() {
         filter.addAction(STOP_ALARM_SOUND)
         filter.addAction(CREATE_ALARM_KEY)
         filter.addAction(CREATE_ALARM_NOT_DEFINED_KEY)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(usbReceiver, filter, RECEIVER_EXPORTED)
-        } else {
-            ContextCompat.registerReceiver(
-                this,
-                usbReceiver,
-                filter,
-                ContextCompat.RECEIVER_NOT_EXPORTED
-            )
-        }
+        ContextCompat.registerReceiver(
+            this,
+            usbReceiver,
+            filter,
+            ContextCompat.RECEIVER_NOT_EXPORTED
+        )
     }
 
     private val usbReceiver = object : BroadcastReceiver() {
@@ -284,7 +280,7 @@ class ServiceHandleAlarms : ParentService() {
 
                     //add alarm to history and send alarm if active
                     if (currentSensorLocally == null) {
-                        sendBroadcast(Intent(RESET_MARKERS_KEY))
+                        sendBroadcast(Intent(RESET_MARKERS_KEY).setPackage(packageName))
                         addAlarmToHistory(
                             false,
                             "undefined",
@@ -295,7 +291,7 @@ class ServiceHandleAlarms : ParentService() {
                             originId
                         )
                     } else if (!currentSensorLocally.isArmed()) {
-                        sendBroadcast(Intent(RESET_MARKERS_KEY))
+                        sendBroadcast(Intent(RESET_MARKERS_KEY).setPackage(packageName))
                         currentSensorLocally.getName()?.let {
                             addAlarmToHistory(
                                 true,
@@ -311,7 +307,7 @@ class ServiceHandleAlarms : ParentService() {
                     } else if (currentSensorLocally.getLatitude() == null
                         || currentSensorLocally.getLongtitude() == null
                     ) {
-                        sendBroadcast(Intent(RESET_MARKERS_KEY))
+                        sendBroadcast(Intent(RESET_MARKERS_KEY).setPackage(packageName))
                         currentSensorLocally.getName()?.let {
                             addAlarmToHistory(
                                 true,
@@ -384,7 +380,7 @@ class ServiceHandleAlarms : ParentService() {
                         //play sound and vibrate
                         startWorkerMedia()
                     }
-                    sendBroadcast(Intent(HANDLE_ALARM_KEY))
+                    sendBroadcast(Intent(HANDLE_ALARM_KEY).setPackage(packageName))
                 }
 
                 STOP_ALARM_SOUND -> {
@@ -413,14 +409,14 @@ class ServiceHandleAlarms : ParentService() {
             WorkManager.getInstance(this)
                 .enqueue(mediaWorkRequest!!)
         } else {
-            sendBroadcast(Intent(UPDATE_MEDIA))
+            sendBroadcast(Intent(UPDATE_MEDIA).setPackage(packageName))
         }
     }
 
     //general validate of the bits and get the format
     private fun validateBitsAndGetFormat(bit: ArrayList<Int>): Int {
 
-        if (bit == null || bit.size < 4) {
+        if (bit.size < 4) {
             return NONE_VALIDATE_BITS
         }
 
@@ -449,11 +445,9 @@ class ServiceHandleAlarms : ParentService() {
     ) {
         val tmp = Calendar.getInstance()
         val resources = this.resources
-        val locale =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) resources.configuration.locales.getFirstMatch(
-                resources.assets.locales
-            )
-            else resources.configuration.locale
+        val locale = resources.configuration.locales.getFirstMatch(
+            resources.assets.locales
+        )
         val dateFormat = SimpleDateFormat("kk:mm:ss dd/MM/yy", locale)
         val dateString = dateFormat.format(tmp.time)
 
@@ -490,11 +484,9 @@ class ServiceHandleAlarms : ParentService() {
     ) {
         val tmp = Calendar.getInstance()
         val resources = this.resources
-        val locale =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) resources.configuration.locales.getFirstMatch(
-                resources.assets.locales
-            )
-            else resources.configuration.locale
+        val locale = resources.configuration.locales.getFirstMatch(
+            resources.assets.locales
+        )
         val dateFormat = SimpleDateFormat("kk:mm:ss dd/MM/yy", locale)
         val dateString = dateFormat.format(tmp.time)
 
@@ -568,7 +560,7 @@ class ServiceHandleAlarms : ParentService() {
     private fun storeAlarmsToLocally(alarms: ArrayList<Alarm>) {
         // sort the list of events by date in descending
         val alarms = ArrayList(alarms.sortedWith(compareByDescending { it.timeInMillis }))
-        if (alarms != null && alarms.size > 0) {
+        if (alarms.size > 0) {
             val alarmsJsonStr = convertToAlarmsGson(alarms)
             setStringInPreference(this, ALARM_LIST_KEY_PREF, alarmsJsonStr)
         }

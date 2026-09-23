@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.telephony.TelephonyManager
@@ -33,7 +32,7 @@ class InitAppActivity : ParentActivity() {
         super.onCreate(savedInstanceState)
         //setBooleanInPreference(this, IS_SSL_MAIL,false)
         //init the usb disconnected
-        sendBroadcast(Intent(STOP_READ_DATA_KEY))
+        sendBroadcast(Intent(STOP_READ_DATA_KEY).setPackage(packageName))
         setBooleanInPreference(this, USB_DEVICE_CONNECT_STATUS, false)
 
         setContentView(R.layout.activity_init_app)
@@ -93,21 +92,15 @@ class InitAppActivity : ParentActivity() {
     //get the device IMEI
     private fun getDeviceIMEI(): String? {
         var deviceUniqueIdentifier: String? = null
-        val tm = this.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
-        if (null != tm) {
-            if (ContextCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.READ_PHONE_STATE
-                ) != PackageManager.PERMISSION_GRANTED
-                
-            ) {
+        val tm = this.getSystemService(TELEPHONY_SERVICE) as TelephonyManager
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.READ_PHONE_STATE
+            ) != PackageManager.PERMISSION_GRANTED
 
-                deviceUniqueIdentifier = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    tm.imei
-                } else {
-                    tm.deviceId
-                }
-            }
+        ) {
+
+            deviceUniqueIdentifier = tm.imei
         }
         if (null == deviceUniqueIdentifier || deviceUniqueIdentifier.isEmpty()) {
             deviceUniqueIdentifier =

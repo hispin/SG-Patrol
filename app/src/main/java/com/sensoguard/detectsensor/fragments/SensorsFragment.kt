@@ -2,16 +2,21 @@ package com.sensoguard.detectsensor.fragments
 
 import android.app.AlertDialog
 import android.app.Dialog
-import android.content.*
-import android.os.Build
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
-import android.widget.*
-import androidx.appcompat.app.AppCompatActivity
+import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatSpinner
@@ -23,7 +28,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.sensoguard.detectsensor.R
 import com.sensoguard.detectsensor.adapters.SensorsAdapter
 import com.sensoguard.detectsensor.classes.Sensor
-import com.sensoguard.detectsensor.global.*
+import com.sensoguard.detectsensor.global.DETECTORS_LIST_KEY_PREF
+import com.sensoguard.detectsensor.global.ERROR_RESP
+import com.sensoguard.detectsensor.global.SHARED_PREF_FILE_NAME
+import com.sensoguard.detectsensor.global.STOP_TIMER
+import com.sensoguard.detectsensor.global.convertJsonToSensorList
+import com.sensoguard.detectsensor.global.getStringInPreference
+import com.sensoguard.detectsensor.global.storeSensorsToLocally
 import com.sensoguard.detectsensor.interfaces.OnAdapterListener
 import com.sensoguard.detectsensor.interfaces.OnFragmentListener
 import java.util.*
@@ -199,7 +210,7 @@ class SensorsFragment : ParentFragment(), OnAdapterListener {
                     return@setOnClickListener
                 }
 
-                if(numSensorsRequest!=null && numSensorsRequest!! >254) {
+                if (numSensorsRequest!! > 254) {
                     Toast.makeText(
                         this.context,
                         resources.getString(R.string.invalid_mum_sensors),
@@ -209,19 +220,16 @@ class SensorsFragment : ParentFragment(), OnAdapterListener {
                 }
 
 
-                if(numSensorsRequest!=null) {
-                    //add numSensors sensors
-                    for (sensorId in 1 until numSensorsRequest!! + 1) {
-                        //add it just if not exist
-                        if (sensors?.let { it1 -> !isIdExist(it1, sensorId.toString()) }!!) {
-                            sensors.add(Sensor(sensorId.toString()))
-                        }
+                //add numSensors sensors
+                for (sensorId in 1 until numSensorsRequest!! + 1) {
+                    //add it just if not exist
+                    if (sensors?.let { it1 -> !isIdExist(it1, sensorId.toString()) }!!) {
+                        sensors.add(Sensor(sensorId.toString()))
                     }
                 }
 
                 //check if the request of sensors number is smaller then the number of exist
                 if(sensors?.size!=null
-                    && numSensorsRequest!=null
                     && numSensorsRequest!! < sensors.size){
                     askBeforeDeleteExtraSensor()
                 }else if(activity!=null) {
@@ -252,7 +260,7 @@ class SensorsFragment : ParentFragment(), OnAdapterListener {
         if (detectorsArr != null) {
 
             val iteratorList = detectorsArr.listIterator()
-            while (iteratorList != null && iteratorList.hasNext()) {
+            while (iteratorList.hasNext()) {
                 val detectorItem = iteratorList.next()
                 if (detectorItem.getId() == detector.getId()) {
                     detector.getName()?.let { detectorItem.setName(it) }
@@ -291,21 +299,21 @@ class SensorsFragment : ParentFragment(), OnAdapterListener {
     }
 
     //save sensors in locally
-    override fun saveSensors(sensor: Sensor) {
+    override fun saveSensors(detector: Sensor) {
         val sensorsArr = populateSensorsFromLocally()
         if (sensorsArr != null) {
 
             val iteratorList = sensorsArr.listIterator()
-            while (iteratorList != null && iteratorList.hasNext()) {
+            while (iteratorList.hasNext()) {
                 var sensorItem = iteratorList.next()
-                if (sensorItem.getId() == sensor.getId()) {
-                    sensor.getName()?.let { sensorItem.setName(it) }
-                    sensor.getId().let { sensorItem.setId(it) }
-                    sensor.getType().let { sensorItem.setType(it) }
-                    sensor.getTypeID().let { sensorItem.setTypeID(it) }
-                    sensor.isArmed().let { sensorItem.setArm(it) }
-                    sensor.getLatitude().let { sensorItem.setLatitude(it) }
-                    sensor.getLongtitude().let { sensorItem.setLongtitude(it) }
+                if (sensorItem.getId() == detector.getId()) {
+                    detector.getName()?.let { sensorItem.setName(it) }
+                    detector.getId().let { sensorItem.setId(it) }
+                    detector.getType().let { sensorItem.setType(it) }
+                    detector.getTypeID().let { sensorItem.setTypeID(it) }
+                    detector.isArmed().let { sensorItem.setArm(it) }
+                    detector.getLatitude().let { sensorItem.setLatitude(it) }
+                    detector.getLongtitude().let { sensorItem.setLongtitude(it) }
                 }
             }
 
@@ -335,7 +343,7 @@ class SensorsFragment : ParentFragment(), OnAdapterListener {
     //trigger also when changing tabs
     override fun onPause() {
         super.onPause()
-        activity?.sendBroadcast(Intent(STOP_TIMER))
+        activity?.let { it.sendBroadcast(Intent(STOP_TIMER).setPackage(it.packageName)) }
     }
 
 
@@ -397,10 +405,13 @@ class SensorsFragment : ParentFragment(), OnAdapterListener {
     private fun setFilter() {
         val filter = IntentFilter("handle.read.data")
         //filter.addAction(ACTION_USB_RESPONSE_CACHE)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            activity?.registerReceiver(usbReceiver, filter, AppCompatActivity.RECEIVER_NOT_EXPORTED)
-        } else {
-            activity?.registerReceiver(usbReceiver, filter)
+        activity?.let {
+            ContextCompat.registerReceiver(
+                it,
+                usbReceiver,
+                filter,
+                ContextCompat.RECEIVER_NOT_EXPORTED
+            )
         }
     }
 
@@ -425,7 +436,7 @@ class SensorsFragment : ParentFragment(), OnAdapterListener {
 //
 //                var msg=""
 //                val iteratorList = arr?.listIterator()
-//                while (iteratorList != null && iteratorList.hasNext()) {
+//                while (iteratorList.hasNext()) {
 //                    val item = iteratorList.next()
 //                    msg+=item.toUByte().toString()+" "
 //                }

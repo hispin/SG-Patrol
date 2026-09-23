@@ -8,11 +8,13 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.view.WindowManager
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.AppCompatButton
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.Fragment
 import com.sensoguard.detectsensor.R
 import com.sensoguard.detectsensor.classes.MyExceptionHandler
@@ -73,10 +75,9 @@ class MainActivity : ParentActivity() {
         setOnClickAlarmLogTable()
 
         //hide status bar
-        window.setFlags(
-            WindowManager.LayoutParams.FLAG_FULLSCREEN,
-            WindowManager.LayoutParams.FLAG_FULLSCREEN
-        )
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        WindowInsetsControllerCompat(window, window.decorView)
+            .hide(WindowInsetsCompat.Type.statusBars())
 
         //for testing
         //saveMyAccount()
@@ -106,7 +107,7 @@ class MainActivity : ParentActivity() {
                     setShowBadge(false)
                 }
             val notificationManager =
-                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                getSystemService(NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(mChannel)
         } else {
 
@@ -136,15 +137,18 @@ class MainActivity : ParentActivity() {
             .setCancelable(false)
         builder.setPositiveButton(yes) { dialog, which ->
 
-            //super.onBackPressed()
-            onBackPressedDispatcher.onBackPressed()
             //disconnect usb device and stop the process
             //sendBroadcast(Intent(DISCONNECT_USB_PROCESS_KEY))
             setBooleanInPreference(this@MainActivity, USB_DEVICE_CONNECT_STATUS, false)
-            sendBroadcast(Intent(DISCONNECT_USB_PROCESS_KEY))
+            sendBroadcast(Intent(DISCONNECT_USB_PROCESS_KEY).setPackage(this@MainActivity.packageName))
             //sendBroadcast(Intent(STOP_GENERAL_TIMER))
 
             dialog.dismiss()
+
+            //disable this callback so the dispatcher falls through to the real
+            //back behavior instead of re-triggering handleOnBackPressed()/this dialog
+            onBackPressedCallback.isEnabled = false
+            onBackPressedDispatcher.onBackPressed()
 
         }
 

@@ -48,7 +48,7 @@ class AlarmAdapter (private var alarms: ArrayList<Alarm>, val context: Context, 
 
         init {
             itemView.setOnClickListener {
-                itemClick.invoke(alarms[adapterPosition])
+                itemClick.invoke(alarms[bindingAdapterPosition])
             }
             itemView.setOnLongClickListener {
 
@@ -72,7 +72,6 @@ class AlarmAdapter (private var alarms: ArrayList<Alarm>, val context: Context, 
 
             if (alarm.isArmed != null
                 && alarm.isArmed!!
-                && alarm.isLocallyDefined != null
                 && alarm.isLocallyDefined
             ) {
                 tvName?.setTextColor(ContextCompat.getColor(context, R.color.red))

@@ -8,8 +8,8 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
 import android.os.IBinder
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import com.sensoguard.detectsensor.R
 import com.sensoguard.detectsensor.global.ACTION_INTERVAL
 import com.sensoguard.detectsensor.global.COMMAND_TYPE
@@ -89,7 +89,7 @@ class TimerService : ParentService() {
                     //release the timer to enable the next timer
                     notificationTimer?.cancel()
                     notificationTimer = null
-                    sendBroadcast(Intent(ACTION_INTERVAL))
+                    sendBroadcast(Intent(ACTION_INTERVAL).setPackage(packageName))
                     stopSelf()
                     return
                 }
@@ -98,18 +98,18 @@ class TimerService : ParentService() {
                 if (maxTimeout != -1) {
                     counter += timerValue
                     if (counter < maxTimeout) {
-                        val intent = Intent(ACTION_INTERVAL)
+                        val intent = Intent(ACTION_INTERVAL).setPackage(packageName)
                         intent.putExtra(COMMAND_TYPE, resources.getString(R.string.set_ref_timer))
                         sendBroadcast(intent)
                     } else {
                         //reach to max time out
                         notificationTimer?.cancel()
                         notificationTimer = null
-                        sendBroadcast(Intent(MAX_TIMER_RESPONSE))
+                        sendBroadcast(Intent(MAX_TIMER_RESPONSE).setPackage(packageName))
                         stopSelf()
                     }
                 } else {
-                    val intent = Intent(ACTION_INTERVAL)
+                    val intent = Intent(ACTION_INTERVAL).setPackage(packageName)
                     intent.putExtra(COMMAND_TYPE, resources.getString(R.string.set_ref_timer))
                     sendBroadcast(intent)
                 }
@@ -127,11 +127,12 @@ class TimerService : ParentService() {
     private fun setFilter() {
         val filter = IntentFilter(STOP_TIMER)
         filter.addAction(STOP_TIMER)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(usbReceiver, filter, AppCompatActivity.RECEIVER_EXPORTED)
-        } else {
-            registerReceiver(usbReceiver, filter)
-        }
+        ContextCompat.registerReceiver(
+            this,
+            usbReceiver,
+            filter,
+            ContextCompat.RECEIVER_NOT_EXPORTED
+        )
     }
 
     private val usbReceiver = object : BroadcastReceiver() {
@@ -139,7 +140,7 @@ class TimerService : ParentService() {
             if (inn.action == STOP_TIMER) {
                 notificationTimer?.cancel()
                 notificationTimer = null
-                sendBroadcast(Intent(MAX_TIMER_RESPONSE))
+                sendBroadcast(Intent(MAX_TIMER_RESPONSE).setPackage(packageName))
                 stopSelf()
             }
         }
@@ -161,7 +162,7 @@ class TimerService : ParentService() {
                 NotificationManager.IMPORTANCE_DEFAULT
             )
 
-            val `object` = getSystemService(Context.NOTIFICATION_SERVICE)
+            val `object` = getSystemService(NOTIFICATION_SERVICE)
             if (`object` != null && `object` is NotificationManager) {
                 `object`.createNotificationChannel(channel)
             }

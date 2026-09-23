@@ -46,7 +46,7 @@ class SystemSortDialogAdapter(
         //TODO how to define with this
     }
 
-    inner class ViewHolder(
+    class ViewHolder(
         private val _itemView: View,
         private val itemClick: (SystemSort) -> Unit
     ) :
@@ -58,7 +58,7 @@ class SystemSortDialogAdapter(
 
 //        init {
 //            itemView.setOnClickListener {
-//                //itemClick.invoke(sensors[adapterPosition])
+//                //itemClick.invoke(sensors[bindingAdapterPosition])
 //            }
 //        }
 
