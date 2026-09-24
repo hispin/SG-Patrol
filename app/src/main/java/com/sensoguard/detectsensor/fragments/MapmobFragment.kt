@@ -1,35 +1,5 @@
 package com.sensoguard.detectsensor.fragments
 
-//import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions
-//haggay
-
-
-//import com.mapbox.mapboxsdk.Mapbox
-//import com.mapbox.mapboxsdk.camera.CameraPosition
-//import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
-//import com.mapbox.mapboxsdk.geometry.LatLng
-//import com.mapbox.mapboxsdk.maps.MapView
-//import com.mapbox.mapboxsdk.maps.MapboxMap
-//import com.mapbox.mapboxsdk.maps.Style
-//import com.mapbox.mapboxsdk.offline.OfflineRegion
-//import com.mapbox.mapboxsdk.plugins.annotation.Symbol
-//import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions
-//import com.mapbox.mapboxsdk.plugins.markerview.MarkerViewManager
-//import com.mapbox.mapboxsdk.style.expressions.Expression
-//import com.mapbox.mapboxsdk.style.expressions.Expression.get
-//import com.mapbox.mapboxsdk.style.layers.Property.TEXT_ANCHOR_TOP
-//import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap
-//import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconIgnorePlacement
-//import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconImage
-//import com.mapbox.mapboxsdk.style.layers.PropertyFactory.textAllowOverlap
-//import com.mapbox.mapboxsdk.style.layers.PropertyFactory.textField
-//import com.mapbox.mapboxsdk.style.layers.PropertyFactory.textHaloColor
-//import com.mapbox.mapboxsdk.style.layers.PropertyFactory.textHaloWidth
-//import com.mapbox.mapboxsdk.style.layers.PropertyFactory.textIgnorePlacement
-//import com.mapbox.mapboxsdk.style.layers.PropertyFactory.textOffset
-//import com.mapbox.mapboxsdk.style.layers.PropertyFactory.textVariableAnchor
-//import com.mapbox.mapboxsdk.style.layers.SymbolLayer
-//import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import android.app.Dialog
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -52,6 +22,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toBitmap
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -69,6 +40,11 @@ import com.mapbox.maps.OfflineRegion
 import com.mapbox.maps.Style
 import com.mapbox.maps.ViewAnnotationAnchor
 import com.mapbox.maps.ViewAnnotationOptions
+import com.mapbox.maps.extension.style.image.image
+import com.mapbox.maps.extension.style.layers.generated.symbolLayer
+import com.mapbox.maps.extension.style.sources.generated.GeoJsonSource
+import com.mapbox.maps.extension.style.sources.generated.geoJsonSource
+import com.mapbox.maps.extension.style.style
 import com.mapbox.maps.plugin.annotation.AnnotationPlugin
 import com.mapbox.maps.plugin.annotation.annotations
 import com.mapbox.maps.plugin.annotation.generated.OnPointAnnotationClickListener
@@ -355,7 +331,7 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
         markersList = ArrayList<Feature>()
 
         //show current location marker
-        showCurrentLocationMarker()
+        //showCurrentLocationMarker()
 
         //get sensors from locally
         val sensorsArr = activity?.let { getSensorsFromLocally(it) }
@@ -650,10 +626,59 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
         return null
     }
 
+
+    private lateinit var geojsonSource: GeoJsonSource
+
+    /**
+     * show current location marker
+     */
+    private fun showCurrentLocationMarker() {
+
+        if (myLocate == null) return
+
+        val currentPoint = Point.fromLngLat(
+            myLocate?.longitude!!,
+            myLocate?.latitude!!
+        )
+
+
+        geojsonSource = geoJsonSource("source-id") {
+            feature(Feature.fromGeometry(currentPoint))
+        }
+
+
+        //val mapboxMap = binding.mapView.mapboxMap
+        myMapboxMap?.loadStyle(
+            style(mapType) {
+                +image(
+                    "marker_icon",
+                    ContextCompat.getDrawable(requireActivity(), R.drawable.ic_my_locate)!!
+                        .toBitmap()
+                )
+
+
+                +geojsonSource
+                +symbolLayer(layerId = "layer-id", sourceId = "source-id") {
+                    iconImage("marker_icon")
+                    iconIgnorePlacement(true)
+                    iconAllowOverlap(true)
+                }
+            }
+        ) {
+//            Toast.makeText(
+//                this@AnimatedMarkerActivity,
+//                getString(R.string.tap_on_map_instruction),
+//                Toast.LENGTH_LONG
+//            ).show()
+//            myMapboxMap?.addOnMapClickListener(requireActivity() as OnMapClickListener)
+        }
+    }
+
+
     /**
      * show marker of current location if exist
      */
-    private fun showCurrentLocationMarker() {
+    private fun showCurrentLocationMarker1() {
 
         if (activity == null) {
             return
@@ -1300,19 +1325,21 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
                 true
             }
 
-            //go to last location
-            val location = initFindLocation()
-
-
-            //set last location if exist
-            location?.let {
-                myLocate =
-                    LatLng(it.latitude, it.longitude)
-            }
-
-            showLocation(location)
-
-            gotoMyLocation()
+//            //go to last location
+//            val location = initFindLocation()
+//
+//
+//            //set last location if exist
+//            location?.let {
+//                myLocate =
+//                    LatLng(it.latitude, it.longitude)
+//            }
+//
+//            showLocation(location)
+//
+//            gotoMyLocation()
+            showMarkers()
+            gotoMySingleLocation()
 
         }
     }
@@ -1436,7 +1463,9 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
                     )
                     //clear the current marker
                     markersList?.remove(currentLocationMarker)
-                    showMyLocationMarker(location)
+
+                    moveCamera(location)
+                    //showMyLocationMarker(location)
                     //showLocation(location)
                 } else {
                     Toast.makeText(activity, "error in location2", Toast.LENGTH_LONG).show()
@@ -1455,7 +1484,8 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
                         CURRENT_LONGTUDE_PREF,
                         location.longitude.toString()
                     )
-                    showLocation(location)
+                    moveCamera(location)
+                    //showLocation(location)
                 } else {
                     Toast.makeText(activity, "error in location2", Toast.LENGTH_LONG).show()
                 }
@@ -1474,6 +1504,57 @@ class MapmobFragment : ParentFragment(), OnAdapterListener, OnMoveListener {
         }
     }
 
+
+    /**
+     * Move camera to current location
+     */
+    private fun moveCamera(location: Location?) {
+
+        if (location != null) {
+            setMyLocate(
+                LatLng(
+                    location.latitude, location.longitude
+                )
+            )
+        } else {
+            myLocate = getLastLocationLocally()
+
+            if (myLocate == null) {
+                //set default location (london)
+                myLocate = LatLng(51.509865, -0.118092)
+                //set default location (london) if there is no last location
+                setMyLocate(LatLng(51.509865, -0.118092))
+            }
+        }
+        //add marker at the focus of the map
+        myLocate?.let {
+            //load the camera
+            if (myLocate != null && myLocate?.latitude != null &&
+                myLocate?.longitude != null
+            ) {
+
+                pointAnnotationManager =
+                    mapView?.annotations?.createPointAnnotationManager().apply {
+
+                        val cameraPosition = CameraOptions.Builder()
+                            .zoom(15.0)
+                            .center(
+                                Point.fromLngLat(
+                                    myLocate?.longitude!!,
+                                    myLocate?.latitude!!
+                                )
+                            )
+                            .build()
+                        // set camera position
+                        myMapboxMap?.setCamera(cameraPosition)
+                        showCurrentLocationMarker()
+                        showMarkers()
+                    }
+
+            }
+
+        }
+    }
 //    private val PROPERTY_NAME = "name"
 //    private val PROPERTY_NAME_WIN = "name_win"
 //    private val PROPERTY_SENSOR_TYPE = "sensor_type"
